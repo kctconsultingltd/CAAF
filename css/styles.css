@@ -619,7 +619,7 @@ p {
 @keyframes gentlePulse {
   0%,
   100% {
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) scale(0.88);
   }
   50% {
     transform: translate(-50%, -50%) scale(1.04);
@@ -627,7 +627,7 @@ p {
 }
 
 .inner-africa-map {
-  animation: gentlePulse 12s ease-in-out infinite; /* Uncomment to enable */
+  animation: gentlePulse 8s ease-in-out infinite; /* Uncomment to enable */
 }
 
 /* If you prefer no border-radius and natural rectangular shape, just remove border-radius */
