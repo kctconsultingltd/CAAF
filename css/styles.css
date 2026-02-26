@@ -1212,63 +1212,82 @@ p {
 /* ═══════════════════════════════════════════════════
     7. VISION & MISSION
     ════════════════════════���══════════════════════════ */
-.vm-featured-image-wrapper {
-  position: relative;
-  margin-bottom: 40px;
-  border-radius: 4px;
-  overflow: hidden;
-  max-height: 400px;
-}
-.vm-featured-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 70%;
-  display: block;
-  filter: brightness(0.85) contrast(1.1);
-  transition: filter 0.3s ease;
-}
-.vm-featured-image:hover {
-  filter: brightness(0.95) contrast(1.15);
-}
-.vm-image-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    transparent 50%,
-    rgba(10, 14, 20, 0.6) 100%
-  );
-  pointer-events: none;
-}
-@media (max-width: 600px) {
-  .vm-featured-image-wrapper {
-    max-height: 250px;
-  }
-}
-.vm-grid {
+
+/* Main two-column layout */
+.vm-main-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  gap: 32px;
+  min-height: 500px;
+  align-items: stretch;
 }
 @media (max-width: 899px) {
-  .vm-grid {
+  .vm-main-layout {
     grid-template-columns: 1fr;
+    min-height: auto;
   }
 }
+
+/* Left side: Stacked cards */
+.vm-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: 100%;
+}
+
+/* Entry animations */
+.vm-slide-in-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.vm-slide-in-left.reveal.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+.vm-slide-in-left.vm-delay-2 {
+  transition-delay: 0.2s;
+}
+
+.vm-slide-in-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  transition-delay: 0.15s;
+}
+.vm-slide-in-right.reveal.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Vision/Mission boxes */
 .vm-box {
   border: 1px solid var(--card-border);
   border-radius: 4px;
-  padding: 40px 36px;
+  padding: 32px 28px;
   position: relative;
   overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+.vm-box:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-color: var(--gold);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(200, 150, 42, 0.1);
 }
 .vm-box::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.vm-box:hover::before {
+  opacity: 1.5;
 }
 .vm-box.vision::before {
   background: radial-gradient(
@@ -1284,6 +1303,25 @@ p {
     transparent 60%
   );
 }
+
+/* Icon styling */
+.vm-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(200, 150, 42, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: var(--gold);
+  transition: transform 0.4s ease, background 0.4s ease;
+}
+.vm-box:hover .vm-icon {
+  transform: scale(1.1) rotate(5deg);
+  background: rgba(200, 150, 42, 0.18);
+}
+
 .vm-label {
   font-family: var(--condensed);
   font-size: 14px;
@@ -1304,11 +1342,64 @@ p {
 }
 .vm-text {
   font-family: var(--serif);
-  font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
   font-weight: 600;
   color: var(--white);
-  line-height: 1.35;
+  line-height: 1.4;
   position: relative;
+}
+
+/* Right side: Image container */
+.vm-image-container {
+  position: relative;
+  height: 100%;
+  min-height: 450px;
+}
+@media (max-width: 899px) {
+  .vm-image-container {
+    min-height: 350px;
+    order: -1;
+  }
+}
+
+.vm-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.vm-featured-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 60%;
+  display: block;
+  filter: brightness(0.88) contrast(1.05);
+  transition: filter 0.5s ease, transform 0.6s ease;
+}
+
+.vm-image-wrapper:hover .vm-featured-image {
+  filter: brightness(1) contrast(1.1);
+  transform: scale(1.04);
+}
+
+.vm-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(200, 150, 42, 0.1) 0%,
+    transparent 50%,
+    rgba(10, 14, 20, 0.4) 100%
+  );
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.vm-image-wrapper:hover .vm-image-overlay {
+  opacity: 0.7;
 }
 
 /* ═══════════════════════════════════════════════════

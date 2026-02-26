@@ -617,31 +617,52 @@
      ═══════════════════════════════════════════════ -->
     <section class="section-pad border-top-gold" style="background: var(--bg2)">
       <div class="container">
-        <!-- Featured Team Image -->
-        <div class="vm-featured-image-wrapper reveal">
-          <img 
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/christina-wocintechchat-com-m-rg1y72eKw6o-unsplash-h9WMuNfN4d0haIdhGUAyrxgjF1i3n3.jpg" 
-            alt="Professional team collaborating in a modern boardroom meeting" 
-            class="vm-featured-image"
-          />
-          <div class="vm-image-overlay"></div>
-        </div>
-        <div class="vm-grid">
-          <div class="vm-box vision reveal">
-            <div class="vm-label">Vision</div>
-            <div class="vm-sub">What we are building toward</div>
-            <div class="vm-text">
-              To make capital the most powerful tool for scaling real economic
-              transformation where it matters most.
+        <div class="vm-main-layout">
+          <!-- Left side: Stacked cards -->
+          <div class="vm-cards-stack">
+            <div class="vm-box vision reveal vm-slide-in-left">
+              <div class="vm-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <circle cx="12" cy="12" r="4"/>
+                  <line x1="12" y1="2" x2="12" y2="4"/>
+                  <line x1="12" y1="20" x2="12" y2="22"/>
+                  <line x1="2" y1="12" x2="4" y2="12"/>
+                  <line x1="20" y1="12" x2="22" y2="12"/>
+                </svg>
+              </div>
+              <div class="vm-label">Vision</div>
+              <div class="vm-sub">What we are building toward</div>
+              <div class="vm-text">
+                To make capital the most powerful tool for scaling real economic
+                transformation where it matters most.
+              </div>
+            </div>
+            <div class="vm-box mission reveal vm-slide-in-left vm-delay-2">
+              <div class="vm-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div class="vm-label">Mission</div>
+              <div class="vm-sub">How we get there</div>
+              <div class="vm-text">
+                To equip investors and capital providers with catalytic tools,
+                practical lenses, and execution frameworks that multiply the
+                impact and productivity of capital.
+              </div>
             </div>
           </div>
-          <div class="vm-box mission reveal reveal-delay-2">
-            <div class="vm-label">Mission</div>
-            <div class="vm-sub">How we get there</div>
-            <div class="vm-text">
-              To equip investors and capital providers with catalytic tools,
-              practical lenses, and execution frameworks that multiply the
-              impact and productivity of capital.
+          <!-- Right side: Full image -->
+          <div class="vm-image-container reveal vm-slide-in-right">
+            <div class="vm-image-wrapper">
+              <img 
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/christina-wocintechchat-com-m-rg1y72eKw6o-unsplash-h9WMuNfN4d0haIdhGUAyrxgjF1i3n3.jpg" 
+                alt="Professional team collaborating in a modern boardroom meeting" 
+                class="vm-featured-image"
+              />
+              <div class="vm-image-overlay"></div>
             </div>
           </div>
         </div>
