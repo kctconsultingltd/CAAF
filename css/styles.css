@@ -1117,8 +1117,77 @@ p {
 }
 
 /* ═══════════════════════════════════════════════════
+    6b. WHO WE SERVE - INTRO IMAGE
+    ═══════════════════════════════════════════════════ */
+.serve-intro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  margin-bottom: 48px;
+}
+@media (max-width: 899px) {
+  .serve-intro-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+.serve-intro-image {
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.serve-featured-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+  filter: brightness(0.9) contrast(1.05);
+  transition: filter 0.3s ease, transform 0.4s ease;
+}
+.serve-featured-image:hover {
+  filter: brightness(1) contrast(1.1);
+  transform: scale(1.02);
+}
+
+/* ═══════════════════════════════════════════════════
     7. VISION & MISSION
     ════════════════════════���══════════════════════════ */
+.vm-featured-image-wrapper {
+  position: relative;
+  margin-bottom: 40px;
+  border-radius: 4px;
+  overflow: hidden;
+  max-height: 400px;
+}
+.vm-featured-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  display: block;
+  filter: brightness(0.85) contrast(1.1);
+  transition: filter 0.3s ease;
+}
+.vm-featured-image:hover {
+  filter: brightness(0.95) contrast(1.15);
+}
+.vm-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 50%,
+    rgba(10, 14, 20, 0.6) 100%
+  );
+  pointer-events: none;
+}
+@media (max-width: 600px) {
+  .vm-featured-image-wrapper {
+    max-height: 250px;
+  }
+}
 .vm-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
