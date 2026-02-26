@@ -112,27 +112,4 @@
       el.classList.add("visible");
     });
   }
-
-  /* ── Contact Form ──────────────────────────────── */
-  var form = document.getElementById("contactForm");
-  var btn = document.getElementById("submitBtn");
-  if (form && btn) {
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      btn.textContent = "\u2713 Message Sent";
-      btn.classList.add("sent");
-      setTimeout(function () {
-        btn.textContent = "Submit Enquiry";
-        btn.classList.remove("sent");
-        form.reset();
-      }, 3000);
-    });
-    btn.addEventListener("click", function () {
-      if (form.checkValidity()) {
-        form.dispatchEvent(new Event("submit"));
-      } else {
-        form.reportValidity();
-      }
-    });
-  }
 })();
