@@ -1075,16 +1075,23 @@ p {
   }
 }
 
-/* Left side: Stacked cards */
+/* Right side: Stacked cards */
 .serve-cards-stack {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   gap: 16px;
-  align-content: start;
+  height: 100%;
+}
+@media (max-width: 899px) {
+  .serve-cards-stack {
+    height: auto;
+  }
 }
 @media (max-width: 600px) {
   .serve-cards-stack {
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
   }
 }
 
@@ -1092,8 +1099,9 @@ p {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 14px;
-  padding: 24px 16px;
+  padding: 20px 16px;
   border: 1px solid var(--card-border);
   border-radius: 4px;
   text-align: center;
@@ -1102,6 +1110,7 @@ p {
     border-color 0.3s,
     transform 0.3s;
   cursor: default;
+  height: 100%;
 }
 .serve-card:hover {
   background: rgba(244, 242, 237, 0.03);
@@ -1127,7 +1136,7 @@ p {
   color: var(--white);
 }
 
-/* Right side: Image with hover overlay */
+/* Left side: Image with hover overlay */
 .serve-image-container {
   position: relative;
   height: 100%;
