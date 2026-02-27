@@ -11,6 +11,8 @@
       content="CAPITAL AS A FORCE is a field-based investment advisory organization deploying capital for transformational impact in Africa and emerging markets."
     />
 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
     <!-- Open Graph -->
 
     <!-- Open Graph / WhatsApp / Facebook -->
@@ -155,65 +157,21 @@
      2. HERO
      ═══════════════════════════════════════════════ -->
     <section class="hero" id="hero">
-      <div class="hero-ring-wrap" aria-hidden="true">
-        <div class="hero-ring ring-outer">
-          <div class="ring-dot"></div>
-        </div>
-        <div class="hero-ring ring-mid">
-          <div class="ring-dot"></div>
-        </div>
-        <div class="hero-ring ring-inner">
-          
-          <!-- Africa map image -->
-          <img 
-            src="/img/africa-remove-bg.png" 
-            alt="Africa continent in dot matrix style" 
-            class="inner-africa-map"
-            style="position:relative;z-index:2;"
-          >
-          <!-- Golden orb -->
-          <div id="africa-orb" style="position:absolute;width:10px;height:10px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px 2px var(--gold-light);z-index:3;opacity:0;"></div>
-        </div>
 
-        <div class="orbit-orbs" aria-hidden="true">
-          <span class="orbit-dot" style="animation-delay: 0s"></span>
-          <span class="orbit-dot" style="animation-delay: 2s"></span>
-          <span class="orbit-dot" style="animation-delay: 4s"></span>
-          <span class="orbit-dot" style="animation-delay: 6s"></span>
-        </div>
-      </div>
+      <!-- Video background -->
+      <video class="hero-video" autoplay muted loop playsinline poster="img/Lagos Skyline-Cover.jpg">
+        <source src="https://kv8yg7t5dp9dvhnp.public.blob.vercel-storage.com/Lagos%20Skyline.mp4" type="video/mp4">
+      </video>
+      
       <div class="container">
-        <script>
-        // Animate golden orb around Africa map
-        const orb = document.getElementById('africa-orb');
-        const ringInner = orb && orb.parentElement;
-        if (orb && ringInner) {
-          const radius = ringInner.offsetWidth/2 - 24; // Adjust for image/orb size and new orb size
-          let angle = 0;
-          // Set initial position to the ring (angle = 0)
-          const initialX = (ringInner.offsetWidth/2) + radius * Math.cos(angle) - orb.offsetWidth/2;
-          const initialY = (ringInner.offsetHeight/2) + radius * Math.sin(angle) - orb.offsetHeight/2;
-          orb.style.left = initialX + 'px';
-          orb.style.top = initialY + 'px';
-          orb.style.opacity = 1;
-          function animateOrb() {
-            angle += 0.012; // Speed
-            const x = (ringInner.offsetWidth/2) + radius * Math.cos(angle) - orb.offsetWidth/2;
-            const y = (ringInner.offsetHeight/2) + radius * Math.sin(angle) - orb.offsetHeight/2;
-            orb.style.left = x + 'px';
-            orb.style.top = y + 'px';
-            requestAnimationFrame(animateOrb);
-          }
-          animateOrb();
-        }
-        </script>
+        
         <div class="hero-content" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;">
           <p class="hero-tag hero-anim hero-d1">
             Field-Based Investment Advisory Organization
           </p>
-          <p class="hero-eq hero-anim hero-d2">
+          <!-- <p class="hero-eq hero-anim hero-d2">
             Capital + Perspective = Transformational Impact
-          </p>
+          </p> -->
           <h1 class="hero-anim hero-d3">
             Deploy capital where it <em>multiplies</em> impact.
           </h1>
@@ -858,7 +816,7 @@
     </footer>
 
     <!-- ═══════════════════════════════════════════════
-     JAVASCRIPT
+     JAVASCRIPT 
      ═══════════════════════════════════════════════ -->
     <script src="js/main.js" defer></script>
   </body>
