@@ -1094,15 +1094,23 @@ p {
 
 /* Main two-column layout */
 .vm-main-layout {
+
+/* Main two-column layout */
+.vm-main-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  min-height: 500px;
+  align-items: stretch;
   gap: 32px;
   min-height: 500px;
   align-items: stretch;
 }
 @media (max-width: 899px) {
   .vm-main-layout {
+  .vm-main-layout {
     grid-template-columns: 1fr;
+    min-height: auto;
     min-height: auto;
   }
 }
@@ -1149,6 +1157,7 @@ p {
   border: 1px solid var(--card-border);
   border-radius: 4px;
   padding: 32px 28px;
+  padding: 32px 28px;
   position: relative;
   overflow: hidden;
   flex: 1;
@@ -1172,6 +1181,10 @@ p {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.vm-box:hover::before {
+  opacity: 1.5;
   transition: opacity 0.4s ease;
 }
 .vm-box:hover::before {
@@ -1233,8 +1246,10 @@ p {
 .vm-text {
   font-family: var(--serif);
   font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
   font-weight: 600;
   color: var(--white);
+  line-height: 1.4;
   line-height: 1.4;
   position: relative;
 }
