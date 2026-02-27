@@ -524,6 +524,7 @@ p {
   align-items: center;
   padding-top: var(--nav-h);
   overflow: hidden;
+<<<<<<< HEAD
   background: var(--bg); /* ← keep this as fallback color */
   /* The two radial-gradients can stay — they'll blend over the video */
 }
@@ -574,6 +575,21 @@ p {
   pointer-events: none;
 }
 
+=======
+  background:
+    radial-gradient(
+      ellipse 60% 50% at 80% 40%,
+      rgba(26, 111, 196, 0.12) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 50% 50% at 15% 85%,
+      rgba(200, 150, 42, 0.06) 0%,
+      transparent 60%
+    ),
+    var(--bg);
+}
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
 .hero-content {
   position: relative;
   z-index: 2;
@@ -581,6 +597,140 @@ p {
   padding: 60px 0 40px;
 }
 
+<<<<<<< HEAD
+=======
+/* Hero Ring */
+.hero-ring-wrap {
+  position: absolute;
+  top: 50%;
+  right: -10vw;
+  width: 65vw;
+  height: 65vw;
+  transform: translate(0, -50%);
+  pointer-events: none;
+}
+@media (max-width: 899px) {
+  .hero-ring-wrap {
+    display: none;
+  }
+}
+.hero-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  border: 1px solid rgba(244, 242, 237, 0.04);
+}
+.ring-outer {
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  animation: ringRotate 40s linear infinite;
+}
+.ring-mid {
+  width: 78%;
+  height: 78%;
+  transform: translate(-50%, -50%);
+  animation: ringRotateReverse 28s linear infinite;
+}
+.ring-inner {
+  width: 56%;
+  height: 56%;
+  transform: translate(-50%, -50%);
+  border-color: rgba(244, 242, 237, 0.06);
+}
+.ring-dot {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+}
+
+/* Existing styles remain unchanged... */
+
+/* New: Center the Africa image perfectly inside the inner ring */
+.ring-inner {
+  position: relative; /* Ensure child img can be absolutely positioned relative to this */
+  overflow: hidden; /* Optional: hide any overflow if image is slightly larger */
+}
+
+.inner-africa-map {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%; /* Adjust this % to fit nicely — 70–90% looks good */
+  height: auto; /* Preserve aspect ratio */
+  max-width: 100%; /* Prevent overflow */
+  border-radius: 50%; /* Optional: make it circular to match ring shape */
+  opacity: 0.9; /* Slight transparency so rings show through if desired */
+  pointer-events: none; /* Don't interfere with clicks */
+  box-shadow: 0 0 30px rgba(244, 242, 237, 0.15); /* Optional subtle glow to match theme */
+}
+
+/* Optional: If you want the image to subtly pulse or scale (futuristic feel) */
+@keyframes gentlePulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(0.88);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+}
+
+.inner-africa-map {
+  animation: gentlePulse 8s ease-in-out infinite; /* Uncomment to enable */
+}
+
+/* If you prefer no border-radius and natural rectangular shape, just remove border-radius */
+
+/* Orbiting dots container (independent orbit animation) */
+.orbit-orbs {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.orbit-orbs .orbit-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: var(--gold-light);
+  box-shadow: 0 0 12px 3px rgba(240, 185, 58, 0.32);
+  animation: orbit 8s linear infinite;
+}
+.orbit-orbs .orbit-dot:nth-child(2) {
+  animation-delay: 2s;
+}
+.orbit-orbs .orbit-dot:nth-child(3) {
+  animation-delay: 4s;
+}
+.orbit-orbs .orbit-dot:nth-child(4) {
+  animation-delay: 6s;
+}
+
+@keyframes orbit {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg) translateX(calc(32.5vw))
+      rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg) translateX(calc(32.5vw))
+      rotate(-360deg);
+  }
+}
+
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
 /* Hero Content */
 .hero-tag {
   display: inline-flex;
@@ -591,7 +741,11 @@ p {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.16em;
+<<<<<<< HEAD
   color: white;
+=======
+  color: var(--muted);
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
   margin-bottom: 18px;
 }
 .hero-tag::before {
@@ -620,7 +774,11 @@ p {
 }
 .hero-sub {
   font-size: 1.05rem;
+<<<<<<< HEAD
   color: white;
+=======
+  color: var(--muted);
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
   max-width: 560px;
   margin-bottom: 36px;
   line-height: 1.65;
@@ -677,6 +835,38 @@ p {
   color: var(--white);
 }
 
+<<<<<<< HEAD
+=======
+/* Stats */
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  margin-top: 56px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.stat {
+  min-width: 100px;
+}
+.stat-val {
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1.1;
+}
+.stat-label {
+  font-family: var(--condensed);
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
 /* ═══════════════════════════════════════════════════
     3. WHO WE ARE
     ═══════════════════════════════════════════════════ */
@@ -1041,9 +1231,13 @@ p {
   object-position: center;
   display: block;
   filter: brightness(0.9) contrast(1.05);
+<<<<<<< HEAD
   transition:
     filter 0.4s ease,
     transform 0.5s ease;
+=======
+  transition: filter 0.4s ease, transform 0.5s ease;
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
 }
 
 .serve-image-wrapper:hover .serve-featured-image {
@@ -1119,9 +1313,13 @@ p {
 .vm-slide-in-left {
   opacity: 0;
   transform: translateX(-40px);
+<<<<<<< HEAD
   transition:
     opacity 0.6s ease-out,
     transform 0.6s ease-out;
+=======
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
 }
 .vm-slide-in-left.reveal.active {
   opacity: 1;
@@ -1134,9 +1332,13 @@ p {
 .vm-slide-in-right {
   opacity: 0;
   transform: translateX(40px);
+<<<<<<< HEAD
   transition:
     opacity 0.7s ease-out,
     transform 0.7s ease-out;
+=======
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
   transition-delay: 0.15s;
 }
 .vm-slide-in-right.reveal.active {
@@ -1155,17 +1357,25 @@ p {
   display: flex;
   flex-direction: column;
   justify-content: center;
+<<<<<<< HEAD
   transition:
     transform 0.4s ease,
     border-color 0.4s ease,
     box-shadow 0.4s ease;
+=======
+  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
 }
 .vm-box:hover {
   transform: translateY(-6px) scale(1.02);
   border-color: var(--gold);
+<<<<<<< HEAD
   box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.3),
     0 0 30px rgba(200, 150, 42, 0.1);
+=======
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(200, 150, 42, 0.1);
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
 }
 .vm-box::before {
   content: "";
@@ -1203,9 +1413,13 @@ p {
   justify-content: center;
   margin-bottom: 20px;
   color: var(--gold);
+<<<<<<< HEAD
   transition:
     transform 0.4s ease,
     background 0.4s ease;
+=======
+  transition: transform 0.4s ease, background 0.4s ease;
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
 }
 .vm-box:hover .vm-icon {
   transform: scale(1.1) rotate(5deg);
@@ -1267,9 +1481,13 @@ p {
   object-position: center 60%;
   display: block;
   filter: brightness(0.88) contrast(1.05);
+<<<<<<< HEAD
   transition:
     filter 0.5s ease,
     transform 0.6s ease;
+=======
+  transition: filter 0.5s ease, transform 0.6s ease;
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
 }
 
 .vm-image-wrapper:hover .vm-featured-image {
@@ -1781,6 +1999,7 @@ to {
   align-items: center;
   padding-top: var(--nav-h);
   overflow: hidden;
+<<<<<<< HEAD
   background: var(--bg); /* ← keep this as fallback color */
   /* The two radial-gradients can stay — they'll blend over the video */
 }
@@ -1831,6 +2050,21 @@ to {
   pointer-events: none;
 }
 
+=======
+  background:
+    radial-gradient(
+      ellipse 60% 50% at 80% 40%,
+      rgba(26, 111, 196, 0.12) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 50% 50% at 15% 85%,
+      rgba(200, 150, 42, 0.06) 0%,
+      transparent 60%
+    ),
+    var(--bg);
+}
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
 .hero-content {
   position: relative;
   z-index: 2;
@@ -1838,6 +2072,61 @@ to {
   padding: 60px 0 40px;
 }
 
+<<<<<<< HEAD
+=======
+/* Hero Ring */
+.hero-ring-wrap {
+  position: absolute;
+  top: 50%;
+  right: -10vw;
+  width: 65vw;
+  height: 65vw;
+  transform: translate(0, -50%);
+  pointer-events: none;
+}
+@media (max-width: 899px) {
+  .hero-ring-wrap {
+    display: none;
+  }
+}
+.hero-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  border: 1px solid rgba(244, 242, 237, 0.04);
+}
+.ring-outer {
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  animation: ringRotate 40s linear infinite;
+}
+.ring-mid {
+  width: 78%;
+  height: 78%;
+  transform: translate(-50%, -50%);
+  animation: ringRotateReverse 28s linear infinite;
+}
+.ring-inner {
+  width: 56%;
+  height: 56%;
+  transform: translate(-50%, -50%);
+  border-color: rgba(244, 242, 237, 0.06);
+}
+.ring-dot {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  border-radius: 50%;
+  background: var(--gold-light);
+  box-shadow: 0 0 16px 4px rgba(240, 185, 58, 0.35);
+}
+
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
 /* Hero Content */
 .hero-tag {
   display: inline-flex;
@@ -1848,7 +2137,11 @@ to {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.16em;
+<<<<<<< HEAD
   color: white;
+=======
+  color: var(--muted);
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
   margin-bottom: 18px;
 }
 .hero-tag::before {
@@ -1877,7 +2170,11 @@ to {
 }
 .hero-sub {
   font-size: 1.05rem;
+<<<<<<< HEAD
   color: white;
+=======
+  color: var(--muted);
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
   max-width: 560px;
   margin-bottom: 36px;
   line-height: 1.65;
@@ -1933,3 +2230,41 @@ to {
 .btn-ghost:hover {
   color: var(--white);
 }
+<<<<<<< HEAD
+=======
+
+/* Stats */
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  margin-top: 56px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.stat {
+  min-width: 100px;
+}
+.stat-val {
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1.1;
+}
+.stat-label {
+  font-family: var(--condensed);
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════════════════
+   3. WHO WE ARE
+   ═══════════════════════════════════════════════════ */
+/* ... rest of original CSS ... */
+/* (file continues with the same content extracted from index.html) */
+>>>>>>> b28aaf0ee358204a4b3439d60452a2620fc91ede
