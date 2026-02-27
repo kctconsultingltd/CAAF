@@ -265,8 +265,8 @@ p {
   /* Ensures logo aligns with nav-inner padding */
 }
 .nav-logo-img {
-  height: 182px;
-  width: 597px;
+  height: 70px;
+  width: 120px;
   mix-blend-mode: screen;
   background: transparent;
   flex-shrink: 0;
@@ -279,8 +279,8 @@ p {
 
 @media (max-width: 899px) {
   .nav-logo-img {
-    height: 120px;
-    width: 392px;
+    height: 70px;
+    width: 120px;
   }
 }
 .nav-center {
@@ -1663,7 +1663,7 @@ to {
 }
 @media (max-width: 899px) {
   .nav-logo-img {
-    height: 80px;
+    height: 70px;
   }
 }
 .nav-center {
