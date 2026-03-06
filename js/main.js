@@ -26,19 +26,6 @@
       e.stopImmediatePropagation();
       if (_toggleLock) return;
       _toggleLock = true;
-      toggleMobileMenu();
-      setTimeout(function () {
-        _toggleLock = false;
-      }, 300);
-    });
-
-    // Prevent duplicate toggles (some environments fire multiple click-like events)
-    var _toggleLock = false;
-    hamburger.addEventListener("click", function (e) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      if (_toggleLock) return;
-      _toggleLock = true;
       console.log("Hamburger clicked", e.type, "target:", e.target);
       toggleMobileMenu();
       setTimeout(function () {
@@ -77,6 +64,37 @@
       });
     }
   }
+
+  /* ── Bio "See More / See Less" Toggle ──────────── */
+  function toggleBio(btn) {
+    var text = btn.previousElementSibling;
+
+    if (!text || !text.classList.contains("bio-text")) {
+      console.warn("Toggle failed: .bio-text not found next to button");
+      return;
+    }
+
+    text.classList.toggle("expanded");
+    var isExpanded = text.classList.contains("expanded");
+
+    btn.textContent = isExpanded ? "See less" : "See more";
+    btn.classList.toggle("expanded", isExpanded);
+  }
+
+  // Run once DOM is completely ready
+  document.addEventListener("DOMContentLoaded", function () {
+    // console.log("DOM fully loaded → attaching see-more listeners");
+
+    var buttons = document.querySelectorAll(".see-more-btn");
+    // console.log("Found " + buttons.length + " see-more buttons");
+
+    buttons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        // console.log("See more button clicked!");
+        toggleBio(this);
+      });
+    });
+  });
 
   /* ── Smooth Scroll for Anchor Links ────────────── */
   document.querySelectorAll('a[href^="#"]').forEach(function (a) {
