@@ -107,6 +107,54 @@
     });
   });
 
+  /* ── What We Do Carousel ──────────────────────────── */
+  (function() {
+    var wrapper = document.querySelector(".carousel-wrapper");
+    var slides = document.querySelectorAll(".carousel-slide");
+    var track = document.querySelector(".carousel-slides");
+    
+    if (!slides.length) return;
+
+    var currentIndex = 0;
+    var totalSlides = slides.length;
+    var slideInterval = null;
+    var isMobile = window.innerWidth <= 900;
+
+    function updateCarousel() {
+      slides.forEach(function(slide) {
+        slide.classList.remove("is-active");
+      });
+      slides[currentIndex].classList.add("is-active");
+      
+      // On mobile: slide the track
+      if (isMobile && track) {
+        track.style.transform = "translateX(-" + (currentIndex * (100 / 3)) + "%)";
+      } else if (!isMobile && track) {
+        track.style.transform = "translateX(0)";
+      }
+    }
+
+    function nextSlide() {
+      currentIndex = (currentIndex + 1) % totalSlides;
+      updateCarousel();
+    }
+
+    function startInterval() {
+      if (slideInterval) clearInterval(slideInterval);
+      slideInterval = setInterval(nextSlide, 3000);
+    }
+
+    // Check for resize
+    window.addEventListener("resize", function() {
+      isMobile = window.innerWidth <= 900;
+      updateCarousel();
+    });
+
+    // Start auto-rotate
+    startInterval();
+    updateCarousel();
+  })();
+
   /* ── Intersection Observer — Reveal ────────────── */
   var reveals = document.querySelectorAll(".reveal");
   if ("IntersectionObserver" in window) {

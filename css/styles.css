@@ -1952,3 +1952,175 @@ to {
 .btn-ghost:hover {
   color: var(--white);
 }
+
+/* ═══════════════════════════════════════════════
+   SOLUTIONS BANNER CAROUSEL
+   ═══════════════════════════════════════════════ */
+.solutions-banner {
+  background: var(--bg);
+  padding: 60px 0 80px;
+}
+
+.banner-title {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.banner-title h2 {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 600;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 30px rgba(200, 150, 42, 0.4);
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════
+   WHAT WE DO CAROUSEL - All 3 slides visible
+   ═══════════════════════════════════════════════ */
+.carousel-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.carousel-slides {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+
+.carousel-slide {
+  flex: 1;
+  position: relative;
+  width: 500px;
+  height: 500px;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.6s ease;
+}
+
+.carousel-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.carousel-slide .slide-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 36px 28px 24px;
+  background: linear-gradient(
+    to top,
+    rgba(6, 17, 31, 1) 0%,
+    rgba(6, 17, 31, 0.8) 75%,
+    transparent 100%
+  );
+  transition: all 0.6s ease;
+}
+
+.carousel-slide .slide-overlay h3 {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--white);
+  margin: 0 0 8px;
+  transition: all 0.6s ease;
+}
+
+.carousel-slide .slide-overlay p {
+  font-family: var(--condensed);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+  transition: all 0.6s ease;
+}
+
+/* Active (center) slide - highlighted with gold border */
+.carousel-slide.is-active {
+  transform: scale(1);
+  filter: brightness(1.15);
+  border: 2px solid var(--gold);
+  z-index: 10;
+}
+
+.carousel-slide.is-active .slide-overlay h3 {
+  color: var(--gold);
+}
+
+/* Inactive (side) slides - smaller, dimmed */
+.carousel-slide:not(.is-active) {
+  transform: scale(0.95);
+  filter: brightness(0.75);
+  opacity: 0.8;
+}
+
+.carousel-slide:not(.is-active) .slide-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(6, 17, 31, 1) 0%,
+    rgba(6, 17, 31, 0.9) 75%,
+    transparent 100%
+  );
+}
+
+/* Mobile: sliding carousel (1 slide at a time) */
+@media (max-width: 900px) {
+  .solutions-banner {
+    padding: 40px 0 60px;
+  }
+
+  .carousel-slides {
+    display: flex;
+    width: 300%;
+    transition: transform 0.6s ease-in-out;
+  }
+
+  .carousel-slide {
+    width: calc(100% / 3);
+    aspect-ratio: auto;
+    height: 500px;
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+  }
+
+  .carousel-slide:not(.is-active) {
+    opacity: 0;
+  }
+
+  .carousel-slide.is-active {
+    border: 2px solid var(--gold);
+    box-shadow: none;
+  }
+
+  .carousel-slide .slide-overlay h3 {
+    color: var(--white);
+  }
+
+  .carousel-slide.is-active .slide-overlay h3 {
+    color: var(--gold);
+  }
+
+  .carousel-slide .slide-overlay {
+    padding: 28px 20px 20px;
+  }
+
+  .carousel-slide .slide-overlay h3 {
+    font-size: 1.25rem;
+  }
+
+  .carousel-slide .slide-overlay p {
+    font-size: 0.75rem;
+  }
+}
