@@ -1490,6 +1490,22 @@ p {
   margin-top: 24px;
 }
 
+.contact-center-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.contact-center-wrapper .contact-item {
+  justify-content: center;
+}
+
+.contact-center-wrapper .btn-gold {
+  margin-top: 20px;
+}
+
 /* Center and expand contact section */
 #contact .contact-grid {
   grid-template-columns: 1fr;
