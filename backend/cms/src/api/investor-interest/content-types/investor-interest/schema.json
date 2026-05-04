@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "investor_interests",
+  "info": {
+    "singularName": "investor-interest",
+    "pluralName": "investor-interests",
+    "displayName": "Investor Interest",
+    "description": ""
+  },
+  "options": { "draftAndPublish": false },
+  "pluginOptions": {},
+  "attributes": {
+    "investorName": { "type": "string", "required": true },
+    "email": { "type": "email", "required": true },
+    "investmentRange": { "type": "string" },
+    "notes": { "type": "text" },
+    "linkedDeal": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::deal.deal",
+      "inversedBy": "investorInterests"
+    }
+  }
+}

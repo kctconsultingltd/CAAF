@@ -1,0 +1,26 @@
+{
+  "kind": "collectionType",
+  "collectionName": "deal_submissions",
+  "info": {
+    "singularName": "deal-submission",
+    "pluralName": "deal-submissions",
+    "displayName": "Deal Submission",
+    "description": ""
+  },
+  "options": { "draftAndPublish": false },
+  "pluginOptions": {},
+  "attributes": {
+    "businessName": { "type": "string", "required": true },
+    "industry": { "type": "string", "required": true },
+    "revenue": { "type": "decimal" },
+    "fundingNeeded": { "type": "decimal" },
+    "description": { "type": "text" },
+    "contactEmail": { "type": "email", "required": true },
+    "status": {
+      "type": "enumeration",
+      "enum": ["pending", "approved", "rejected"],
+      "default": "pending",
+      "required": true
+    }
+  }
+}
