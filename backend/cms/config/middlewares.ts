@@ -9,7 +9,7 @@ const config: Core.Config.Middlewares = [
     config: {
       headers: "*",
       origin: [
-        "https://caaf-iota.vercel.app",
+        "https://caaf-2.vercel.app",
         "http://localhost:3000",
         "http://localhost:1337",
       ],
