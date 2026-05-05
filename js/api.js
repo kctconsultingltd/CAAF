@@ -79,8 +79,13 @@
     apiFetch('/team-members?populate=image')
       .then(function (json) {
         var items = json.data || [];
-        if (!items.length) { el.innerHTML = '<p>No team members found.</p>'; return; }
+        if (!items.length) { el.innerHTML = ''; return; }
         el.innerHTML = items.map(renderTeamMember).join('');
+        // Hide one placeholder per CMS member loaded
+        var placeholders = document.querySelectorAll('.team-card.placeholder');
+        placeholders.forEach(function (ph, i) {
+          if (i < items.length) ph.style.display = 'none';
+        });
         // Wire up see-more toggles for dynamically added bios
         el.querySelectorAll('.see-more-btn').forEach(function (btn) {
           btn.addEventListener('click', function () {

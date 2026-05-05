@@ -1313,6 +1313,7 @@ p {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
+  align-items: start;
 }
 @media (max-width: 899px) {
   .team-grid {
