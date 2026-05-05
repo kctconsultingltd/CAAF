@@ -90,6 +90,13 @@
             btn.textContent = expanded ? 'See less' : 'See more';
           });
         });
+
+        // Equalize card heights so buttons stay aligned while expansion only affects the clicked card
+        var cards = Array.from(el.querySelectorAll('.cms-team-card'));
+        if (cards.length > 1) {
+          var maxH = Math.max.apply(null, cards.map(function (c) { return c.offsetHeight; }));
+          cards.forEach(function (c) { c.style.minHeight = maxH + 'px'; });
+        }
       })
       .catch(function (err) { setError(el, 'Could not load team members: ' + err.message); });
   }
