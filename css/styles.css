@@ -1313,7 +1313,6 @@ p {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
-  align-items: start;
 }
 @media (max-width: 899px) {
   .team-grid {
@@ -1328,6 +1327,8 @@ p {
   border-radius: 4px;
   overflow: hidden;
   transition: border-color 0.3s;
+  display: flex;
+  flex-direction: column;
 }
 .team-card:hover {
   border-color: var(--gold);
@@ -1345,7 +1346,8 @@ p {
 
 /* ── See More / See Less Toggle ───────────────────── */
 .team-bio {
-  margin-top: 16px;
+  margin-top: auto;
+  padding-top: 16px;
 }
 
 .bio-text {
@@ -1408,6 +1410,9 @@ p {
 
 .team-info {
   padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 .team-name {
   font-family: var(--serif);
