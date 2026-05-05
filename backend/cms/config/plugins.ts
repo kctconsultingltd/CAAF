@@ -1,6 +1,11 @@
 import type { Core } from '@strapi/strapi';
 
 const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin => ({
+  'users-permissions': {
+    config: {
+      jwtSecret: env('JWT_SECRET'),
+    },
+  },
   // ─── Email ───────────────────────────────────────────────────────────────────
   // Install: npm install @strapi/plugin-email @strapi/provider-email-nodemailer
   // Then uncomment the block below and set env vars in .env
