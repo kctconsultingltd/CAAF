@@ -3,18 +3,11 @@ import type { Core } from '@strapi/strapi';
 const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin => ({
   upload: {
     config: {
-      provider: 'aws-s3',
+      provider: 'cloudinary',
       providerOptions: {
-        credentials: {
-          accessKeyId: env('TIGRIS_ACCESS_KEY_ID'),
-          secretAccessKey: env('TIGRIS_SECRET_ACCESS_KEY'),
-        },
-        region: env('TIGRIS_REGION', 'auto'),
-        endpoint: env('TIGRIS_ENDPOINT', 'https://fly.storage.tigris.dev'),
-        forcePathStyle: true,
-        params: {
-          Bucket: env('TIGRIS_BUCKET_NAME'),
-        },
+        cloud_name: env('CLOUDINARY_NAME'),
+        api_key: env('CLOUDINARY_KEY'),
+        api_secret: env('CLOUDINARY_SECRET'),
       },
       actionOptions: {
         upload: {},

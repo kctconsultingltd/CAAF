@@ -10,8 +10,8 @@ const config: Core.Config.Middlewares = [
         useDefaults: true,
         directives: {
           "connect-src": ["'self'", "https:"],
-          "img-src": ["'self'", "data:", "blob:", "*.tigris.dev"],
-          "media-src": ["'self'", "data:", "blob:", "*.tigris.dev"],
+          "img-src": ["'self'", "data:", "blob:", "res.cloudinary.com"],
+          "media-src": ["'self'", "data:", "blob:", "res.cloudinary.com"],
           upgradeInsecureRequests: null,
         },
       },
