@@ -226,10 +226,13 @@
       return;
     }
 
+    var phoneCode = form.phoneCode ? form.phoneCode.value : '';
+    var phoneNum  = form.phone ? form.phone.value.trim() : '';
     var body = {
       businessName:  form.businessName.value.trim(),
       industry:      form.industry.value.trim(),
       contactEmail:  contactEmail,
+      phone:         phoneNum ? phoneCode + ' ' + phoneNum : null,
       revenue:       parseFormattedNumber(form.revenue && form.revenue.value),
       fundingNeeded: parseFormattedNumber(form.fundingNeeded && form.fundingNeeded.value),
       description:   description,

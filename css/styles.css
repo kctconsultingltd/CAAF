@@ -2408,3 +2408,56 @@ to {
     max-width: none;
   }
 }
+
+/* ═══════════════════════════════════════════════
+   PHONE INPUT WITH DIALING CODE
+   ═══════════════════════════════════════════════ */
+.phone-input-wrapper {
+  display: flex;
+  align-items: stretch;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
+  border-radius: 3px;
+  transition: border-color 0.2s;
+  overflow: hidden;
+}
+
+.phone-input-wrapper:focus-within {
+  border-color: var(--gold);
+}
+
+.phone-code-select {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  border-right: 1px solid var(--card-border);
+  padding: 12px 8px;
+  color: var(--white);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: var(--sans);
+  min-width: 96px;
+  flex-shrink: 0;
+}
+
+.phone-code-select:focus {
+  outline: none;
+}
+
+.phone-code-select option,
+.phone-code-select optgroup {
+  background: #0d1e30;
+  color: var(--white);
+}
+
+.phone-input-wrapper input[type="tel"] {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 12px 14px;
+  color: var(--white);
+  min-width: 0;
+}
+
+.phone-input-wrapper input[type="tel"]:focus {
+  outline: none;
+}

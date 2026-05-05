@@ -16,6 +16,7 @@
     "fundingNeeded": { "type": "decimal" },
     "description": { "type": "text" },
     "contactEmail": { "type": "email", "required": true },
+    "phone": { "type": "string" },
     "reviewStatus": {
       "type": "enumeration",
       "enum": ["pending", "approved", "rejected"],

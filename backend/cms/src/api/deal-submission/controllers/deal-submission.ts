@@ -29,6 +29,7 @@ export default factories.createCoreController('api::deal-submission.deal-submiss
         fundingNeeded: raw.fundingNeeded ?? null,
         description: raw.description ?? null,
         contactEmail: raw.contactEmail,
+        phone: raw.phone ?? null,
         reviewStatus: 'pending',
       },
     };
@@ -46,6 +47,7 @@ export default factories.createCoreController('api::deal-submission.deal-submiss
         fundingNeeded: raw.fundingNeeded,
         description: raw.description,
         contactEmail: raw.contactEmail,
+        phone: raw.phone ?? null,
       })
       .catch((err: Error) =>
         strapi.log.error('[deal-submission] Admin notification failed:', err.message)
