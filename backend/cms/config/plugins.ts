@@ -1,6 +1,26 @@
 import type { Core } from '@strapi/strapi';
 
 const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin => ({
+  upload: {
+    config: {
+      provider: 'aws-s3',
+      providerOptions: {
+        accessKeyId: env('TIGRIS_ACCESS_KEY_ID'),
+        secretAccessKey: env('TIGRIS_SECRET_ACCESS_KEY'),
+        region: env('TIGRIS_REGION', 'auto'),
+        endpoint: env('TIGRIS_ENDPOINT', 'https://fly.storage.tigris.dev'),
+        forcePathStyle: true,
+        params: {
+          Bucket: env('TIGRIS_BUCKET_NAME'),
+        },
+      },
+      actionOptions: {
+        upload: {},
+        uploadStream: {},
+        delete: {},
+      },
+    },
+  },
   'users-permissions': {
     config: {
       jwtSecret: env('JWT_SECRET'),

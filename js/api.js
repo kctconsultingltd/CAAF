@@ -2,7 +2,6 @@
   'use strict';
 
   var API_BASE = 'https://caaf20-production.up.railway.app/api';
-  var STRAPI_BASE = 'https://caaf20-production.up.railway.app';
 
   // ─── Core fetch wrapper ───────────────────────────────────────────────────
 
@@ -50,7 +49,7 @@
 
   function renderTeamMember(member) {
     var imgUrl = member.image && member.image.url
-      ? STRAPI_BASE + member.image.url
+      ? member.image.url
       : null;
     var avatar = imgUrl
       ? '<div class="team-avatar"><img src="' + escHtml(imgUrl) + '" alt="' + escHtml(member.name) + '" class="team-avatar-img" /></div>'
