@@ -31,7 +31,7 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
         secure: env.bool('SMTP_SECURE', true),
         auth: {
           user: env('SMTP_USERNAME', 'resend'),
-          pass: env('SMTP_PASSWORD'),
+          pass: env('SMTP_PASSWORD', ''),
         },
       },
       settings: {
