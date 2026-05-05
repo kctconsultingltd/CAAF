@@ -693,7 +693,104 @@
     </section>
 
     <!-- ═══════════════════════════════════════════════
-     9. CONTACT
+     9. DEAL PIPELINE
+     ═══════════════════════════════════════════════ -->
+    <section class="section-pad border-top-gold" id="deals" style="background: var(--bg2)">
+      <div class="container">
+        <div class="reveal">
+          <div class="section-label"><span>Deal Pipeline</span></div>
+          <h2>Current Investment Opportunities</h2>
+          <p style="color: var(--muted); margin-top: 12px;">
+            Vetted businesses seeking capital. Click &ldquo;Express Interest&rdquo; to connect.
+          </p>
+        </div>
+        <div id="cms-deals-list" class="deals-grid"></div>
+        <div hidden id="investor-form-wrapper">
+          <div class="investor-form-section">
+            <h3 class="investor-form-title">
+              Express Interest in: <span id="cms-investor-deal-name"></span>
+            </h3>
+            <form id="cms-investor-form" class="cms-form" novalidate>
+              <div class="form-field">
+                <label for="investorName">Your Name *</label>
+                <input type="text" id="investorName" name="investorName" required placeholder="Full name" />
+              </div>
+              <div class="form-field">
+                <label for="investorEmail">Email *</label>
+                <input type="email" id="investorEmail" name="email" required placeholder="email@example.com" />
+              </div>
+              <input type="hidden" name="dealId" />
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="investmentRange">Investment Range (optional)</label>
+                  <input type="text" id="investmentRange" name="investmentRange" placeholder="e.g. $50k&ndash;$200k" />
+                </div>
+                <div class="form-field">
+                  <label for="notes">Notes (optional)</label>
+                  <textarea id="notes" name="notes" rows="4" placeholder="Any additional context..."></textarea>
+                </div>
+              </div>
+              <button type="submit" class="btn-gold">
+                Submit Interest <span class="arrow">&rarr;</span>
+              </button>
+              <p id="cms-investor-status" class="cms-status"></p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+     10. DEAL SUBMISSION
+     ═══════════════════════════════════════════════ -->
+    <section class="section-pad border-top-gold" id="submit-deal" style="background: var(--bg)">
+      <div class="container">
+        <div class="reveal">
+          <div class="section-label"><span>For Businesses</span></div>
+          <h2>Submit Your Business for Investment Consideration</h2>
+          <p style="color: var(--muted); margin-top: 12px;">
+            Seeking capital? Share your details and we will connect you with the right investors in our network.
+          </p>
+        </div>
+        <form id="cms-deal-form" class="cms-form" novalidate>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="businessName">Business Name *</label>
+              <input type="text" id="businessName" name="businessName" required placeholder="Your company name" />
+            </div>
+            <div class="form-field">
+              <label for="industry">Industry *</label>
+              <input type="text" id="industry" name="industry" required placeholder="e.g. Agritech, Fintech, Energy" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="contactEmail">Contact Email *</label>
+              <input type="email" id="contactEmail" name="contactEmail" required placeholder="email@example.com" />
+            </div>
+            <div class="form-field">
+              <label for="fundingNeeded">Funding Required (USD, optional)</label>
+              <input type="number" id="fundingNeeded" name="fundingNeeded" placeholder="e.g. 500000" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="revenue">Annual Revenue (USD, optional)</label>
+            <input type="number" id="revenue" name="revenue" placeholder="e.g. 250000" />
+          </div>
+          <div class="form-field">
+            <label for="description">Business Description (optional)</label>
+            <textarea id="description" name="description" rows="5" placeholder="Tell us about your business, traction, and what you are looking for..."></textarea>
+          </div>
+          <button type="submit" class="btn-gold">
+            Submit for Review <span class="arrow">&rarr;</span>
+          </button>
+          <p id="cms-deal-status" class="cms-status"></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+     11. CONTACT
      ═══════════════════════════════════════════════ -->
     <section
       class="section-pad border-top-gold"

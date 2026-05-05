@@ -2144,3 +2144,165 @@ to {
     font-size: 0.75rem;
   }
 }
+
+/* ═══════════════════════════════════════════════
+   DEAL PIPELINE
+   ═══════════════════════════════════════════════ */
+.deals-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.cms-deal-card {
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cms-deal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.cms-deal-name {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.cms-deal-industry {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  padding: 3px 8px;
+  border-radius: 2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cms-deal-funding {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.cms-deal-desc {
+  font-size: 0.9rem;
+  color: var(--muted);
+  flex: 1;
+}
+
+.cms-invest-btn {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+/* ═══════════════════════════════════════════════
+   INVESTOR INTEREST FORM
+   ═══════════════════════════════════════════════ */
+.investor-form-section {
+  margin-top: 48px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line-solid);
+}
+
+.investor-form-title {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* ═══════════════════════════════════════════════
+   SHARED FORM STYLES
+   ═══════════════════════════════════════════════ */
+.cms-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 40px;
+  max-width: 720px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+
+.form-field input,
+.form-field textarea {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
+  border-radius: 3px;
+  padding: 12px 14px;
+  color: var(--white);
+  transition: border-color 0.2s;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  border-color: var(--gold);
+}
+
+.form-field textarea {
+  resize: vertical;
+}
+
+/* ═══════════════════════════════════════════════
+   STATUS MESSAGES
+   ═══════════════════════════════════════════════ */
+.cms-status {
+  font-size: 0.875rem;
+  min-height: 1.2em;
+}
+
+.cms-status--success {
+  color: #4caf87;
+}
+
+.cms-status--error {
+  color: #e05c5c;
+}
+
+.cms-loading {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.cms-error {
+  color: #e05c5c;
+}
+
+/* Responsive — collapse grids to single column on mobile */
+@media (max-width: 699px) {
+  .deals-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
