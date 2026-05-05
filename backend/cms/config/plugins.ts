@@ -17,8 +17,8 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
         },
       },
       actionOptions: {
-        upload: { ACL: 'public-read' },
-        uploadStream: { ACL: 'public-read' },
+        upload: {},
+        uploadStream: {},
         delete: {},
       },
     },
