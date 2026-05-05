@@ -2,6 +2,7 @@
   'use strict';
 
   var API_BASE = 'https://caaf20-production.up.railway.app/api';
+  var STRAPI_BASE = 'https://caaf20-production.up.railway.app';
 
   // ─── Core fetch wrapper ───────────────────────────────────────────────────
 
@@ -48,13 +49,23 @@
   // Expected container: <div id="cms-team-list"></div>
 
   function renderTeamMember(member) {
+    var imgUrl = member.image && member.image.url
+      ? STRAPI_BASE + member.image.url
+      : null;
+    var avatar = imgUrl
+      ? '<div class="team-avatar"><img src="' + escHtml(imgUrl) + '" alt="' + escHtml(member.name) + '" class="team-avatar-img" /></div>'
+      : '<div class="team-avatar"><div class="avatar-ring-2" aria-hidden="true"></div><div class="avatar-ring" aria-hidden="true"></div><span class="avatar-initials">' + escHtml(member.name.charAt(0)) + '</span></div>';
+    var bio = member.bio
+      ? escHtml(member.bio).replace(/\n/g, '<br>')
+      : '';
     return (
       '<div class="team-card cms-team-card" data-id="' + escHtml(member.documentId) + '">' +
+        avatar +
         '<div class="team-info">' +
           '<div class="team-name">' + escHtml(member.name) + '</div>' +
           '<div class="team-role">' + escHtml(member.role) + '</div>' +
-          (member.bio
-            ? '<div class="team-bio"><p class="bio-text">' + escHtml(member.bio) + '</p>' +
+          (bio
+            ? '<div class="team-bio"><p class="bio-text">' + bio + '</p>' +
               '<button class="see-more-btn">See more</button></div>'
             : '') +
         '</div>' +
@@ -66,7 +77,7 @@
     var el = document.getElementById('cms-team-list');
     if (!el) return;
     setLoading(el);
-    apiFetch('/team-members')
+    apiFetch('/team-members?populate=image')
       .then(function (json) {
         var items = json.data || [];
         if (!items.length) { el.innerHTML = '<p>No team members found.</p>'; return; }
