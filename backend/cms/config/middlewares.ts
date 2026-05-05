@@ -1,27 +1,26 @@
-import type { Core } from '@strapi/strapi';
+import type { Core } from "@strapi/strapi";
 
 const config: Core.Config.Middlewares = [
-  'strapi::logger',
-  'strapi::errors',
-  'strapi::security',
+  "strapi::logger",
+  "strapi::errors",
+  "strapi::security",
   {
-    name: 'strapi::cors',
+    name: "strapi::cors",
     config: {
-      enabled: true,
-      headers: '*',
+      headers: "*",
       origin: [
-        'https://caaf-iota.vercel.app',
-        'http://localhost:3000',
-        'http://localhost:1337',
+        "https://caaf-iota.vercel.app",
+        "http://localhost:3000",
+        "http://localhost:1337",
       ],
     },
   },
-  'strapi::poweredBy',
-  'strapi::query',
-  'strapi::body',
-  'strapi::session',
-  'strapi::favicon',
-  'strapi::public',
+  "strapi::poweredBy",
+  "strapi::query",
+  "strapi::body",
+  "strapi::session",
+  "strapi::favicon",
+  "strapi::public",
 ];
 
 export default config;
