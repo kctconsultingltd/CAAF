@@ -150,7 +150,7 @@
     if (!el) return;
     setLoading(el);
     // Server enforces approved-only for public requests; filter is a belt-and-suspenders hint
-    apiFetch('/deals?filters[status]=approved')
+    apiFetch('/deals?filters[reviewStatus]=approved')
       .then(function (json) {
         var items = json.data || [];
         if (!items.length) { el.innerHTML = '<p>No active deals at this time.</p>'; return; }

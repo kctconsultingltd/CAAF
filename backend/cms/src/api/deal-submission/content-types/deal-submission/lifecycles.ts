@@ -5,8 +5,8 @@ export default {
   }) {
     const { params, state } = event;
 
-    // Only fetch previous state when the update is setting status to approved
-    if (params.data?.status !== 'approved') return;
+    // Only fetch previous state when the update is setting reviewStatus to approved
+    if (params.data?.reviewStatus !== 'approved') return;
 
     const documentId = params.where?.documentId;
     if (!documentId) return;
@@ -15,7 +15,7 @@ export default {
       .documents('api::deal-submission.deal-submission')
       .findOne({ documentId });
 
-    state.previousStatus = current?.status ?? null;
+    state.previousStatus = current?.reviewStatus ?? null;
   },
 
   async afterUpdate(event: {
@@ -25,7 +25,7 @@ export default {
     const { result, state } = event;
 
     // Only act on a transition to 'approved' — skip if it was already approved
-    if (result.status !== 'approved' || state.previousStatus === 'approved') {
+    if (result.reviewStatus !== 'approved' || state.previousStatus === 'approved') {
       return;
     }
 
@@ -37,7 +37,7 @@ export default {
           description: (result.description as string | null) ?? null,
           fundingRequired: (result.fundingNeeded as number | null) ?? null,
           contactEmail: (result.contactEmail as string | null) ?? null,
-          status: 'approved',
+          reviewStatus: 'approved',
         },
       });
 

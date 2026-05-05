@@ -29,7 +29,7 @@ export default factories.createCoreController('api::deal-submission.deal-submiss
         fundingNeeded: raw.fundingNeeded ?? null,
         description: raw.description ?? null,
         contactEmail: raw.contactEmail,
-        status: 'pending',
+        reviewStatus: 'pending',
       },
     };
 

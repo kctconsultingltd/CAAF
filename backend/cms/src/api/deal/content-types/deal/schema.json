@@ -14,7 +14,7 @@
     "industry": { "type": "string", "required": true },
     "description": { "type": "text" },
     "fundingRequired": { "type": "decimal" },
-    "status": {
+    "reviewStatus": {
       "type": "enumeration",
       "enum": ["pending", "approved", "rejected"],
       "default": "pending",

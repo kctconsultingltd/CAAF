@@ -10,7 +10,7 @@ export default factories.createCoreController('api::deal.deal', ({ strapi }) => 
           ...(typeof ctx.query.filters === 'object' && ctx.query.filters !== null
             ? (ctx.query.filters as object)
             : {}),
-          status: 'approved',
+          reviewStatus: 'approved',
         },
       };
     }
