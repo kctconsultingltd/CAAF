@@ -7,6 +7,7 @@ interface SubmissionPayload {
   fundingNeeded?: number | null;
   description?: string | null;
   contactEmail: string;
+  phone?: string | null;
 }
 
 const service = factories.createCoreService('api::deal-submission.deal-submission', ({ strapi }) => ({
@@ -20,6 +21,7 @@ const service = factories.createCoreService('api::deal-submission.deal-submissio
       `Business:       ${submission.businessName}`,
       `Industry:       ${submission.industry}`,
       `Contact:        ${submission.contactEmail}`,
+      submission.phone ? `Phone:          ${submission.phone}` : null,
       submission.revenue != null
         ? `Revenue:        $${submission.revenue.toLocaleString()}`
         : null,
@@ -34,7 +36,6 @@ const service = factories.createCoreService('api::deal-submission.deal-submissio
     ].filter((l): l is string => l !== null);
 
     const text = lines.join('\n');
-
     const emailPlugin = strapi.plugin('email');
 
     if (emailPlugin && adminEmail) {
@@ -43,7 +44,6 @@ const service = factories.createCoreService('api::deal-submission.deal-submissio
       return;
     }
 
-    // Development mock — prints what would have been sent
     strapi.log.info(
       '[deal-submission] Email mock' +
         (adminEmail ? '' : ' (set ADMIN_NOTIFICATION_EMAIL to enable)') +
@@ -51,6 +51,32 @@ const service = factories.createCoreService('api::deal-submission.deal-submissio
         `To: ${adminEmail ?? '(not configured)'}\n` +
         `Subject: ${subject}\n\n` +
         text
+    );
+  },
+
+  async notifySubmitter(email: string, businessName: string): Promise<void> {
+    const subject = `We've received your submission — CAAF`;
+    const text = [
+      'Hi,',
+      '',
+      `Thank you for submitting ${businessName} to CAAF. We've received your details`,
+      'and our team will review your submission shortly.',
+      '',
+      "We'll be in touch if your business is a good fit for our network.",
+      '',
+      'The CAAF Team',
+    ].join('\n');
+
+    const emailPlugin = strapi.plugin('email');
+
+    if (emailPlugin) {
+      await emailPlugin.service('email').send({ to: email, subject, text });
+      strapi.log.info(`[deal-submission] Submitter confirmation sent to ${email}`);
+      return;
+    }
+
+    strapi.log.info(
+      `[deal-submission] Submitter confirmation mock:\nTo: ${email}\nSubject: ${subject}\n\n${text}`
     );
   },
 }));

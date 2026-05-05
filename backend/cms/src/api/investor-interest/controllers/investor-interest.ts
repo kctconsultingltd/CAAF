@@ -44,6 +44,29 @@ export default factories.createCoreController('api::investor-interest.investor-i
     await super.create(ctx);
     const saved = ctx.body as { data?: { documentId?: string } };
 
+    // Notify admin and investor — fire-and-forget
+    const svc = strapi.service('api::investor-interest.investor-interest') as {
+      notifyAdmin: (p: object) => Promise<void>;
+      notifyInvestor: (email: string, investorName: string, dealName: string) => Promise<void>;
+    };
+    const dealName = (deal as any).businessName ?? raw.dealId;
+
+    svc.notifyAdmin({
+        investorName: raw.investorName,
+        email: raw.email,
+        phone: raw.phone ?? null,
+        dealName,
+        investmentRange: raw.investmentRange ?? null,
+        notes: raw.notes ?? null,
+      })
+      .catch((err: Error) =>
+        strapi.log.error('[investor-interest] Admin notification failed:', err.message)
+      );
+    svc.notifyInvestor(raw.email, raw.investorName, dealName)
+      .catch((err: Error) =>
+        strapi.log.error('[investor-interest] Investor confirmation failed:', err.message)
+      );
+
     ctx.body = {
       data: { documentId: saved?.data?.documentId ?? null },
       message: 'Thank you for your interest. We will be in touch shortly.',

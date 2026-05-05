@@ -38,8 +38,11 @@ export default factories.createCoreController('api::deal-submission.deal-submiss
     await super.create(ctx);
     const saved = ctx.body as { data?: { documentId?: string } };
 
-    // Notify admin — fire-and-forget; email failure must not fail the HTTP response
-    const svc = strapi.service('api::deal-submission.deal-submission') as { notifyAdmin: (p: object) => Promise<void> };
+    // Notify admin and submitter — fire-and-forget; email failure must not fail the HTTP response
+    const svc = strapi.service('api::deal-submission.deal-submission') as {
+      notifyAdmin: (p: object) => Promise<void>;
+      notifySubmitter: (email: string, businessName: string) => Promise<void>;
+    };
     svc.notifyAdmin({
         businessName: raw.businessName,
         industry: raw.industry,
@@ -51,6 +54,10 @@ export default factories.createCoreController('api::deal-submission.deal-submiss
       })
       .catch((err: Error) =>
         strapi.log.error('[deal-submission] Admin notification failed:', err.message)
+      );
+    svc.notifySubmitter(raw.contactEmail, raw.businessName)
+      .catch((err: Error) =>
+        strapi.log.error('[deal-submission] Submitter confirmation failed:', err.message)
       );
 
     // Return a minimal response — don't expose all internal fields to the public

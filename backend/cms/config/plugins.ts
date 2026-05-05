@@ -21,28 +21,25 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
       jwtSecret: env('JWT_SECRET'),
     },
   },
-  // ─── Email ───────────────────────────────────────────────────────────────────
-  // Install: npm install @strapi/plugin-email @strapi/provider-email-nodemailer
-  // Then uncomment the block below and set env vars in .env
-  //
-  // email: {
-  //   config: {
-  //     provider: 'nodemailer',
-  //     providerOptions: {
-  //       host: env('SMTP_HOST', 'smtp.example.com'),
-  //       port: env.int('SMTP_PORT', 587),
-  //       secure: env.bool('SMTP_SECURE', false),
-  //       auth: {
-  //         user: env('SMTP_USERNAME'),
-  //         pass: env('SMTP_PASSWORD'),
-  //       },
-  //     },
-  //     settings: {
-  //       defaultFrom: env('EMAIL_FROM', 'noreply@yourdomain.com'),
-  //       defaultReplyTo: env('EMAIL_FROM', 'noreply@yourdomain.com'),
-  //     },
-  //   },
-  // },
+  // ─── Email (Resend via SMTP relay) ───────────────────────────────────────────
+  email: {
+    config: {
+      provider: 'nodemailer',
+      providerOptions: {
+        host: env('SMTP_HOST', 'smtp.resend.com'),
+        port: env.int('SMTP_PORT', 465),
+        secure: env.bool('SMTP_SECURE', true),
+        auth: {
+          user: env('SMTP_USERNAME', 'resend'),
+          pass: env('SMTP_PASSWORD'),
+        },
+      },
+      settings: {
+        defaultFrom: env('EMAIL_FROM', 'noreply@example.com'),
+        defaultReplyTo: env('EMAIL_FROM', 'noreply@example.com'),
+      },
+    },
+  },
 });
 
 export default config;
