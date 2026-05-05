@@ -34,6 +34,7 @@ export default factories.createCoreController('api::investor-interest.investor-i
       data: {
         investorName: raw.investorName,
         email: raw.email,
+        phone: raw.phone ?? null,
         investmentRange: raw.investmentRange ?? null,
         notes: raw.notes ?? null,
         linkedDeal: raw.dealId,

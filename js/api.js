@@ -282,15 +282,24 @@
     e.preventDefault();
     var form = e.target;
     var btn = form.querySelector('[type="submit"]');
-    var statusEl = document.getElementById('cms-investor-status');
     var originalLabel = btn ? btn.textContent : '';
 
-    setStatus(statusEl, '', '');
     if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
 
+    var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var email = form.email.value.trim();
+    if (!email || !emailRe.test(email)) {
+      showToast('Please enter a valid email address.', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
+      return;
+    }
+
+    var phoneCode = form.phoneCode ? form.phoneCode.value : '';
+    var phoneNum  = form.phone ? form.phone.value.trim() : '';
     var body = {
       investorName:    form.investorName.value.trim(),
-      email:           form.email.value.trim(),
+      email:           email,
+      phone:           phoneNum ? phoneCode + ' ' + phoneNum : null,
       dealId:          form.dealId.value,
       investmentRange: form.investmentRange && form.investmentRange.value.trim() || null,
       notes:           form.notes && form.notes.value.trim() || null,
@@ -298,11 +307,11 @@
 
     apiFetch('/investor-interests', { method: 'POST', body: JSON.stringify(body) })
       .then(function (json) {
-        setStatus(statusEl, json.message || 'Interest submitted.', 'success');
+        showToast(json.message || 'Interest submitted.', 'success');
         form.reset();
       })
       .catch(function (err) {
-        setStatus(statusEl, err.message, 'error');
+        showToast(err.message, 'error');
       })
       .finally(function () {
         if (btn) { btn.disabled = false; btn.textContent = originalLabel; }

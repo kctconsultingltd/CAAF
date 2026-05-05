@@ -2354,9 +2354,10 @@ to {
 }
 
 /* ═══════════════════════════════════════════════
-   DEAL FORM BUTTON
+   DEAL FORM BUTTON / INVESTOR FORM BUTTON
    ═══════════════════════════════════════════════ */
-#cms-deal-form .btn-gold {
+#cms-deal-form .btn-gold,
+#cms-investor-form .btn-gold {
   align-self: center;
   justify-content: center;
   min-width: 220px;

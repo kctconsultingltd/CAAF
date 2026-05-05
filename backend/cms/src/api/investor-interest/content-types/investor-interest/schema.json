@@ -12,6 +12,7 @@
   "attributes": {
     "investorName": { "type": "string", "required": true },
     "email": { "type": "email", "required": true },
+    "phone": { "type": "string" },
     "investmentRange": { "type": "string" },
     "notes": { "type": "text" },
     "linkedDeal": {
