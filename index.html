@@ -770,21 +770,26 @@
             </div>
             <div class="form-field">
               <label for="fundingNeeded">Funding Required (USD, optional)</label>
-              <input type="number" id="fundingNeeded" name="fundingNeeded" placeholder="e.g. 500000" />
+              <div class="input-with-prefix">
+                <span class="input-prefix">$</span>
+                <input type="text" inputmode="numeric" id="fundingNeeded" name="fundingNeeded" placeholder="e.g. 500,000" />
+              </div>
             </div>
           </div>
           <div class="form-field">
             <label for="revenue">Annual Revenue (USD, optional)</label>
-            <input type="number" id="revenue" name="revenue" placeholder="e.g. 250000" />
+            <div class="input-with-prefix">
+              <span class="input-prefix">$</span>
+              <input type="text" inputmode="numeric" id="revenue" name="revenue" placeholder="e.g. 250,000" />
+            </div>
           </div>
           <div class="form-field">
-            <label for="description">Business Description (optional)</label>
-            <textarea id="description" name="description" rows="5" placeholder="Tell us about your business, traction, and what you are looking for..."></textarea>
+            <label for="description">Business Description *</label>
+            <textarea id="description" name="description" rows="5" required placeholder="Tell us about your business, traction, and what you are looking for..."></textarea>
           </div>
           <button type="submit" class="btn-gold">
             Submit for Review <span class="arrow">&rarr;</span>
           </button>
-          <p id="cms-deal-status" class="cms-status"></p>
         </form>
       </div>
     </section>

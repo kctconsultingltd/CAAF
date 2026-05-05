@@ -36,6 +36,33 @@
     el.className = 'cms-status' + (type ? ' cms-status--' + type : '');
   }
 
+  function showToast(msg, type) {
+    var existing = document.getElementById('cms-toast');
+    if (existing) existing.remove();
+    var toast = document.createElement('div');
+    toast.id = 'cms-toast';
+    toast.className = 'cms-toast cms-toast--' + (type || 'info');
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { toast.classList.add('cms-toast--visible'); });
+    });
+    setTimeout(function () {
+      toast.classList.remove('cms-toast--visible');
+      setTimeout(function () { if (toast.parentNode) toast.remove(); }, 400);
+    }, 5000);
+  }
+
+  function formatNumberInput(input) {
+    var raw = input.value.replace(/[^0-9]/g, '');
+    input.value = raw ? Number(raw).toLocaleString('en-US') : '';
+  }
+
+  function parseFormattedNumber(val) {
+    var raw = String(val || '').replace(/[^0-9]/g, '');
+    return raw ? Number(raw) : null;
+  }
+
   function escHtml(str) {
     return String(str)
       .replace(/&/g, '&amp;')
@@ -173,36 +200,48 @@
 
   // ─── Deal Submission Form ─────────────────────────────────────────────────
   // Expected form:  <form id="cms-deal-form"> ... </form>
-  // Expected status: <p id="cms-deal-status"></p>
-  // Required inputs (name attr): businessName, industry, contactEmail
-  // Optional inputs (name attr): revenue, fundingNeeded, description
+  // Required inputs (name attr): businessName, industry, contactEmail, description
+  // Optional inputs (name attr): revenue, fundingNeeded
 
   function handleDealSubmit(e) {
     e.preventDefault();
     var form = e.target;
     var btn = form.querySelector('[type="submit"]');
-    var statusEl = document.getElementById('cms-deal-status');
     var originalLabel = btn ? btn.textContent : '';
 
-    setStatus(statusEl, '', '');
     if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
 
+    var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var contactEmail = form.contactEmail.value.trim();
+    var description = form.description && form.description.value.trim();
+
+    if (!contactEmail || !emailRe.test(contactEmail)) {
+      showToast('Please enter a valid email address.', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
+      return;
+    }
+    if (!description) {
+      showToast('Please provide a business description.', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
+      return;
+    }
+
     var body = {
-      businessName: form.businessName.value.trim(),
-      industry:     form.industry.value.trim(),
-      contactEmail: form.contactEmail.value.trim(),
-      revenue:      form.revenue && form.revenue.value ? Number(form.revenue.value) : null,
-      fundingNeeded: form.fundingNeeded && form.fundingNeeded.value ? Number(form.fundingNeeded.value) : null,
-      description:  form.description && form.description.value.trim() || null,
+      businessName:  form.businessName.value.trim(),
+      industry:      form.industry.value.trim(),
+      contactEmail:  contactEmail,
+      revenue:       parseFormattedNumber(form.revenue && form.revenue.value),
+      fundingNeeded: parseFormattedNumber(form.fundingNeeded && form.fundingNeeded.value),
+      description:   description,
     };
 
     apiFetch('/deal-submissions', { method: 'POST', body: JSON.stringify(body) })
       .then(function (json) {
-        setStatus(statusEl, json.message || 'Submission received.', 'success');
+        showToast(json.message || 'Submission received.', 'success');
         form.reset();
       })
       .catch(function (err) {
-        setStatus(statusEl, err.message, 'error');
+        showToast(err.message, 'error');
       })
       .finally(function () {
         if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
@@ -278,6 +317,12 @@
     var investorForm = document.getElementById('cms-investor-form');
     if (dealForm)     dealForm.addEventListener('submit', handleDealSubmit);
     if (investorForm) investorForm.addEventListener('submit', handleInvestorSubmit);
+
+    // Number formatting for deal form currency fields
+    ['revenue', 'fundingNeeded'].forEach(function (name) {
+      var input = document.querySelector('#cms-deal-form [name="' + name + '"]');
+      if (input) input.addEventListener('input', function () { formatNumberInput(this); });
+    });
   });
 
 })();
