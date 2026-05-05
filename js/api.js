@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var API_BASE = 'http://localhost:1337/api';
+  var API_BASE = 'https://caaf20-production.up.railway.app/api';
 
   // ─── Core fetch wrapper ───────────────────────────────────────────────────
 
