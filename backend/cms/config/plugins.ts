@@ -5,8 +5,10 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
     config: {
       provider: 'aws-s3',
       providerOptions: {
-        accessKeyId: env('TIGRIS_ACCESS_KEY_ID'),
-        secretAccessKey: env('TIGRIS_SECRET_ACCESS_KEY'),
+        credentials: {
+          accessKeyId: env('TIGRIS_ACCESS_KEY_ID'),
+          secretAccessKey: env('TIGRIS_SECRET_ACCESS_KEY'),
+        },
         region: env('TIGRIS_REGION', 'auto'),
         endpoint: env('TIGRIS_ENDPOINT', 'https://fly.storage.tigris.dev'),
         forcePathStyle: true,
