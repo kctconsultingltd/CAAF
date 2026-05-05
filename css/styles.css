@@ -1319,6 +1319,9 @@ p {
     grid-template-columns: 1fr;
   }
 }
+#cms-team-list {
+  display: contents;
+}
 .team-card {
   border: 1px solid var(--card-border);
   border-radius: 4px;
