@@ -15,7 +15,7 @@ export default {
       .documents('api::deal-submission.deal-submission')
       .findOne({ documentId });
 
-    state.previousStatus = current?.reviewStatus ?? null;
+    state.previousStatus = (current as any)?.reviewStatus ?? null;
   },
 
   async afterUpdate(event: {
@@ -38,7 +38,7 @@ export default {
           fundingRequired: (result.fundingNeeded as number | null) ?? null,
           contactEmail: (result.contactEmail as string | null) ?? null,
           reviewStatus: 'approved',
-        },
+        } as any,
       });
 
       strapi.log.info(
