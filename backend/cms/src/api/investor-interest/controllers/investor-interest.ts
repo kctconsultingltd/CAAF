@@ -25,7 +25,7 @@ export default factories.createCoreController('api::investor-interest.investor-i
     if (!deal) {
       return ctx.notFound('Deal not found.');
     }
-    if (deal.status !== 'approved') {
+    if ((deal as any).reviewStatus !== 'approved') {
       return ctx.badRequest('Deal is not open for investor interest.');
     }
 
