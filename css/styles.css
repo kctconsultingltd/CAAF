@@ -1539,7 +1539,7 @@ p {
     10. FOOTER
     ═══════════════════════════════════════════════════ */
 footer {
-  background: var(--bg);
+  background: var(--bg2);
   padding: 64px 0 0;
 }
 .footer-grid {
@@ -2158,6 +2158,7 @@ to {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
+  transition: opacity 0.3s ease;
   margin-top: 40px;
 }
 
@@ -2379,7 +2380,7 @@ to {
 .cms-confirm-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
@@ -2399,7 +2400,9 @@ to {
   text-align: center;
   opacity: 0;
   transform: translateY(-16px) scale(0.97);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
   pointer-events: all;
 }
 .cms-confirm--visible .cms-confirm-box {
@@ -2418,7 +2421,9 @@ to {
   cursor: pointer;
   transition: color 0.2s;
 }
-.cms-confirm-close:hover { color: var(--white); }
+.cms-confirm-close:hover {
+  color: var(--white);
+}
 .cms-confirm-msg {
   font-family: var(--sans);
   font-size: 1rem;
@@ -2426,12 +2431,22 @@ to {
   margin: 0;
   color: var(--white);
 }
-.cms-confirm-modal--success .cms-confirm-box { border-color: #4caf87; }
-.cms-confirm-modal--success .cms-confirm-msg { color: #4caf87; }
-.cms-confirm-modal--error .cms-confirm-box   { border-color: #e05c5c; }
-.cms-confirm-modal--error .cms-confirm-msg   { color: #e05c5c; }
+.cms-confirm-modal--success .cms-confirm-box {
+  border-color: #4caf87;
+}
+.cms-confirm-modal--success .cms-confirm-msg {
+  color: #4caf87;
+}
+.cms-confirm-modal--error .cms-confirm-box {
+  border-color: #e05c5c;
+}
+.cms-confirm-modal--error .cms-confirm-msg {
+  color: #e05c5c;
+}
 @media (max-width: 499px) {
-  .cms-confirm-box { padding: 28px 20px; }
+  .cms-confirm-box {
+    padding: 28px 20px;
+  }
 }
 
 /* ═══════════════════════════════════════════════
@@ -2547,7 +2562,9 @@ to {
   font-size: 0.9rem;
   cursor: pointer;
   text-decoration: none;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 .btn-outline:hover {
@@ -2614,7 +2631,9 @@ to {
   z-index: 1;
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.28s ease, transform 0.28s ease;
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease;
 }
 
 .investor-modal--open .investor-modal-box {
@@ -2665,7 +2684,9 @@ to {
   padding: 28px 24px;
   transition: border-color 0.2s;
 }
-.cms-blog-card:hover { border-color: var(--gold); }
+.cms-blog-card:hover {
+  border-color: var(--gold);
+}
 .cms-blog-title {
   font-family: var(--serif);
   font-size: 1.1rem;
@@ -2676,7 +2697,9 @@ to {
   line-height: 1.35;
   transition: color 0.2s;
 }
-.cms-blog-card:hover .cms-blog-title { color: var(--gold); }
+.cms-blog-card:hover .cms-blog-title {
+  color: var(--gold);
+}
 .cms-blog-desc {
   color: var(--muted);
   font-size: 0.875rem;

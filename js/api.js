@@ -8,7 +8,7 @@
   var EJS_SERVICE_ID = "service_loo2y5r";
   var EJS_TEMPLATE_ID = "template_5n5bpht";
   var EJS_PUBLIC_KEY = "7X7DzX8YFDbXSdnyo";
-  var ADMIN_EMAIL = "info@capitalasaforce.com";
+  var ADMIN_EMAIL = "jjjaja001@gmail.com";
 
   // ─── Core fetch wrapper ───────────────────────────────────────────────────
 
@@ -110,21 +110,11 @@
   }
 
   function sendEmail(toEmail, subject, message) {
-    if (
-      typeof window.emailjs === "undefined" ||
-      EJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY"
-    )
-      return;
+    if (typeof window.emailjs === "undefined" || EJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") return;
     window.emailjs
-      .send(
-        EJS_SERVICE_ID,
-        EJS_TEMPLATE_ID,
-        { to_email: toEmail, subject: subject, message: message },
-        { publicKey: EJS_PUBLIC_KEY },
-      )
-      .catch(function (err) {
-        console.warn("[emailjs] send failed:", err);
-      });
+      .send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, { to_email: toEmail, subject: subject, message: message })
+      .then(function () { console.log("[emailjs] sent → " + toEmail); })
+      .catch(function (err) { console.error("[emailjs] failed:", err); });
   }
 
   // ─── Team Members ─────────────────────────────────────────────────────────
@@ -286,28 +276,36 @@
     return card;
   }
 
-  // ─── Index.html: 3-card preview ───────────────────────────────────────────
+  // ─── Index.html: rotating 3-card preview ─────────────────────────────────
+
+  var _previewPool = [];
+  var _previewTimer = null;
+
+  function pickPreviewDeals() {
+    var el = document.getElementById("cms-deals-preview");
+    if (!el || !_previewPool.length) return;
+    var shuffled = _previewPool.slice().sort(function () { return Math.random() - 0.5; });
+    var three = shuffled.slice(0, Math.min(3, shuffled.length));
+    el.style.opacity = "0";
+    setTimeout(function () {
+      el.innerHTML = three.map(function (d) { return renderDeal(d, { previewMode: true }); }).join("");
+      el.style.opacity = "1";
+    }, 300);
+  }
 
   function loadDealsPreview() {
     var el = document.getElementById("cms-deals-preview");
     if (!el) return;
     setLoading(el);
-    apiFetch("/deals?filters[reviewStatus]=approved&pagination[pageSize]=3")
+    apiFetch("/deals?filters[reviewStatus]=approved&pagination[pageSize]=50")
       .then(function (json) {
-        var items = json.data || [];
-        if (!items.length) {
-          el.innerHTML = "";
-          return;
-        }
-        el.innerHTML = items
-          .map(function (d) {
-            return renderDeal(d, { previewMode: true });
-          })
-          .join("");
+        _previewPool = json.data || [];
+        if (!_previewPool.length) { el.innerHTML = ""; return; }
+        pickPreviewDeals();
+        if (_previewTimer) clearInterval(_previewTimer);
+        _previewTimer = setInterval(pickPreviewDeals, 30000);
       })
-      .catch(function (err) {
-        setError(el, "Could not load deals: " + err.message);
-      });
+      .catch(function (err) { setError(el, "Could not load deals: " + err.message); });
   }
 
   // ─── Deals.html: paginated list with industry filter ──────────────────────
@@ -632,6 +630,10 @@
   // ─── Init ─────────────────────────────────────────────────────────────────
 
   document.addEventListener("DOMContentLoaded", function () {
+    if (typeof window.emailjs !== "undefined" && EJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
+      window.emailjs.init({ publicKey: EJS_PUBLIC_KEY });
+    }
+
     loadTeamMembers();
     loadBlogLinks();
 
