@@ -2545,3 +2545,80 @@ to {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
 }
+
+/* ═══════════════════════════════════════════════
+   INVESTOR INTEREST MODAL
+   ═══════════════════════════════════════════════ */
+
+.investor-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.investor-modal[hidden] {
+  display: none;
+}
+
+.investor-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+
+.investor-modal--open .investor-modal-backdrop {
+  opacity: 1;
+}
+
+.investor-modal-box {
+  position: relative;
+  background: var(--bg2);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  padding: 40px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 1;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.investor-modal--open .investor-modal-box {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.investor-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+
+.investor-modal-close:hover {
+  color: var(--white);
+}
+
+@media (max-width: 699px) {
+  .investor-modal-box {
+    padding: 28px 20px;
+    max-height: 95vh;
+  }
+}

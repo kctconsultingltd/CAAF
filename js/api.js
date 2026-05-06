@@ -324,31 +324,42 @@
       });
   }
 
-  // ─── Investor Interest Form ───────────────────────────────────────────────
-  // Expected form:  <form id="cms-investor-form"> ... </form>
-  // Expected status: <p id="cms-investor-status"></p>
+  // ─── Investor Interest Modal ──────────────────────────────────────────────
+  // Expected modal:      <div id="investor-modal"> ... </div>
   // Expected deal label: <span id="cms-investor-deal-name"></span>
+  // Expected form:       <form id="cms-investor-form"> ... </form>
   // Required inputs (name attr): investorName, email, dealId (hidden)
-  // Optional inputs (name attr): investmentRange, notes
+  // Optional inputs (name attr): phone, investmentRange, notes
+
+  function closeInvestorModal() {
+    var modal = document.getElementById('investor-modal');
+    if (!modal) return;
+    modal.classList.remove('investor-modal--open');
+    setTimeout(function () { modal.hidden = true; }, 280);
+    document.body.style.overflow = '';
+  }
 
   function openInvestorForm(dealId, dealName) {
-    var form = document.getElementById('cms-investor-form');
-    if (!form) return;
+    var modal = document.getElementById('investor-modal');
+    var form  = document.getElementById('cms-investor-form');
+    if (!modal || !form) return;
 
     var dealIdInput  = form.querySelector('[name="dealId"]');
     var dealNameSpan = document.getElementById('cms-investor-deal-name');
-    var statusEl     = document.getElementById('cms-investor-status');
-
-    if (dealIdInput)  dealIdInput.value = dealId;
-    if (dealNameSpan) dealNameSpan.textContent = dealName;
-    if (statusEl)     setStatus(statusEl, '', '');
 
     form.reset();
-    if (dealIdInput)  dealIdInput.value = dealId; // re-set after reset
+    if (dealIdInput)  dealIdInput.value = dealId;
+    if (dealNameSpan) dealNameSpan.textContent = dealName;
 
-    // Reveal form if hidden, then scroll to it
-    form.closest('[hidden]') && (form.closest('[hidden]').hidden = false);
-    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    modal.hidden = false;
+    requestAnimationFrame(function () {
+      modal.classList.add('investor-modal--open');
+    });
+    document.body.style.overflow = 'hidden';
+
+    // Focus first input for accessibility
+    var firstInput = form.querySelector('input:not([type="hidden"])');
+    if (firstInput) setTimeout(function () { firstInput.focus(); }, 50);
   }
 
   function handleInvestorSubmit(e) {
@@ -382,6 +393,7 @@
       .then(function (json) {
         showToast(json.message || 'Interest submitted.', 'success');
         form.reset();
+        closeInvestorModal();
       })
       .catch(function (err) {
         showToast(err.message, 'error');
@@ -425,6 +437,16 @@
     var investorForm = document.getElementById('cms-investor-form');
     if (dealForm)     dealForm.addEventListener('submit', handleDealSubmit);
     if (investorForm) investorForm.addEventListener('submit', handleInvestorSubmit);
+
+    // Modal: close button, backdrop click, Escape key
+    var investorModal = document.getElementById('investor-modal');
+    if (investorModal) {
+      investorModal.querySelector('.investor-modal-close').addEventListener('click', closeInvestorModal);
+      investorModal.querySelector('.investor-modal-backdrop').addEventListener('click', closeInvestorModal);
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !investorModal.hidden) closeInvestorModal();
+      });
+    }
 
     // Number formatting for deal form currency fields
     ['revenue', 'fundingNeeded'].forEach(function (name) {

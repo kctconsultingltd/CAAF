@@ -134,10 +134,12 @@
           <button id="deals-load-more" class="btn-outline" hidden>Load More</button>
         </div>
 
-        <!-- Investor interest form -->
-        <div hidden id="investor-form-wrapper">
-          <div class="investor-form-section">
-            <h3 class="investor-form-title">
+        <!-- Investor interest modal -->
+        <div hidden id="investor-modal" class="investor-modal" role="dialog" aria-modal="true" aria-labelledby="investor-modal-title">
+          <div class="investor-modal-backdrop"></div>
+          <div class="investor-modal-box">
+            <button class="investor-modal-close" aria-label="Close modal">&times;</button>
+            <h3 class="investor-form-title" id="investor-modal-title">
               Express Interest in: <span id="cms-investor-deal-name"></span>
             </h3>
             <form id="cms-investor-form" class="cms-form" novalidate>
