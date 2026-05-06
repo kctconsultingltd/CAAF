@@ -13,7 +13,7 @@
     "businessName": { "type": "string", "required": true },
     "industry": { "type": "string", "required": true },
     "description": { "type": "text" },
-    "fundingRequired": { "type": "decimal" },
+    "fundingRequired": { "type": "biginteger" },
     "reviewStatus": {
       "type": "enumeration",
       "enum": ["pending", "approved", "rejected"],

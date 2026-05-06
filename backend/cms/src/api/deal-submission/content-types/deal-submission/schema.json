@@ -12,8 +12,8 @@
   "attributes": {
     "businessName": { "type": "string", "required": true },
     "industry": { "type": "string", "required": true },
-    "revenue": { "type": "decimal" },
-    "fundingNeeded": { "type": "decimal" },
+    "revenue": { "type": "biginteger" },
+    "fundingNeeded": { "type": "biginteger" },
     "description": { "type": "text" },
     "contactEmail": { "type": "email", "required": true },
     "phone": { "type": "string" },
