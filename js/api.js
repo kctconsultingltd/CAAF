@@ -36,21 +36,37 @@
     el.className = 'cms-status' + (type ? ' cms-status--' + type : '');
   }
 
-  function showToast(msg, type) {
-    var existing = document.getElementById('cms-toast');
+  function showConfirmModal(msg, type) {
+    var existing = document.getElementById('cms-confirm-modal');
     if (existing) existing.remove();
-    var toast = document.createElement('div');
-    toast.id = 'cms-toast';
-    toast.className = 'cms-toast cms-toast--' + (type || 'info');
-    toast.textContent = msg;
-    document.body.appendChild(toast);
+
+    var modal = document.createElement('div');
+    modal.id = 'cms-confirm-modal';
+    modal.className = 'cms-confirm-modal cms-confirm-modal--' + (type || 'info');
+    modal.innerHTML =
+      '<div class="cms-confirm-backdrop"></div>' +
+      '<div class="cms-confirm-box">' +
+        '<button class="cms-confirm-close" aria-label="Close">&times;</button>' +
+        '<p class="cms-confirm-msg">' + escHtml(msg) + '</p>' +
+      '</div>';
+
+    document.body.appendChild(modal);
+
+    var timer;
+    function dismiss() {
+      clearTimeout(timer);
+      modal.classList.remove('cms-confirm--visible');
+      setTimeout(function () { if (modal.parentNode) modal.remove(); }, 300);
+    }
+
+    modal.querySelector('.cms-confirm-close').addEventListener('click', dismiss);
+    modal.querySelector('.cms-confirm-backdrop').addEventListener('click', dismiss);
+
     requestAnimationFrame(function () {
-      requestAnimationFrame(function () { toast.classList.add('cms-toast--visible'); });
+      requestAnimationFrame(function () { modal.classList.add('cms-confirm--visible'); });
     });
-    setTimeout(function () {
-      toast.classList.remove('cms-toast--visible');
-      setTimeout(function () { if (toast.parentNode) toast.remove(); }, 400);
-    }, 5000);
+
+    timer = setTimeout(dismiss, 5000);
   }
 
   function formatNumberInput(input) {
@@ -289,12 +305,12 @@
     var description = form.description && form.description.value.trim();
 
     if (!contactEmail || !emailRe.test(contactEmail)) {
-      showToast('Please enter a valid email address.', 'error');
+      showConfirmModal('Please enter a valid email address.', 'error');
       if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
       return;
     }
     if (!description) {
-      showToast('Please provide a business description.', 'error');
+      showConfirmModal('Please provide a business description.', 'error');
       if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
       return;
     }
@@ -313,11 +329,11 @@
 
     apiFetch('/deal-submissions', { method: 'POST', body: JSON.stringify(body) })
       .then(function (json) {
-        showToast(json.message || 'Submission received.', 'success');
+        showConfirmModal(json.message || 'Submission received.', 'success');
         form.reset();
       })
       .catch(function (err) {
-        showToast(err.message, 'error');
+        showConfirmModal(err.message, 'error');
       })
       .finally(function () {
         if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
@@ -373,7 +389,7 @@
     var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     var email = form.email.value.trim();
     if (!email || !emailRe.test(email)) {
-      showToast('Please enter a valid email address.', 'error');
+      showConfirmModal('Please enter a valid email address.', 'error');
       if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
       return;
     }
@@ -391,12 +407,12 @@
 
     apiFetch('/investor-interests', { method: 'POST', body: JSON.stringify(body) })
       .then(function (json) {
-        showToast(json.message || 'Interest submitted.', 'success');
+        showConfirmModal(json.message || 'Interest submitted.', 'success');
         form.reset();
         closeInvestorModal();
       })
       .catch(function (err) {
-        showToast(err.message, 'error');
+        showConfirmModal(err.message, 'error');
       })
       .finally(function () {
         if (btn) { btn.disabled = false; btn.textContent = originalLabel; }

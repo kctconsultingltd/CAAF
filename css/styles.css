@@ -2364,50 +2364,74 @@ to {
 }
 
 /* ═══════════════════════════════════════════════
-   TOAST NOTIFICATION
+   CONFIRMATION MODAL
    ═══════════════════════════════════════════════ */
-.cms-toast {
+.cms-confirm-modal {
   position: fixed;
-  bottom: 32px;
-  right: 32px;
-  padding: 16px 24px;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  font-family: var(--sans);
-  max-width: 380px;
-  z-index: 9999;
-  border-left: 4px solid;
-  transform: translateY(16px);
-  opacity: 0;
-  transition: transform 0.35s ease, opacity 0.35s ease;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
   pointer-events: none;
 }
-
-.cms-toast.cms-toast--visible {
-  transform: translateY(0);
+.cms-confirm-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.cms-confirm--visible .cms-confirm-backdrop {
   opacity: 1;
-  pointer-events: auto;
+  pointer-events: all;
 }
-
-.cms-toast--success {
-  background: #071910;
-  color: #4caf87;
-  border-color: #4caf87;
+.cms-confirm-box {
+  position: relative;
+  background: var(--bg2);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  padding: 36px 44px;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(-16px) scale(0.97);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: all;
 }
-
-.cms-toast--error {
-  background: #1a0707;
-  color: #e05c5c;
-  border-color: #e05c5c;
+.cms-confirm--visible .cms-confirm-box {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
-
-@media (max-width: 699px) {
-  .cms-toast {
-    left: 16px;
-    right: 16px;
-    bottom: 16px;
-    max-width: none;
-  }
+.cms-confirm-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.cms-confirm-close:hover { color: var(--white); }
+.cms-confirm-msg {
+  font-family: var(--sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  margin: 0;
+  color: var(--white);
+}
+.cms-confirm-modal--success .cms-confirm-box { border-color: #4caf87; }
+.cms-confirm-modal--success .cms-confirm-msg { color: #4caf87; }
+.cms-confirm-modal--error .cms-confirm-box   { border-color: #e05c5c; }
+.cms-confirm-modal--error .cms-confirm-msg   { color: #e05c5c; }
+@media (max-width: 499px) {
+  .cms-confirm-box { padding: 28px 20px; }
 }
 
 /* ═══════════════════════════════════════════════
@@ -2621,4 +2645,39 @@ to {
     padding: 28px 20px;
     max-height: 95vh;
   }
+}
+
+/* ═══════════════════════════════════════════════
+   BLOG / INSIGHTS
+   ═══════════════════════════════════════════════ */
+.cms-blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 40px;
+}
+.cms-blog-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  padding: 28px 24px;
+  transition: border-color 0.2s;
+}
+.cms-blog-card:hover { border-color: var(--gold); }
+.cms-blog-title {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--white);
+  text-decoration: none;
+  display: block;
+  margin-bottom: 10px;
+  line-height: 1.35;
+}
+.cms-blog-title:hover { color: var(--gold); }
+.cms-blog-desc {
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  margin: 0;
 }
