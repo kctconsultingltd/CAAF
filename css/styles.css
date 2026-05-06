@@ -2657,6 +2657,8 @@ to {
   margin-top: 40px;
 }
 .cms-blog-card {
+  display: block;
+  text-decoration: none;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 4px;
@@ -2669,12 +2671,12 @@ to {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--white);
-  text-decoration: none;
   display: block;
   margin-bottom: 10px;
   line-height: 1.35;
+  transition: color 0.2s;
 }
-.cms-blog-title:hover { color: var(--gold); }
+.cms-blog-card:hover .cms-blog-title { color: var(--gold); }
 .cms-blog-desc {
   color: var(--muted);
   font-size: 0.875rem;

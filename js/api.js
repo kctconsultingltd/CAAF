@@ -3,6 +3,13 @@
 
   var API_BASE = 'https://caaf20-production.up.railway.app/api';
 
+  // ─── EmailJS config ───────────────────────────────────────────────────────
+  // Replace these four values after setting up https://emailjs.com
+  var EJS_SERVICE_ID  = 'YOUR_SERVICE_ID';
+  var EJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
+  var EJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';
+  var ADMIN_EMAIL     = 'info@capitalasaforce.org';
+
   // ─── Core fetch wrapper ───────────────────────────────────────────────────
 
   function apiFetch(path, options) {
@@ -87,6 +94,13 @@
       .replace(/"/g, '&quot;');
   }
 
+  function sendEmail(toEmail, subject, message) {
+    if (typeof window.emailjs === 'undefined' || EJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') return;
+    window.emailjs
+      .send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, { to_email: toEmail, subject: subject, message: message }, { publicKey: EJS_PUBLIC_KEY })
+      .catch(function (err) { console.warn('[emailjs] send failed:', err); });
+  }
+
   // ─── Team Members ─────────────────────────────────────────────────────────
   // Expected container: <div id="cms-team-list"></div>
 
@@ -149,12 +163,11 @@
 
   function renderBlogLink(link) {
     return (
-      '<article class="cms-blog-card" data-id="' + escHtml(link.documentId) + '">' +
-        '<a href="' + escHtml(link.url) + '" target="_blank" rel="noopener noreferrer" class="cms-blog-title">' +
-          escHtml(link.title) +
-        '</a>' +
+      '<a href="' + escHtml(link.url) + '" target="_blank" rel="noopener noreferrer" ' +
+        'class="cms-blog-card" data-id="' + escHtml(link.documentId) + '">' +
+        '<span class="cms-blog-title">' + escHtml(link.title) + '</span>' +
         (link.description ? '<p class="cms-blog-desc">' + escHtml(link.description) + '</p>' : '') +
-      '</article>'
+      '</a>'
     );
   }
 
@@ -331,6 +344,20 @@
       .then(function (json) {
         showConfirmModal(json.message || 'Submission received.', 'success');
         form.reset();
+        var biz = body.businessName;
+        var lines = [
+          'Business: ' + biz,
+          'Industry: ' + body.industry,
+          'Contact: ' + body.contactEmail,
+          body.phone ? 'Phone: ' + body.phone : null,
+          body.revenue != null ? 'Revenue: $' + Number(body.revenue).toLocaleString() : null,
+          body.fundingNeeded != null ? 'Funding Required: $' + Number(body.fundingNeeded).toLocaleString() : null,
+          body.description ? '\nDescription:\n' + body.description : null,
+        ].filter(Boolean).join('\n');
+        sendEmail(ADMIN_EMAIL, 'New Deal Submission: ' + biz,
+          'A new deal submission has been received.\n\n' + lines + '\n\nLog in to the admin panel to review.');
+        sendEmail(body.contactEmail, 'We’ve received your submission — CAAF',
+          'Hi,\n\nThank you for submitting ' + biz + ' to CAAF. Our team will review your submission shortly.\n\nThe CAAF Team');
       })
       .catch(function (err) {
         showConfirmModal(err.message, 'error');
@@ -410,6 +437,21 @@
         showConfirmModal(json.message || 'Interest submitted.', 'success');
         form.reset();
         closeInvestorModal();
+        var inv = body.investorName;
+        var dealName = document.getElementById('cms-investor-deal-name');
+        var deal = dealName ? dealName.textContent : body.dealId;
+        var lines = [
+          'Investor: ' + inv,
+          'Email: ' + body.email,
+          body.phone ? 'Phone: ' + body.phone : null,
+          'Deal: ' + deal,
+          body.investmentRange ? 'Investment Range: ' + body.investmentRange : null,
+          body.notes ? '\nNotes:\n' + body.notes : null,
+        ].filter(Boolean).join('\n');
+        sendEmail(ADMIN_EMAIL, 'New Investor Interest: ' + inv + ' → ' + deal,
+          'A new investor has expressed interest.\n\n' + lines + '\n\nLog in to the admin panel to review.');
+        sendEmail(body.email, 'Thank you for your interest — CAAF',
+          'Hi ' + inv + ',\n\nThank you for expressing interest through CAAF. Our team will review your submission and reach out to discuss next steps.\n\nThe CAAF Team');
       })
       .catch(function (err) {
         showConfirmModal(err.message, 'error');
