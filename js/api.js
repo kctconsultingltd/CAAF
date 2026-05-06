@@ -4,11 +4,10 @@
   var API_BASE = "https://caaf20-production.up.railway.app/api";
 
   // ─── EmailJS config ───────────────────────────────────────────────────────
-  // Replace these four values after setting up https://emailjs.com
+  // "To Email" is hardcoded in the EmailJS template dashboard — no variable needed here
   var EJS_SERVICE_ID = "service_loo2y5r";
   var EJS_TEMPLATE_ID = "template_5n5bpht";
   var EJS_PUBLIC_KEY = "7X7DzX8YFDbXSdnyo";
-  var ADMIN_EMAIL = "jjjaja001@gmail.com";
 
   // ─── Core fetch wrapper ───────────────────────────────────────────────────
 
@@ -109,11 +108,11 @@
       .replace(/"/g, "&quot;");
   }
 
-  function sendEmail(toEmail, subject, message) {
+  function sendEmail(subject, message) {
     if (typeof window.emailjs === "undefined" || EJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") return;
     window.emailjs
-      .send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, { to_email: toEmail, subject: subject, message: message })
-      .then(function () { console.log("[emailjs] sent → " + toEmail); })
+      .send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, { subject: subject, message: message })
+      .then(function () { console.log("[emailjs] sent: " + subject); })
       .catch(function (err) { console.error("[emailjs] failed:", err); });
   }
 
@@ -476,18 +475,8 @@
           .filter(Boolean)
           .join("\n");
         sendEmail(
-          ADMIN_EMAIL,
           "New Deal Submission: " + biz,
-          "A new deal submission has been received.\n\n" +
-            lines +
-            "\n\nLog in to the admin panel to review.",
-        );
-        sendEmail(
-          body.contactEmail,
-          "We’ve received your submission — CAAF",
-          "Hi,\n\nThank you for submitting " +
-            biz +
-            " to CAAF. Our team will review your submission shortly.\n\nThe CAAF Team",
+          "A new deal submission has been received.\n\n" + lines + "\n\nLog in to the admin panel to review."
         );
       })
       .catch(function (err) {
@@ -602,18 +591,8 @@
           .filter(Boolean)
           .join("\n");
         sendEmail(
-          ADMIN_EMAIL,
           "New Investor Interest: " + inv + " → " + deal,
-          "A new investor has expressed interest.\n\n" +
-            lines +
-            "\n\nLog in to the admin panel to review.",
-        );
-        sendEmail(
-          body.email,
-          "Thank you for your interest — CAAF",
-          "Hi " +
-            inv +
-            ",\n\nThank you for expressing interest through CAAF. Our team will review your submission and reach out to discuss next steps.\n\nThe CAAF Team",
+          "A new investor has expressed interest.\n\n" + lines + "\n\nLog in to the admin panel to review."
         );
       })
       .catch(function (err) {
