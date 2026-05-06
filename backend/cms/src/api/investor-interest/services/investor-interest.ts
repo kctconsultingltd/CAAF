@@ -1,4 +1,5 @@
 import { factories } from '@strapi/strapi';
+import { Resend } from 'resend';
 
 interface InterestPayload {
   investorName: string;
@@ -9,9 +10,15 @@ interface InterestPayload {
   notes?: string | null;
 }
 
+function getResend(): Resend | null {
+  const key = process.env.RESEND_API_KEY;
+  return key ? new Resend(key) : null;
+}
+
 const service = factories.createCoreService('api::investor-interest.investor-interest', ({ strapi }) => ({
   async notifyAdmin(payload: InterestPayload): Promise<void> {
     const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
+    const from = process.env.EMAIL_FROM || 'noreply@example.com';
 
     const subject = `New Investor Interest: ${payload.investorName} → ${payload.dealName}`;
     const lines = [
@@ -28,10 +35,10 @@ const service = factories.createCoreService('api::investor-interest.investor-int
     ].filter((l): l is string => l !== null);
 
     const text = lines.join('\n');
-    const emailPlugin = strapi.plugin('email');
+    const resend = getResend();
 
-    if (emailPlugin && adminEmail) {
-      await emailPlugin.service('email').send({ to: adminEmail, subject, text });
+    if (resend && adminEmail) {
+      await resend.emails.send({ from, to: adminEmail, subject, text });
       strapi.log.info(`[investor-interest] Admin notification sent to ${adminEmail}`);
       return;
     }
@@ -39,14 +46,13 @@ const service = factories.createCoreService('api::investor-interest.investor-int
     strapi.log.info(
       '[investor-interest] Email mock' +
         (adminEmail ? '' : ' (set ADMIN_NOTIFICATION_EMAIL to enable)') +
-        ':\n' +
-        `To: ${adminEmail ?? '(not configured)'}\n` +
-        `Subject: ${subject}\n\n` +
-        text
+        (resend ? '' : ' (set RESEND_API_KEY to enable)') +
+        `:\nTo: ${adminEmail ?? '(not configured)'}\nSubject: ${subject}\n\n${text}`
     );
   },
 
   async notifyInvestor(email: string, investorName: string, dealName: string): Promise<void> {
+    const from = process.env.EMAIL_FROM || 'noreply@example.com';
     const subject = `Thank you for your interest — CAAF`;
     const text = [
       `Hi ${investorName},`,
@@ -57,16 +63,16 @@ const service = factories.createCoreService('api::investor-interest.investor-int
       'The CAAF Team',
     ].join('\n');
 
-    const emailPlugin = strapi.plugin('email');
+    const resend = getResend();
 
-    if (emailPlugin) {
-      await emailPlugin.service('email').send({ to: email, subject, text });
+    if (resend) {
+      await resend.emails.send({ from, to: email, subject, text });
       strapi.log.info(`[investor-interest] Investor confirmation sent to ${email}`);
       return;
     }
 
     strapi.log.info(
-      `[investor-interest] Investor confirmation mock:\nTo: ${email}\nSubject: ${subject}\n\n${text}`
+      `[investor-interest] Investor confirmation mock (set RESEND_API_KEY to enable):\nTo: ${email}\nSubject: ${subject}\n\n${text}`
     );
   },
 }));

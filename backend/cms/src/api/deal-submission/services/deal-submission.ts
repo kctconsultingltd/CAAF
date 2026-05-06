@@ -1,4 +1,5 @@
 import { factories } from '@strapi/strapi';
+import { Resend } from 'resend';
 
 interface SubmissionPayload {
   businessName: string;
@@ -10,9 +11,15 @@ interface SubmissionPayload {
   phone?: string | null;
 }
 
+function getResend(): Resend | null {
+  const key = process.env.RESEND_API_KEY;
+  return key ? new Resend(key) : null;
+}
+
 const service = factories.createCoreService('api::deal-submission.deal-submission', ({ strapi }) => ({
   async notifyAdmin(submission: SubmissionPayload): Promise<void> {
     const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
+    const from = process.env.EMAIL_FROM || 'noreply@example.com';
 
     const subject = `New Deal Submission: ${submission.businessName}`;
     const lines = [
@@ -28,18 +35,16 @@ const service = factories.createCoreService('api::deal-submission.deal-submissio
       submission.fundingNeeded != null
         ? `Funding needed: $${submission.fundingNeeded.toLocaleString()}`
         : null,
-      submission.description
-        ? `\nDescription:\n${submission.description}`
-        : null,
+      submission.description ? `\nDescription:\n${submission.description}` : null,
       '',
       'Log in to the admin panel to review, approve, or reject this submission.',
     ].filter((l): l is string => l !== null);
 
     const text = lines.join('\n');
-    const emailPlugin = strapi.plugin('email');
+    const resend = getResend();
 
-    if (emailPlugin && adminEmail) {
-      await emailPlugin.service('email').send({ to: adminEmail, subject, text });
+    if (resend && adminEmail) {
+      await resend.emails.send({ from, to: adminEmail, subject, text });
       strapi.log.info(`[deal-submission] Admin notification sent to ${adminEmail}`);
       return;
     }
@@ -47,14 +52,13 @@ const service = factories.createCoreService('api::deal-submission.deal-submissio
     strapi.log.info(
       '[deal-submission] Email mock' +
         (adminEmail ? '' : ' (set ADMIN_NOTIFICATION_EMAIL to enable)') +
-        ':\n' +
-        `To: ${adminEmail ?? '(not configured)'}\n` +
-        `Subject: ${subject}\n\n` +
-        text
+        (resend ? '' : ' (set RESEND_API_KEY to enable)') +
+        `:\nTo: ${adminEmail ?? '(not configured)'}\nSubject: ${subject}\n\n${text}`
     );
   },
 
   async notifySubmitter(email: string, businessName: string): Promise<void> {
+    const from = process.env.EMAIL_FROM || 'noreply@example.com';
     const subject = `We've received your submission — CAAF`;
     const text = [
       'Hi,',
@@ -67,16 +71,16 @@ const service = factories.createCoreService('api::deal-submission.deal-submissio
       'The CAAF Team',
     ].join('\n');
 
-    const emailPlugin = strapi.plugin('email');
+    const resend = getResend();
 
-    if (emailPlugin) {
-      await emailPlugin.service('email').send({ to: email, subject, text });
+    if (resend) {
+      await resend.emails.send({ from, to: email, subject, text });
       strapi.log.info(`[deal-submission] Submitter confirmation sent to ${email}`);
       return;
     }
 
     strapi.log.info(
-      `[deal-submission] Submitter confirmation mock:\nTo: ${email}\nSubject: ${subject}\n\n${text}`
+      `[deal-submission] Submitter confirmation mock (set RESEND_API_KEY to enable):\nTo: ${email}\nSubject: ${subject}\n\n${text}`
     );
   },
 }));

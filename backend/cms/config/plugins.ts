@@ -21,25 +21,7 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
       jwtSecret: env('JWT_SECRET'),
     },
   },
-  // ─── Email (Resend via SMTP relay) ───────────────────────────────────────────
-  email: {
-    config: {
-      provider: 'nodemailer',
-      providerOptions: {
-        host: env('SMTP_HOST', 'smtp.resend.com'),
-        port: env.int('SMTP_PORT', 465),
-        secure: env.bool('SMTP_SECURE', true),
-        auth: {
-          user: env('SMTP_USERNAME', 'resend'),
-          pass: env('SMTP_PASSWORD', ''),
-        },
-      },
-      settings: {
-        defaultFrom: env('EMAIL_FROM', 'noreply@example.com'),
-        defaultReplyTo: env('EMAIL_FROM', 'noreply@example.com'),
-      },
-    },
-  },
+  // Email is handled via the Resend SDK directly in service files (no Strapi plugin needed)
 });
 
 export default config;
