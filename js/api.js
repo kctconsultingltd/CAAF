@@ -156,10 +156,12 @@
   }
 
   // ─── Deals ────────────────────────────────────────────────────────────────
-  // Expected container: <div id="cms-deals-list"></div>
+  // Preview container (index.html): <div id="cms-deals-preview"></div>
+  // Full page container (deals.html): <div id="cms-deals-list"></div>
 
-  function renderDeal(deal) {
-    return (
+  function renderDeal(deal, opts) {
+    var preview = opts && opts.previewMode;
+    var card = (
       '<div class="cms-deal-card" data-id="' + escHtml(deal.documentId) + '">' +
         '<div class="cms-deal-header">' +
           '<h3 class="cms-deal-name">' + escHtml(deal.businessName) + '</h3>' +
@@ -170,32 +172,103 @@
               Number(deal.fundingRequired).toLocaleString() + '</p>'
           : '') +
         (deal.description ? '<p class="cms-deal-desc">' + escHtml(deal.description) + '</p>' : '') +
-        '<button class="btn-gold cms-invest-btn" ' +
-          'data-deal-id="' + escHtml(deal.documentId) + '" ' +
-          'data-deal-name="' + escHtml(deal.businessName) + '">' +
-          'Express Interest' +
-        '</button>' +
+        (preview
+          ? ''
+          : '<button class="btn-gold cms-invest-btn" ' +
+              'data-deal-id="' + escHtml(deal.documentId) + '" ' +
+              'data-deal-name="' + escHtml(deal.businessName) + '">' +
+              'Express Interest' +
+            '</button>') +
       '</div>'
     );
+    return card;
   }
 
-  function loadDeals() {
-    var el = document.getElementById('cms-deals-list');
+  // ─── Index.html: 3-card preview ───────────────────────────────────────────
+
+  function loadDealsPreview() {
+    var el = document.getElementById('cms-deals-preview');
     if (!el) return;
     setLoading(el);
-    // Server enforces approved-only for public requests; filter is a belt-and-suspenders hint
-    apiFetch('/deals?filters[reviewStatus]=approved')
+    apiFetch('/deals?filters[reviewStatus]=approved&pagination[pageSize]=3')
       .then(function (json) {
         var items = json.data || [];
-        if (!items.length) { el.innerHTML = '<p>No active deals at this time.</p>'; return; }
-        el.innerHTML = items.map(renderDeal).join('');
-        el.querySelectorAll('.cms-invest-btn').forEach(function (btn) {
+        if (!items.length) { el.innerHTML = ''; return; }
+        el.innerHTML = items.map(function (d) { return renderDeal(d, { previewMode: true }); }).join('');
+      })
+      .catch(function (err) { setError(el, 'Could not load deals: ' + err.message); });
+  }
+
+  // ─── Deals.html: paginated list with industry filter ──────────────────────
+
+  var _dealsPage = 1;
+  var _dealsTotalPages = 1;
+  var _dealsIndustry = '';
+
+  function loadDealsPage(reset) {
+    var el = document.getElementById('cms-deals-list');
+    var loadMoreBtn = document.getElementById('deals-load-more');
+    var countEl = document.getElementById('deals-result-count');
+    if (!el) return;
+
+    if (reset) {
+      _dealsPage = 1;
+      var filterSelect = document.getElementById('deals-industry-filter');
+      _dealsIndustry = filterSelect ? filterSelect.value : '';
+      setLoading(el);
+    }
+
+    var qs = '/deals?filters[reviewStatus]=approved' +
+      '&pagination[page]=' + _dealsPage +
+      '&pagination[pageSize]=9';
+    if (_dealsIndustry) qs += '&filters[industry][$eq]=' + encodeURIComponent(_dealsIndustry);
+
+    apiFetch(qs)
+      .then(function (json) {
+        var items = json.data || [];
+        var meta = json.meta && json.meta.pagination;
+        _dealsTotalPages = meta ? meta.pageCount : 1;
+
+        if (reset) el.innerHTML = '';
+
+        if (!items.length && reset) {
+          el.innerHTML = '<p style="color:var(--muted)">No deals found.</p>';
+          if (loadMoreBtn) loadMoreBtn.hidden = true;
+          if (countEl) countEl.textContent = '';
+          return;
+        }
+
+        el.insertAdjacentHTML('beforeend', items.map(function (d) { return renderDeal(d); }).join(''));
+
+        el.querySelectorAll('.cms-invest-btn:not([data-wired])').forEach(function (btn) {
+          btn.dataset.wired = '1';
           btn.addEventListener('click', function () {
             openInvestorForm(btn.dataset.dealId, btn.dataset.dealName);
           });
         });
+
+        if (countEl && meta) {
+          countEl.textContent = meta.total + ' deal' + (meta.total !== 1 ? 's' : '');
+        }
+        if (loadMoreBtn) loadMoreBtn.hidden = _dealsPage >= _dealsTotalPages;
       })
       .catch(function (err) { setError(el, 'Could not load deals: ' + err.message); });
+  }
+
+  function loadIndustryFilter() {
+    apiFetch('/deals?filters[reviewStatus]=approved&fields[0]=industry&pagination[pageSize]=200')
+      .then(function (json) {
+        var seen = {};
+        (json.data || []).forEach(function (d) { if (d.industry) seen[d.industry] = 1; });
+        var select = document.getElementById('deals-industry-filter');
+        if (!select) return;
+        Object.keys(seen).sort().forEach(function (ind) {
+          var opt = document.createElement('option');
+          opt.value = ind;
+          opt.textContent = ind;
+          select.appendChild(opt);
+        });
+      });
   }
 
   // ─── Deal Submission Form ─────────────────────────────────────────────────
@@ -323,7 +396,30 @@
   document.addEventListener('DOMContentLoaded', function () {
     loadTeamMembers();
     loadBlogLinks();
-    loadDeals();
+
+    // index.html: 3-card preview
+    if (document.getElementById('cms-deals-preview')) {
+      loadDealsPreview();
+    }
+
+    // deals.html: paginated full list
+    if (document.getElementById('cms-deals-list')) {
+      loadIndustryFilter();
+      loadDealsPage(true);
+
+      var loadMoreBtn = document.getElementById('deals-load-more');
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function () {
+          _dealsPage++;
+          loadDealsPage(false);
+        });
+      }
+
+      var filterSelect = document.getElementById('deals-industry-filter');
+      if (filterSelect) {
+        filterSelect.addEventListener('change', function () { loadDealsPage(true); });
+      }
+    }
 
     var dealForm     = document.getElementById('cms-deal-form');
     var investorForm = document.getElementById('cms-investor-form');

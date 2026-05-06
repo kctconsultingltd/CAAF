@@ -2462,3 +2462,86 @@ to {
 .phone-input-wrapper input[type="tel"]:focus {
   outline: none;
 }
+
+/* ═══════════════════════════════════════════════
+   DEALS PAGE — FILTER BAR & LOAD MORE
+   ═══════════════════════════════════════════════ */
+
+.deals-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+
+.deals-filter-select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
+  border-radius: 3px;
+  color: var(--white);
+  padding: 10px 14px;
+  font-family: var(--sans);
+  font-size: 0.875rem;
+  cursor: pointer;
+  min-width: 200px;
+  transition: border-color 0.2s;
+}
+
+.deals-filter-select:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.deals-filter-select option,
+.deals-filter-select optgroup {
+  background: var(--bg2);
+  color: var(--white);
+}
+
+.deals-result-count {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.deals-load-more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  background: none;
+  padding: 12px 40px;
+  border-radius: 3px;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-outline:hover {
+  background: var(--gold);
+  color: var(--bg);
+}
+
+/* Active nav link on deals.html */
+.nav-active {
+  color: var(--gold) !important;
+}
+
+/* Screen-reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
