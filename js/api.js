@@ -158,7 +158,7 @@
     var el = document.getElementById("cms-team-list");
     if (!el) return;
     setLoading(el);
-    apiFetch("/team-members?populate=image")
+    apiFetch("/team-members?populate=image&sort=order:asc")
       .then(function (json) {
         var items = json.data || [];
         if (!items.length) {
@@ -199,6 +199,14 @@
   // Expected container: <div id="cms-blog-list"></div>
 
   function renderBlogLink(link) {
+    var imgHtml =
+      link.coverImage && link.coverImage.url
+        ? '<img src="' +
+          escHtml(link.coverImage.url) +
+          '" alt="' +
+          escHtml(link.title) +
+          '" class="cms-blog-img" loading="lazy" />'
+        : "";
     return (
       '<a href="' +
       escHtml(link.url) +
@@ -206,6 +214,7 @@
       'class="cms-blog-card" data-id="' +
       escHtml(link.documentId) +
       '">' +
+      imgHtml +
       '<span class="cms-blog-title">' +
       escHtml(link.title) +
       "</span>" +
@@ -220,7 +229,7 @@
     var el = document.getElementById("cms-blog-list");
     if (!el) return;
     setLoading(el);
-    apiFetch("/blog-links")
+    apiFetch("/blog-links?populate=coverImage")
       .then(function (json) {
         var items = json.data || [];
         if (!items.length) {
