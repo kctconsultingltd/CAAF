@@ -50,6 +50,9 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://caaf-hero-media.t3.storage.dev" crossorigin />
+    <link rel="preconnect" href="https://hebbkx1anhila5yf.public.blob.vercel-storage.com" crossorigin />
+    <link rel="preload" as="image" href="img/Lagos Skyline-Cover.webp" />
     <link
       href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap"
       rel="stylesheet"
@@ -88,11 +91,14 @@
     <nav class="nav" id="mainNav">
       <div class="nav-inner">
         <a href="#" class="nav-logo" aria-label="Capital As A Force - Home">
-          <img
-            src="img/CAAF-removebg-preview.png"
-            alt="Capital As A Force"
-            class="nav-logo-img"
-          />
+          <picture>
+            <source srcset="img/CAAF-removebg-preview.webp" type="image/webp">
+            <img
+              src="img/CAAF-removebg-preview.png"
+              alt="Capital As A Force"
+              class="nav-logo-img"
+            />
+          </picture>
         </a>
         <div class="nav-center">
           <a href="#about">About</a>
@@ -167,7 +173,7 @@
     <section class="hero" id="hero">
 
       <!-- Video background -->
-      <video class="hero-video" autoplay muted loop playsinline poster="img/Lagos Skyline-Cover.jpg">
+      <video class="hero-video" autoplay muted loop playsinline poster="img/Lagos Skyline-Cover.webp">
         <source src="https://caaf-hero-media.t3.storage.dev/Lagos%20Skyline.mp4" type="video/mp4">
       </video>
       
@@ -326,21 +332,30 @@
         <div class="carousel-wrapper">
           <div class="carousel-slides">
             <div class="carousel-slide is-active">
-              <img src="img/handshake.jpg" alt="Access to Finance">
+              <picture>
+                <source srcset="img/handshake.webp" type="image/webp">
+                <img src="img/handshake.jpg" alt="Access to Finance" loading="lazy">
+              </picture>
               <div class="slide-overlay">
                 <h3>Access to Finance</h3>
                 <p>Unlock capital into qualifying deals/opportunities.</p>
               </div>
             </div>
             <div class="carousel-slide">
-              <img src="img/solardiscussion.jpg" alt="Development Programming">
+              <picture>
+                <source srcset="img/solardiscussion.webp" type="image/webp">
+                <img src="img/solardiscussion.jpg" alt="Development Programming" loading="lazy">
+              </picture>
               <div class="slide-overlay">
                 <h3>Development Programming</h3>
                 <p>Implement sustainable development programs with perspectives that multiply impact.</p>
               </div>
             </div>
             <div class="carousel-slide">
-              <img src="img/blackglobe2hands.png" alt="Impact Strategy">
+              <picture>
+                <source srcset="img/blackglobe2hands.webp" type="image/webp">
+                <img src="img/blackglobe2hands.png" alt="Impact Strategy" loading="lazy">
+              </picture>
               <div class="slide-overlay">
                 <h3>Impact Strategy</h3>
                 <p>Move impact from marginal agenda to core business logic.</p>
@@ -439,11 +454,15 @@
               is catalytic.&rdquo;
             </blockquote>
             <div class="problem-image-wrapper">
-              <img
-                src="img/office-team.jpg"
-                alt="Black professionals in office"
-                class="problem-image"
-              />
+              <picture>
+                <source srcset="img/office-team.webp" type="image/webp">
+                <img
+                  src="img/office-team.jpg"
+                  alt="Black professionals in office"
+                  class="problem-image"
+                  loading="lazy"
+                />
+              </picture>
             </div>
           </div>
           <div class="problem-right reveal reveal-delay-2">
@@ -488,10 +507,11 @@
           <!-- Left side: Image with hover-reveal text -->
           <div class="serve-image-container reveal">
             <div class="serve-image-wrapper">
-              <img 
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/vitaly-gariev-c9rttLPYNWA-unsplash-1M5UaovT8jyAC7yWKJ0gXE7xSuNYZC.jpg" 
-                alt="Business professional in consultation meeting" 
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/vitaly-gariev-c9rttLPYNWA-unsplash-1M5UaovT8jyAC7yWKJ0gXE7xSuNYZC.jpg"
+                alt="Business professional in consultation meeting"
                 class="serve-featured-image"
+                loading="lazy"
               />
               <div class="serve-image-overlay">
                 <div class="serve-overlay-content">
@@ -660,10 +680,11 @@
           <!-- Right side: Full image -->
           <div class="vm-image-container reveal vm-slide-in-right">
             <div class="vm-image-wrapper">
-              <img 
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/christina-wocintechchat-com-m-rg1y72eKw6o-unsplash-h9WMuNfN4d0haIdhGUAyrxgjF1i3n3.jpg" 
-                alt="Professional team collaborating in a modern boardroom meeting" 
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/christina-wocintechchat-com-m-rg1y72eKw6o-unsplash-h9WMuNfN4d0haIdhGUAyrxgjF1i3n3.jpg"
+                alt="Professional team collaborating in a modern boardroom meeting"
                 class="vm-featured-image"
+                loading="lazy"
               />
               <div class="vm-image-overlay"></div>
             </div>
@@ -928,11 +949,15 @@
         <div class="footer-grid">
           <div class="footer-brand">
             <a href="#" class="nav-logo" aria-label="Capital As A Force - Home">
-              <img
-                src="img/CAAF-removebg-preview.png"
-                alt="Capital As A Force"
-                class="nav-logo-img footer-logo-img"
-              />
+              <picture>
+                <source srcset="img/CAAF-removebg-preview.webp" type="image/webp">
+                <img
+                  src="img/CAAF-removebg-preview.png"
+                  alt="Capital As A Force"
+                  class="nav-logo-img footer-logo-img"
+                  loading="lazy"
+                />
+              </picture>
             </a>
             <p>
               A field-based investment advisory organization deploying capital
