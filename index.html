@@ -50,6 +50,9 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://caaf-hero-media.t3.storage.dev" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preload" as="image" href="img/Lagos Skyline-Cover.webp" />
     <link
       href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap"
       rel="stylesheet"
@@ -89,7 +92,7 @@
       <div class="nav-inner">
         <a href="#" class="nav-logo" aria-label="Capital As A Force - Home">
           <img
-            src="img/CAAF-removebg-preview.png"
+            src="img/CAAF-removebg-preview.webp"
             alt="Capital As A Force"
             class="nav-logo-img"
           />
@@ -167,7 +170,7 @@
     <section class="hero" id="hero">
 
       <!-- Video background -->
-      <video class="hero-video" autoplay muted loop playsinline poster="img/Lagos Skyline-Cover.jpg">
+      <video class="hero-video" autoplay muted loop playsinline poster="img/Lagos Skyline-Cover.webp">
         <source src="https://caaf-hero-media.t3.storage.dev/Lagos%20Skyline.mp4" type="video/mp4">
       </video>
       
@@ -326,21 +329,21 @@
         <div class="carousel-wrapper">
           <div class="carousel-slides">
             <div class="carousel-slide is-active">
-              <img src="img/handshake.jpg" alt="Access to Finance">
+              <img src="img/handshake.webp" alt="Access to Finance" loading="lazy">
               <div class="slide-overlay">
                 <h3>Access to Finance</h3>
                 <p>Unlock capital into qualifying deals/opportunities.</p>
               </div>
             </div>
             <div class="carousel-slide">
-              <img src="img/solardiscussion.jpg" alt="Development Programming">
+              <img src="img/solardiscussion.webp" alt="Development Programming" loading="lazy">
               <div class="slide-overlay">
                 <h3>Development Programming</h3>
                 <p>Implement sustainable development programs with perspectives that multiply impact.</p>
               </div>
             </div>
             <div class="carousel-slide">
-              <img src="img/blackglobe2hands.png" alt="Impact Strategy">
+              <img src="img/blackglobe2hands.webp" alt="Impact Strategy" loading="lazy">
               <div class="slide-overlay">
                 <h3>Impact Strategy</h3>
                 <p>Move impact from marginal agenda to core business logic.</p>
@@ -440,9 +443,10 @@
             </blockquote>
             <div class="problem-image-wrapper">
               <img
-                src="img/office-team.jpg"
+                src="img/office-team.webp"
                 alt="Black professionals in office"
                 class="problem-image"
+                loading="lazy"
               />
             </div>
           </div>
@@ -489,9 +493,10 @@
           <div class="serve-image-container reveal">
             <div class="serve-image-wrapper">
               <img 
-                src="img/vitaly-gariev-c9rttLPYNWA-unsplash.jpg"
-                alt="Business professional in consultation meeting" 
+                src="img/vitaly-gariev-c9rttLPYNWA-unsplash.webp"
+                alt="Business professional in consultation meeting"
                 class="serve-featured-image"
+                loading="lazy"
               />
               <div class="serve-image-overlay">
                 <div class="serve-overlay-content">
@@ -662,8 +667,9 @@
             <div class="vm-image-wrapper">
               <img 
                 src="img/christina-wocintechchat-com-m-rg1y72eKw6o-unsplash.jpg"
-                alt="Professional team collaborating in a modern boardroom meeting" 
+                alt="Professional team collaborating in a modern boardroom meeting"
                 class="vm-featured-image"
+                loading="lazy"
               />
               <div class="vm-image-overlay"></div>
             </div>
@@ -929,9 +935,10 @@
           <div class="footer-brand">
             <a href="#" class="nav-logo" aria-label="Capital As A Force - Home">
               <img
-                src="img/CAAF-removebg-preview.png"
+                src="img/CAAF-removebg-preview.webp"
                 alt="Capital As A Force"
                 class="nav-logo-img footer-logo-img"
+                loading="lazy"
               />
             </a>
             <p>
@@ -973,7 +980,7 @@
     <!-- ═══════════════════════════════════════════════
       JAVASCRIPT
       ═══════════════════════════════════════════════ -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
     <script src="js/api.js" defer></script>
   </body>
 </html>
