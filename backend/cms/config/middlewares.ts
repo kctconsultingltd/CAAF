@@ -20,7 +20,7 @@ const config: Core.Config.Middlewares = [
   {
     name: "strapi::cors",
     config: {
-      headers: "*",
+      headers: ["Content-Type", "Authorization", "Accept", "Origin"],
       origin: [
         "https://caaf-2.vercel.app",
         "http://localhost:3000",
@@ -28,6 +28,7 @@ const config: Core.Config.Middlewares = [
       ],
     },
   },
+  "global::rate-limit",
   "strapi::poweredBy",
   "strapi::query",
   "strapi::body",
