@@ -27,7 +27,7 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
       connection: env('DATABASE_URL')
         ? {
             connectionString: env('DATABASE_URL'),
-            ssl: { rejectUnauthorized: false }, // Railway uses a self-signed cert; connection is still TLS-encrypted
+            ssl: { rejectUnauthorized: false },
           }
         : {
             host: env('DATABASE_HOST', 'localhost'),

@@ -22,9 +22,11 @@ export default factories.createCoreController('api::investor-interest.investor-i
       .documents('api::deal.deal')
       .findOne({ documentId: raw.dealId as string });
 
-    if (!deal || (deal as any).reviewStatus !== 'approved') {
-      strapi.log.info(`[investor-interest] Deal ${raw.dealId as string} not found or not approved`);
-      return ctx.badRequest('Deal is not available for investment.');
+    if (!deal) {
+      return ctx.notFound('Deal not found.');
+    }
+    if ((deal as any).reviewStatus !== 'approved') {
+      return ctx.badRequest('Deal is not open for investor interest.');
     }
 
     // Build body in Strapi REST format with relation
