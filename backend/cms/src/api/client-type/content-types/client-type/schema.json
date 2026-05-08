@@ -1,0 +1,18 @@
+{
+  "kind": "collectionType",
+  "collectionName": "client_types",
+  "info": {
+    "singularName": "client-type",
+    "pluralName": "client-types",
+    "displayName": "Client Type"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "title": { "type": "string", "required": true },
+    "description": { "type": "text" },
+    "iconName": { "type": "string" },
+    "order": { "type": "integer" }
+  }
+}

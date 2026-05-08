@@ -28,7 +28,7 @@
     />
     <meta
       property="og:image"
-      content="https://caaf-iota.vercel.app/img/og-image.png"
+      content="https://caaf-iota.vercel.app/img/og-image.jpg"
     />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -45,7 +45,7 @@
     />
     <meta
       name="twitter:image"
-      content="https://caaf-iota.vercel.app/img/og-image.png"
+      content="https://caaf-iota.vercel.app/img/og-image.jpg"
     />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -167,23 +167,23 @@
     <section class="hero" id="hero">
 
       <!-- Video background -->
-      <video class="hero-video" autoplay muted loop playsinline poster="img/Lagos Skyline-Cover.jpg">
+      <video id="cms-hero-video" class="hero-video" autoplay muted loop playsinline poster="img/Lagos Skyline-Cover.jpg">
         <source src="https://caaf-hero-media.t3.storage.dev/Lagos%20Skyline.mp4" type="video/mp4">
       </video>
       
       <div class="container">
         
         <div class="hero-content" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;">
-          <p class="hero-tag hero-anim hero-d1">
+          <p id="cms-hero-tag" class="hero-tag hero-anim hero-d1">
             Field-Based Finance and Investment Partner
           </p>
           <!-- <p class="hero-eq hero-anim hero-d2">
             Capital + Perspective = Transformational Impact
           </p> -->
-          <h1 class="hero-anim hero-d3">
+          <h1 id="cms-hero-headline" class="hero-anim hero-d3">
             Deploy capital where it <em>multiplies</em> impact.
           </h1>
-          <p class="hero-sub hero-anim hero-d4">
+          <p id="cms-hero-subheading" class="hero-sub hero-anim hero-d4">
             We partner with investors and capital providers to design catalytic
             instruments, practical lenses, and execution frameworks that unlock and put
             capital to work in high-growth and high-impact markets.
@@ -211,10 +211,10 @@
       <div class="container">
         <div class="reveal">
           <div class="section-label"><span>Who We Are</span></div>
-          <h2>An investment partner helping to unlock more capital for transformative impact.</h2>
+          <h2 id="cms-about-heading">An investment partner helping to unlock more capital for transformative impact.</h2>
         </div>
         <div class="who-grid">
-          <div class="who-left reveal reveal-delay-1">
+          <div id="cms-about-body" class="who-left reveal reveal-delay-1">
             <p>
               CAPITAL AS A FORCE is a field-based access to finance development 
               partner focused on helping to unlock and deploy capital where it multiplies 
@@ -235,12 +235,12 @@
             </p>
             <div class="theory-box">
               <div class="tb-label">Our Theory of Change</div>
-              <div class="tb-text">
+              <div id="cms-theory-of-change" class="tb-text">
                 Capital + Perspective = Transformational Impact
               </div>
             </div>
           </div>
-          <div class="who-right reveal reveal-delay-2">
+          <div id="cms-feature-cards" class="who-right reveal reveal-delay-2">
             <div class="feat-card">
               <div class="feat-icon">
                 <svg
@@ -324,7 +324,7 @@
       </div>
       <div class="container">
         <div class="carousel-wrapper">
-          <div class="carousel-slides">
+          <div id="cms-carousel-slides" class="carousel-slides">
             <div class="carousel-slide is-active">
               <img src="img/handshake.jpg" alt="Access to Finance">
               <div class="slide-overlay">
@@ -369,7 +369,7 @@
             understanding and execution discipline.
           </p>
         </div>
-        <div class="srv-grid">
+        <div id="cms-services-list" class="srv-grid">
           <div class="srv-cell reveal reveal-delay-1">
             <div class="srv-num">01</div>
             <div class="srv-title">Catalytic Instruments</div>
@@ -434,7 +434,7 @@
         </div>
         <div class="problem-grid">
           <div class="reveal reveal-delay-1">
-            <blockquote class="pull-quote">
+            <blockquote id="cms-problem-quote" class="pull-quote">
               &ldquo;Too much capital flows to what is familiar rather than what
               is catalytic.&rdquo;
             </blockquote>
@@ -446,7 +446,7 @@
               />
             </div>
           </div>
-          <div class="problem-right reveal reveal-delay-2">
+          <div id="cms-problem-body" class="problem-right reveal reveal-delay-2">
             <p>
               Too much capital is deployed with incomplete lenses, weak context,
               and poor perspective, resulting in missed opportunities, fragile
@@ -464,7 +464,7 @@
             </p>
             <div class="callout-box">
               <div class="cb-label">Our Core Belief</div>
-              <p>
+              <p id="cms-core-belief">
                 The gap is not in the availability of capital, but in the
                 quality of perspective applied to its deployment. Better lenses
                 produce better outcomes.
@@ -488,9 +488,10 @@
           <!-- Left side: Image with hover-reveal text -->
           <div class="serve-image-container reveal">
             <div class="serve-image-wrapper">
-              <img 
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/vitaly-gariev-c9rttLPYNWA-unsplash-1M5UaovT8jyAC7yWKJ0gXE7xSuNYZC.jpg" 
-                alt="Business professional in consultation meeting" 
+              <img
+                id="cms-clients-feature-image"
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/vitaly-gariev-c9rttLPYNWA-unsplash-1M5UaovT8jyAC7yWKJ0gXE7xSuNYZC.jpg"
+                alt="Business professional in consultation meeting"
                 class="serve-featured-image"
               />
               <div class="serve-image-overlay">
@@ -501,7 +502,7 @@
             </div>
           </div>
           <!-- Right side: Stacked cards -->
-          <div class="serve-cards-stack">
+          <div id="cms-clients-grid" class="serve-cards-stack">
           <div class="serve-card reveal reveal-delay-1">
             <div class="serve-badge" aria-hidden="true">
               <svg
@@ -636,7 +637,7 @@
               </div>
               <div class="vm-label">Vision</div>
               <div class="vm-sub">What we are building toward</div>
-              <div class="vm-text">
+              <div id="cms-vision-text" class="vm-text">
                 To make capital the most powerful tool for scaling real economic
                 transformation where it matters most.
               </div>
@@ -650,7 +651,7 @@
               </div>
               <div class="vm-label">Mission</div>
               <div class="vm-sub">How we get there</div>
-              <div class="vm-text">
+              <div id="cms-mission-text" class="vm-text">
                 To equip investors and capital providers with catalytic tools,
                 practical lenses, and execution frameworks that multiply the
                 impact and productivity of capital.
@@ -660,9 +661,10 @@
           <!-- Right side: Full image -->
           <div class="vm-image-container reveal vm-slide-in-right">
             <div class="vm-image-wrapper">
-              <img 
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/christina-wocintechchat-com-m-rg1y72eKw6o-unsplash-h9WMuNfN4d0haIdhGUAyrxgjF1i3n3.jpg" 
-                alt="Professional team collaborating in a modern boardroom meeting" 
+              <img
+                id="cms-vm-image"
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/christina-wocintechchat-com-m-rg1y72eKw6o-unsplash-h9WMuNfN4d0haIdhGUAyrxgjF1i3n3.jpg"
+                alt="Professional team collaborating in a modern boardroom meeting"
                 class="vm-featured-image"
               />
               <div class="vm-image-overlay"></div>
@@ -885,7 +887,7 @@
                     <path d="M22 4l-10 8L2 4" />
                   </svg>
                 </div>
-                <span><a href="mailto:info@capitalasaforce.com" style="color:inherit;text-decoration:underline;">info@capitalasaforce.com</a></span>
+                <span id="cms-contact-email"><a href="mailto:info@capitalasaforce.com" style="color:inherit;text-decoration:underline;">info@capitalasaforce.com</a></span>
               </div>
               
               <div class="contact-item">
@@ -902,7 +904,7 @@
                     <circle cx="12" cy="10" r="3" />
                   </svg>
                 </div>
-                <span><a href="https://maps.google.com" target="_blank" style="color:inherit;text-decoration:underline;">131 Continental Dr, Suite 305, <br> Newark, Delaware, 19713</a></span>
+                <span id="cms-contact-address"><a href="https://maps.google.com" target="_blank" style="color:inherit;text-decoration:underline;">131 Continental Dr, Suite 305, <br> Newark, Delaware, 19713</a></span>
               </div>
               <a
                 href="mailto:info@capitalasaforce.com"
@@ -934,7 +936,7 @@
                 class="nav-logo-img footer-logo-img"
               />
             </a>
-            <p>
+            <p id="cms-footer-description">
               A field-based investment advisory organization deploying capital
               for transformational impact in Africa and emerging markets.
             </p>

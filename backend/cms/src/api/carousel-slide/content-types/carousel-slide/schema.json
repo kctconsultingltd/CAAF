@@ -1,0 +1,18 @@
+{
+  "kind": "collectionType",
+  "collectionName": "carousel_slides",
+  "info": {
+    "singularName": "carousel-slide",
+    "pluralName": "carousel-slides",
+    "displayName": "Carousel Slide"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "title": { "type": "string", "required": true },
+    "description": { "type": "text" },
+    "image": { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "order": { "type": "integer" }
+  }
+}
