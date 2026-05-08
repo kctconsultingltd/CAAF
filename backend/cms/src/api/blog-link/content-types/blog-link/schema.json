@@ -13,6 +13,7 @@
     "title": { "type": "string", "required": true },
     "url": { "type": "string", "required": true },
     "description": { "type": "text" },
-    "coverImage": { "type": "media", "multiple": false, "required": false, "allowedTypes": ["images"] }
+    "coverImage": { "type": "media", "multiple": false, "required": false, "allowedTypes": ["images"] },
+    "order": { "type": "integer", "default": 0 }
   }
 }

@@ -229,7 +229,7 @@
     var el = document.getElementById("cms-blog-list");
     if (!el) return;
     setLoading(el);
-    apiFetch("/blog-links?populate=coverImage")
+    apiFetch("/blog-links?populate=coverImage&sort=order:asc")
       .then(function (json) {
         var items = json.data || [];
         if (!items.length) {
