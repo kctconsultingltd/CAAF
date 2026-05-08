@@ -26,6 +26,7 @@
       e.stopImmediatePropagation();
       if (_toggleLock) return;
       _toggleLock = true;
+      console.log("Hamburger clicked", e.type, "target:", e.target);
       toggleMobileMenu();
       setTimeout(function () {
         _toggleLock = false;
@@ -56,6 +57,7 @@
     if (closeBtn) {
       closeBtn.addEventListener("click", function (e) {
         e.stopPropagation();
+        console.log("Close button clicked");
         if (mobileMenu.classList.contains("open")) {
           toggleMobileMenu();
         }
@@ -142,14 +144,10 @@
       slideInterval = setInterval(nextSlide, 3000);
     }
 
-    // Check for resize (debounced to avoid thrashing on every pixel)
-    var resizeTimer;
+    // Check for resize
     window.addEventListener("resize", function() {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function() {
-        isMobile = window.innerWidth <= 900;
-        updateCarousel();
-      }, 150);
+      isMobile = window.innerWidth <= 900;
+      updateCarousel();
     });
 
     // Start auto-rotate
