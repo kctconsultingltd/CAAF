@@ -12,7 +12,7 @@ const config: Core.Config.Middlewares = [
           "connect-src": ["'self'", "https:"],
           "img-src": ["'self'", "data:", "blob:", "res.cloudinary.com"],
           "media-src": ["'self'", "data:", "blob:", "res.cloudinary.com"],
-          upgradeInsecureRequests: null,
+          // upgradeInsecureRequests intentionally omitted — useDefaults enables it
         },
       },
     },
@@ -20,15 +20,15 @@ const config: Core.Config.Middlewares = [
   {
     name: "strapi::cors",
     config: {
-      headers: "*",
+      headers: ["Content-Type", "Authorization"],
       origin: [
+        "https://caaf-iota.vercel.app",
         "https://caaf-2.vercel.app",
-        "http://localhost:3000",
-        "http://localhost:1337",
       ],
     },
   },
   "strapi::poweredBy",
+  { name: "global::rate-limit", config: {} },
   "strapi::query",
   "strapi::body",
   "strapi::session",
