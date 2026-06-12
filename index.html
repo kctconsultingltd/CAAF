@@ -104,7 +104,7 @@
           <a href="#services">Services</a>
           <a href="#clients">Clients</a>
           <a href="#team">Team</a>
-          <a href="/deals">Deals</a>
+          <!-- <a href="/deals">Deals</a> -->
         </div>
         <div class="nav-right">
           <a href="#contact" class="nav-cta">Get in Touch</a>
@@ -155,7 +155,7 @@
         <a href="#services">Services</a>
         <a href="#clients">Clients</a>
         <a href="#team">Team</a>
-        <a href="/deals">Deals</a>
+        <!-- <a href="/deals">Deals</a> -->
         <a href="#contact">Contact</a>
       </div>
       <div class="mobile-menu-footer">
@@ -172,7 +172,7 @@
     <section class="hero" id="hero">
 
       <!-- Video background -->
-      <video class="hero-video" autoplay muted loop playsinline poster="img/Lagos Skyline-Cover.webp">
+      <video class="hero-video" autoplay muted loop playsinline preload="none" poster="img/Lagos Skyline-Cover.webp">
         <source src="https://caaf-hero-media.t3.storage.dev/Lagos%20Skyline.mp4" type="video/mp4">
       </video>
       
@@ -205,6 +205,8 @@
         </div>
       </div>
     </section>
+
+    <main>
 
     <!-- ═══════════════════════════════════════════════
      3. WHO WE ARE
@@ -361,7 +363,7 @@
     <!-- ═══════════════════════════════════════════════
      4. OUR SOLUTIONS
      ═══════════════════════════════════════════════ -->
-    <section class="section-pad" id="services" style="background: var(--bg)">
+    <section class="section-pad" id="services">
       <div class="container">
         <div class="services-header reveal">
           <div>
@@ -431,7 +433,6 @@
     ═══════════════════════════════════════════════ -->
     <section
       class="section-pad border-top-gold border-bottom-gold"
-      style="background: var(--bg2)"
     >
       <div class="container">
         <div class="reveal">
@@ -484,7 +485,7 @@
     <!-- ═══════════════════════════════════════════════
      6. WHO WE SERVE
      ═══════════════════════════════════════════════ -->
-    <section class="section-pad" id="clients" style="background: var(--bg)">
+    <section class="section-pad" id="clients">
       <div class="container">
         <div class="reveal">
           <div class="section-label"><span>Who We Serve</span></div>
@@ -625,7 +626,7 @@
     <!-- ═══════════════════════════════════════════════
      7. VISION & MISSION
      ═══════════════════════════════════════════════ -->
-    <section class="section-pad border-top-gold" style="background: var(--bg2)">
+    <section class="section-pad border-top-gold">
       <div class="container">
         <div class="vm-main-layout">
           <!-- Left side: Stacked cards -->
@@ -683,7 +684,7 @@
     <!-- ═══════════════════════════════════════════════
      8. TEAM (UPDATED)
      ═══════════════════════════════════════════════ -->
-    <section class="section-pad" id="team" style="background: var(--bg)">
+    <section class="section-pad" id="team">
       <div class="container">
         <div class="team-header reveal">
           <div>
@@ -706,7 +707,7 @@
      9. INSIGHTS / BLOG
      ═══════════════════════════════════════════════ -->
     <div style="height: 1px; background: var(--line-solid)"></div>
-    <section class="section-pad" id="insights" style="background: var(--bg2)">
+    <section class="section-pad" id="insights">
       <div class="container">
         <div class="reveal">
           <div class="section-label"><span>Thought Leadership</span></div>
@@ -720,9 +721,10 @@
     </section>
 
     <!-- ═══════════════════════════════════════════════
-     10. DEAL PIPELINE
+     10. DEAL PIPELINE — commented out, not live yet
      ═══════════════════════════════════════════════ -->
-    <section class="section-pad border-top-gold" id="deals" style="background: var(--bg)">
+    <!--
+    <section class="section-pad border-top-gold" id="deals">
       <div class="container">
         <div class="reveal">
           <div class="section-label"><span>Deal Pipeline</span></div>
@@ -737,10 +739,12 @@
         </div>
       </div>
     </section>
+    -->
 
     <!-- ═══════════════════════════════════════════════
-     10. DEAL SUBMISSION
+     10. DEAL SUBMISSION — commented out, not live yet
      ═══════════════════════════════════════════════ -->
+    <!--
     <section class="section-pad border-top-gold" id="submit-deal" style="background: var(--bg2)">
       <div class="container">
         <div class="reveal">
@@ -860,6 +864,7 @@
         </form>
       </div>
     </section>
+    -->
 
     <!-- ═══════════════════════════════════════════════
      11. CONTACT
@@ -867,7 +872,6 @@
     <section
       class="section-pad border-top-gold"
       id="contact"
-      style="background: var(--bg)"
     >
       <div class="container">
         <div class="contact-grid">
@@ -924,6 +928,8 @@
         </div>
       </div>
     </section>
+
+    </main>
 
     <!-- Section Divider -->
     <div style="height: 1px; background: var(--line-solid)"></div>

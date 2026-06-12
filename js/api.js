@@ -126,7 +126,7 @@
         escHtml(imgUrl) +
         '" alt="' +
         escHtml(member.name) +
-        '" class="team-avatar-img" /></div>'
+        '" class="team-avatar-img" loading="lazy" /></div>'
       : '<div class="team-avatar"><div class="avatar-ring-2" aria-hidden="true"></div><div class="avatar-ring" aria-hidden="true"></div><span class="avatar-initials">' +
         escHtml(member.name.charAt(0)) +
         "</span></div>";
@@ -243,9 +243,8 @@
       });
   }
 
-  // ─── Deals ────────────────────────────────────────────────────────────────
-  // Preview container (index.html): <div id="cms-deals-preview"></div>
-  // Full page container (deals.html): <div id="cms-deals-list"></div>
+  // ─── Deals & Investor Interest (commented out — not live yet) ────────────
+  /*
 
   function renderDeal(deal, opts) {
     var preview = opts && opts.previewMode;
@@ -615,6 +614,8 @@
       });
   }
 
+  */ // end deals & investor interest
+
   // ─── Init ─────────────────────────────────────────────────────────────────
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -624,62 +625,5 @@
 
     loadTeamMembers();
     loadBlogLinks();
-
-    // index.html: 3-card preview
-    if (document.getElementById("cms-deals-preview")) {
-      loadDealsPreview();
-    }
-
-    // deals.html: paginated full list
-    if (document.getElementById("cms-deals-list")) {
-      loadIndustryFilter();
-      loadDealsPage(true);
-
-      var loadMoreBtn = document.getElementById("deals-load-more");
-      if (loadMoreBtn) {
-        loadMoreBtn.addEventListener("click", function () {
-          _dealsPage++;
-          loadDealsPage(false);
-        });
-      }
-
-      var filterSelect = document.getElementById("deals-industry-filter");
-      if (filterSelect) {
-        filterSelect.addEventListener("change", function () {
-          loadDealsPage(true);
-        });
-      }
-    }
-
-    var dealForm = document.getElementById("cms-deal-form");
-    var investorForm = document.getElementById("cms-investor-form");
-    if (dealForm) dealForm.addEventListener("submit", handleDealSubmit);
-    if (investorForm)
-      investorForm.addEventListener("submit", handleInvestorSubmit);
-
-    // Modal: close button, backdrop click, Escape key
-    var investorModal = document.getElementById("investor-modal");
-    if (investorModal) {
-      investorModal
-        .querySelector(".investor-modal-close")
-        .addEventListener("click", closeInvestorModal);
-      investorModal
-        .querySelector(".investor-modal-backdrop")
-        .addEventListener("click", closeInvestorModal);
-      document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape" && !investorModal.hidden) closeInvestorModal();
-      });
-    }
-
-    // Number formatting for deal form currency fields
-    ["revenue", "fundingNeeded"].forEach(function (name) {
-      var input = document.querySelector(
-        '#cms-deal-form [name="' + name + '"]',
-      );
-      if (input)
-        input.addEventListener("input", function () {
-          formatNumberInput(this);
-        });
-    });
   });
 })();
