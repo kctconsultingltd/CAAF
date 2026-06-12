@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var API_BASE = "https://caaf20-production.up.railway.app/api";
+  var API_BASE = "https://staging.capitalasaforce.com/api";
 
   // ─── EmailJS config ───────────────────────────────────────────────────────
   // "To Email" is hardcoded in the EmailJS template dashboard — no variable needed here
