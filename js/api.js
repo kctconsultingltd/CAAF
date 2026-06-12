@@ -190,8 +190,8 @@
           });
         }
       })
-      .catch(function (err) {
-        setError(el, "Could not load team members: " + err.message);
+      .catch(function () {
+        el.innerHTML = "";
       });
   }
 
@@ -238,8 +238,8 @@
         }
         el.innerHTML = items.map(renderBlogLink).join("");
       })
-      .catch(function (err) {
-        setError(el, "Could not load blog posts: " + err.message);
+      .catch(function () {
+        el.innerHTML = "";
       });
   }
 
@@ -313,7 +313,7 @@
         if (_previewTimer) clearInterval(_previewTimer);
         _previewTimer = setInterval(pickPreviewDeals, 30000);
       })
-      .catch(function (err) { setError(el, "Could not load deals: " + err.message); });
+      .catch(function () { el.innerHTML = ""; });
   }
 
   // ─── Deals.html: paginated list with industry filter ──────────────────────
@@ -382,8 +382,8 @@
         }
         if (loadMoreBtn) loadMoreBtn.hidden = _dealsPage >= _dealsTotalPages;
       })
-      .catch(function (err) {
-        setError(el, "Could not load deals: " + err.message);
+      .catch(function () {
+        if (reset) el.innerHTML = '<p style="color:var(--muted)">No deals available at this time.</p>';
       });
   }
 
