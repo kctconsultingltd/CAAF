@@ -2713,8 +2713,8 @@ to {
    inside <main>, so adding a new section
    automatically gets the correct alternating color.
    ═══════════════════════════════════════════════ */
-main > section:nth-child(odd)  { background: var(--bg2); }
-main > section:nth-child(even) { background: var(--bg);  }
+main > section:nth-of-type(odd)  { background: var(--bg2); }
+main > section:nth-of-type(even) { background: var(--bg);  }
 
 /* ═══════════════════════════════════════════════
    MOBILE HERO — hide video, show poster as bg
