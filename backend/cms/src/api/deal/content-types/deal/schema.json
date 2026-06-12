@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "deals",
+  "info": {
+    "singularName": "deal",
+    "pluralName": "deals",
+    "displayName": "Deal",
+    "description": ""
+  },
+  "options": { "draftAndPublish": false },
+  "pluginOptions": {},
+  "attributes": {
+    "businessName": { "type": "string", "required": true },
+    "industry": { "type": "string", "required": true },
+    "description": { "type": "text" },
+    "fundingRequired": { "type": "biginteger" },
+    "reviewStatus": {
+      "type": "enumeration",
+      "enum": ["pending", "approved", "rejected"],
+      "default": "pending",
+      "required": true
+    },
+    "contactEmail": { "type": "email" },
+    "investorInterests": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::investor-interest.investor-interest",
+      "mappedBy": "linkedDeal"
+    }
+  }
+}
