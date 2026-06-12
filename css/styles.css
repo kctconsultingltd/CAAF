@@ -2100,19 +2100,25 @@ to {
   );
 }
 
+/* hide the infinite-loop clone on desktop (all 3 real slides are visible, no scrolling) */
+.carousel-slide[aria-hidden="true"] { display: none; }
+
 /* Mobile: sliding carousel (1 slide at a time) */
 @media (max-width: 900px) {
+  .carousel-slide[aria-hidden="true"] { display: block; } /* show clone as part of the scroll track */
+
   .solutions-banner {
     padding: 40px 0 60px;
   }
 
   .carousel-slides {
     display: flex;
-    width: 300%;
+    /* width and per-slide width are set dynamically by JS based on clone count */
     transition: transform 0.6s ease-in-out;
   }
 
   .carousel-slide {
+    /* width overridden by JS inline style — kept here as fallback */
     width: calc(100% / 3);
     aspect-ratio: auto;
     height: 500px;
