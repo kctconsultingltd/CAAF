@@ -30,11 +30,11 @@
   "rewrites": [
     {
       "source": "/admin/:path*",
-      "destination": "https://wxgf2lx5.up.railway.app/admin/:path*"
+      "destination": "https://caaf-staging.up.railway.app/admin/:path*"
     },
     {
       "source": "/api/:path*",
-      "destination": "https://wxgf2lx5.up.railway.app/api/:path*"
+      "destination": "https://caaf-staging.up.railway.app/api/:path*"
     }
   ]
 }
