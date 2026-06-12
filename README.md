@@ -2,7 +2,7 @@
 
 Website for **Capital As A Force** — a field-based investment advisory organization deploying capital for transformational impact in Africa and emerging markets.
 
-Live site: [caaf-iota.vercel.app](https://caaf-iota.vercel.app/)
+**Live site:** [caaf-iota.vercel.app](https://caaf-iota.vercel.app/)
 
 ## Stack
 
