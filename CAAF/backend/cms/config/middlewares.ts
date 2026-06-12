@@ -23,6 +23,7 @@ const config: Core.Config.Middlewares = [
       headers: ["Content-Type", "Authorization", "Accept", "Origin"],
       origin: [
         "https://caaf-2.vercel.app",
+        "https://staging.capitalasaforce.com",
         "http://localhost:3000",
         "http://localhost:1337",
       ],
