@@ -2692,24 +2692,32 @@ to {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 4px;
+  overflow: hidden;
   padding: 28px 24px;
   transition: border-color 0.2s;
 }
 .cms-blog-card:hover {
   border-color: var(--gold);
 }
+.cms-blog-img {
+  display: block;
+  width: calc(100% + 48px);
+  height: 180px;
+  object-fit: cover;
+  margin: -28px -24px 24px -24px;
+}
 .cms-blog-title {
   font-family: var(--serif);
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--white);
+  color: var(--gold);
   display: block;
   margin-bottom: 10px;
   line-height: 1.35;
   transition: color 0.2s;
 }
 .cms-blog-card:hover .cms-blog-title {
-  color: var(--gold);
+  color: var(--white);
 }
 .cms-blog-desc {
   color: var(--muted);
