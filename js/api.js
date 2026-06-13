@@ -219,7 +219,29 @@
       .then(function (json) {
         var items = json.data || [];
         if (!items.length) {
-          el.innerHTML = "<p>No blog posts found.</p>";
+          el.innerHTML = "";
+          return;
+        }
+        el.innerHTML = items.slice(0, 3).map(renderBlogLink).join("");
+        if (items.length > 3) {
+          var wrap = document.getElementById("cms-blog-more-wrap");
+          if (wrap) wrap.hidden = false;
+        }
+      })
+      .catch(function () {
+        el.innerHTML = "";
+      });
+  }
+
+  function loadBlogPage() {
+    var el = document.getElementById("cms-blog-page-list");
+    if (!el) return;
+    setLoading(el);
+    apiFetch("/blog-links?populate=coverImage&sort=order:asc")
+      .then(function (json) {
+        var items = json.data || [];
+        if (!items.length) {
+          el.innerHTML = "<p style=\"color:var(--muted)\">No posts yet.</p>";
           return;
         }
         el.innerHTML = items.map(renderBlogLink).join("");
@@ -607,5 +629,6 @@
   document.addEventListener("DOMContentLoaded", function () {
     loadTeamMembers();
     loadBlogLinks();
+    loadBlogPage();
   });
 })();

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Insights &amp; Research — Capital As A Force</title>
+    <meta
+      name="description"
+      content="Perspectives on capital, impact, and emerging markets from the CAAF team."
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://capitalasaforce.com/blog" />
+    <meta property="og:title" content="Insights &amp; Research | Capital As A Force" />
+    <meta property="og:description" content="Perspectives on capital, impact, and emerging markets from the CAAF team." />
+    <meta property="og:image" content="https://capitalasaforce.com/img/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Insights &amp; Research | Capital As A Force" />
+    <meta name="twitter:description" content="Perspectives on capital, impact, and emerging markets from the CAAF team." />
+    <meta name="twitter:image" content="https://capitalasaforce.com/img/og-image.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="icon" href="img/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png" />
+    <script src="js/main.js" defer></script>
+
+    <!-- Vercel Web Analytics -->
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+  </head>
+  <body>
+    <!-- ═══════════════════════════════════════════════
+     NAVIGATION
+     ═══════════════════════════════════════════════ -->
+    <nav class="nav" id="mainNav">
+      <div class="nav-inner">
+        <a href="/" class="nav-logo" aria-label="Capital As A Force - Home">
+          <img
+            src="img/CAAF-removebg-preview.webp"
+            alt="Capital As A Force"
+            class="nav-logo-img"
+          />
+        </a>
+        <div class="nav-center">
+          <a href="/#about">About</a>
+          <a href="/#services">Services</a>
+          <a href="/#clients">Clients</a>
+          <a href="/#team">Team</a>
+          <a href="/blog" class="nav-active">Blog</a>
+          <!-- <a href="/deals">Deals</a> -->
+        </div>
+        <div class="nav-right">
+          <a href="/#contact" class="nav-cta">Get in Touch</a>
+        </div>
+        <button
+          class="nav-hamburger"
+          id="navHamburger"
+          aria-label="Toggle menu"
+          aria-expanded="false"
+        >
+          <svg class="hamburger-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+          <svg class="close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu" id="mobileMenu">
+      <div class="mobile-menu-header"></div>
+      <div class="mobile-menu-links">
+        <a href="/#about">About</a>
+        <a href="/#services">Services</a>
+        <a href="/#clients">Clients</a>
+        <a href="/#team">Team</a>
+        <a href="/blog">Blog</a>
+        <!-- <a href="/deals">Deals</a> -->
+        <a href="/#contact">Contact</a>
+      </div>
+      <div class="mobile-menu-footer">
+        <div class="mobile-menu-contact">
+          <p><a href="mailto:info@capitalasaforce.com" style="color:inherit;text-decoration:underline;">info@capitalasaforce.com</a></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+     BLOG LISTING
+     ═══════════════════════════════════════════════ -->
+    <section class="section-pad border-top-gold" id="blog" style="padding-top: 120px;">
+      <div class="container">
+        <div class="reveal">
+          <div class="section-label"><span>Thought Leadership</span></div>
+          <h1 style="font-family: var(--serif); font-size: clamp(2rem, 5vw, 3rem); font-weight: 600; line-height: 1.1;">Insights &amp; Research</h1>
+          <p style="color: var(--muted); margin-top: 12px; max-width: 560px;">
+            Perspectives on capital, impact, and emerging markets from the CAAF team.
+          </p>
+        </div>
+        <div id="cms-blog-page-list" class="cms-blog-grid" style="margin-top: 48px;"></div>
+      </div>
+    </section>
+
+    <!-- Section Divider -->
+    <div style="height: 1px; background: var(--line-solid)"></div>
+
+    <!-- ═══════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════ -->
+    <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a href="/" class="nav-logo" aria-label="Capital As A Force - Home">
+              <img
+                src="img/CAAF-removebg-preview.webp"
+                alt="Capital As A Force"
+                class="nav-logo-img footer-logo-img"
+                loading="lazy"
+              />
+            </a>
+            <p>
+              A field-based investment advisory organization deploying capital
+              for transformational impact in Africa and emerging markets.
+            </p>
+            <p class="reg">CAPITAL AS A FORCE, LLC. All rights reserved.</p>
+          </div>
+          <div>
+            <div class="footer-col-title">Navigation</div>
+            <ul class="footer-links">
+              <li><a href="/#about">About</a></li>
+              <li><a href="/#services">Services</a></li>
+              <li><a href="/#clients">Clients</a></li>
+              <li><a href="/#team">Team</a></li>
+              <li><a href="/blog">Blog</a></li>
+              <li><a href="/#contact">Contact</a></li>
+            </ul>
+          </div>
+          <div>
+            <div class="footer-col-title">Services</div>
+            <ul class="footer-links">
+              <li><a href="/#services">Catalytic Instruments</a></li>
+              <li><a href="/#services">Investment Lenses</a></li>
+              <li><a href="/#services">Innovative Finance</a></li>
+              <li><a href="/#services">Pipeline Development</a></li>
+              <li><a href="/#services">Thought Leadership</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>&copy; 2026 Capital As A Force. All rights reserved.</span>
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/api.js" defer></script>
+  </body>
+</html>
