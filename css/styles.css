@@ -1556,8 +1556,11 @@ footer {
 }
 @media (max-width: 899px) {
   .footer-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 32px;
+  }
+  .footer-brand {
+    grid-column: 1 / -1;
   }
 }
 .footer-brand p {
