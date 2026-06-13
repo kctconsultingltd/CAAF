@@ -1,12 +1,22 @@
 (function () {
   /* ── Nav Scroll ────────────────────────────────── */
   const nav = document.getElementById("mainNav");
+  var backToTopBtn = document.getElementById("backToTop");
   function checkScroll() {
     if (window.scrollY > 40) nav.classList.add("scrolled");
     else nav.classList.remove("scrolled");
+    if (backToTopBtn) {
+      if (window.scrollY > 400) backToTopBtn.classList.add("visible");
+      else backToTopBtn.classList.remove("visible");
+    }
   }
   window.addEventListener("scroll", checkScroll, { passive: true });
   checkScroll();
+  if (backToTopBtn) {
+    backToTopBtn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
 
   /* ── Mobile Menu Toggle ───────────────────────── */
   var hamburger = document.getElementById("navHamburger");

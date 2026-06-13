@@ -1614,6 +1614,44 @@ footer {
   font-size: 0.82rem;
 }
 
+/* ── Back to Top ─────────────────────────────────── */
+.back-to-top {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s, background 0.3s;
+  z-index: 900;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+.back-to-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.back-to-top:hover {
+  background: var(--gold-light);
+  transform: translateY(-3px);
+}
+@media (max-width: 899px) {
+  .back-to-top {
+    bottom: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+  }
+}
+
 /* ── Scrollbar ───────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;
