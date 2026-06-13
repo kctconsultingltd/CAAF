@@ -1539,7 +1539,7 @@ p {
     10. FOOTER
     ═══════════════════════════════════════════════════ */
 footer {
-  background: var(--bg2);
+  background: var(--bg);
   padding: 64px 0 0;
 }
 .footer-grid {
@@ -2011,6 +2011,7 @@ to {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  overflow: hidden;
 }
 
 .carousel-slides {
@@ -2084,9 +2085,8 @@ to {
   color: var(--gold);
 }
 
-/* Inactive (side) slides - smaller, dimmed */
+/* Inactive slides - dimmed (no scale: would peek through overflow hidden) */
 .carousel-slide:not(.is-active) {
-  transform: scale(0.95);
   filter: brightness(0.75);
   opacity: 0.8;
 }
