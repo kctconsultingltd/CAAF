@@ -2699,6 +2699,11 @@ to {
 .cms-blog-card:hover {
   border-color: var(--gold);
 }
+.cms-blog-img {
+  display: block;
+  width: 100%;
+  margin-bottom: 20px;
+}
 .cms-blog-title {
   font-family: var(--serif);
   font-size: 1.1rem;
