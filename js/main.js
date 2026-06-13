@@ -107,7 +107,7 @@
     });
   });
 
-  /* ── What We Do Carousel (infinite scroll, desktop + mobile) ── */
+  /* ── What We Do Carousel (infinite scroll) ───────── */
   (function () {
     var track = document.querySelector(".carousel-slides");
     if (!track) return;
@@ -130,14 +130,19 @@
     var slideInterval = null;
     var TRANSITION_MS = 650; // slightly over the CSS 0.6s
 
-    // Always set widths on both desktop and mobile; zero the gap so
-    // translateX percentages align exactly with each slide boundary.
-    function setTrackWidths() {
-      track.style.gap   = "0";
-      track.style.width = (totalCount * 100) + "%";
-      allSlides.forEach(function (s) {
-        s.style.width = (100 / totalCount) + "%";
-      });
+    function isMobile() { return window.innerWidth <= 900; }
+
+    // Set track/slide widths so each slide fills the viewport on mobile
+    function setMobileWidths() {
+      if (isMobile()) {
+        track.style.width = (totalCount * 100) + "%";
+        allSlides.forEach(function (s) {
+          s.style.width = (100 / totalCount) + "%";
+        });
+      } else {
+        track.style.width = "";
+        allSlides.forEach(function (s) { s.style.width = ""; });
+      }
     }
 
     function updateActive() {
@@ -154,7 +159,9 @@
       } else {
         track.style.transition = "";
       }
-      track.style.transform = "translateX(-" + (idx / totalCount * 100) + "%)";
+      track.style.transform = isMobile()
+        ? "translateX(-" + (idx / totalCount * 100) + "%)"
+        : "";
       if (!animate) {
         void track.offsetWidth; // flush the transform before re-enabling
         track.style.transition = "";
@@ -169,7 +176,7 @@
       updateActive();
       setPosition(currentIndex, true);
 
-      if (currentIndex === realCount) {
+      if (isMobile() && currentIndex === realCount) {
         // We're on the clone — after the animation, silently snap to real slide 0
         setTimeout(function () {
           currentIndex = 0;
@@ -187,11 +194,11 @@
     }
 
     window.addEventListener("resize", function () {
-      setTrackWidths();
+      setMobileWidths();
       setPosition(currentIndex, false);
     });
 
-    setTrackWidths();
+    setMobileWidths();
     updateActive();
     setPosition(0, false);
     startInterval();

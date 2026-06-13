@@ -2011,7 +2011,6 @@ to {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  overflow: hidden;
 }
 
 .carousel-slides {
@@ -2085,8 +2084,9 @@ to {
   color: var(--gold);
 }
 
-/* Inactive slides - dimmed (no scale: would peek through overflow hidden) */
+/* Inactive (side) slides - smaller, dimmed */
 .carousel-slide:not(.is-active) {
+  transform: scale(0.95);
   filter: brightness(0.75);
   opacity: 0.8;
 }
