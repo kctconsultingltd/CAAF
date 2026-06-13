@@ -3,12 +3,6 @@
 
   var API_BASE = "https://admin-staging.capitalasaforce.com/api";
 
-  // ─── EmailJS config ───────────────────────────────────────────────────────
-  // "To Email" is hardcoded in the EmailJS template dashboard — no variable needed here
-  var EJS_SERVICE_ID = "service_loo2y5r";
-  var EJS_TEMPLATE_ID = "template_5n5bpht";
-  var EJS_PUBLIC_KEY = "7X7DzX8YFDbXSdnyo";
-
   // ─── Core fetch wrapper ───────────────────────────────────────────────────
 
   function apiFetch(path, options) {
@@ -106,14 +100,6 @@
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
-  }
-
-  function sendEmail(subject, message) {
-    if (typeof window.emailjs === "undefined" || EJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") return;
-    window.emailjs
-      .send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, { subject: subject, message: message })
-      .then(function () { console.log("[emailjs] sent: " + subject); })
-      .catch(function (err) { console.error("[emailjs] failed:", err); });
   }
 
   // ─── Team Members ─────────────────────────────────────────────────────────
@@ -619,10 +605,6 @@
   // ─── Init ─────────────────────────────────────────────────────────────────
 
   document.addEventListener("DOMContentLoaded", function () {
-    if (typeof window.emailjs !== "undefined" && EJS_PUBLIC_KEY !== "YOUR_PUBLIC_KEY") {
-      window.emailjs.init({ publicKey: EJS_PUBLIC_KEY });
-    }
-
     loadTeamMembers();
     loadBlogLinks();
   });

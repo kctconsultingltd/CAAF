@@ -26,7 +26,6 @@
       e.stopImmediatePropagation();
       if (_toggleLock) return;
       _toggleLock = true;
-      console.log("Hamburger clicked", e.type, "target:", e.target);
       toggleMobileMenu();
       setTimeout(function () {
         _toggleLock = false;
@@ -57,7 +56,6 @@
     if (closeBtn) {
       closeBtn.addEventListener("click", function (e) {
         e.stopPropagation();
-        console.log("Close button clicked");
         if (mobileMenu.classList.contains("open")) {
           toggleMobileMenu();
         }
