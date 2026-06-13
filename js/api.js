@@ -201,12 +201,14 @@
       escHtml(link.documentId) +
       '">' +
       imgHtml +
+      '<div class="cms-blog-body">' +
       '<span class="cms-blog-title">' +
       escHtml(link.title) +
       "</span>" +
       (link.description
         ? '<p class="cms-blog-desc">' + escHtml(link.description) + "</p>"
         : "") +
+      "</div>" +
       "</a>"
     );
   }
