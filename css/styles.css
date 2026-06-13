@@ -28,7 +28,7 @@
 }
 /* ── Scroll offset for fixed nav ────────────────── */
 section[id] {
-  scroll-margin-top: calc(var(--nav-h) + 24px);
+  scroll-margin-top: calc(var(--nav-h) + 32px);
 }
 
 /* ── Reset ───────────────────────────────────────── */
@@ -223,7 +223,7 @@ p {
     ═══════════════════════════════════════════════════ */
 .nav {
   position: fixed;
-  top: 0;
+  top: 8px;
   left: 0;
   width: 100%;
   height: var(--nav-h);
@@ -528,7 +528,7 @@ p {
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding-top: var(--nav-h);
+  padding-top: calc(var(--nav-h) + 8px);
   overflow: hidden;
   background: var(--bg); /* ← keep this as fallback color */
   /* The two radial-gradients can stay — they'll blend over the video */
@@ -1709,7 +1709,7 @@ to {
    ═══════════════════════════════════════════════════ */
 .nav {
   position: fixed;
-  top: 0;
+  top: 8px;
   left: 0;
   width: 100%;
   height: var(--nav-h);
@@ -1894,7 +1894,7 @@ to {
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding-top: var(--nav-h);
+  padding-top: calc(var(--nav-h) + 8px);
   overflow: hidden;
   background:
     radial-gradient(
