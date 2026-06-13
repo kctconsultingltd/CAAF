@@ -100,7 +100,7 @@
       var t = document.querySelector(this.getAttribute("href"));
       if (t) {
         e.preventDefault();
-        t.scrollIntoView({ behavior: "smooth", block: "center" });
+        t.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     });
   });

@@ -26,6 +26,11 @@
   --condensed: "Barlow Condensed", Arial Narrow, sans-serif;
   --nav-h: 72px;
 }
+/* ── Scroll offset for fixed nav ────────────────── */
+section[id] {
+  scroll-margin-top: calc(var(--nav-h) + 24px);
+}
+
 /* ── Reset ───────────────────────────────────────── */
 *,
 *::before,
