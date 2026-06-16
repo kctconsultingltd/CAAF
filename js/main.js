@@ -1,12 +1,22 @@
 (function () {
   /* ── Nav Scroll ────────────────────────────────── */
   const nav = document.getElementById("mainNav");
+  var backToTopBtn = document.getElementById("backToTop");
   function checkScroll() {
     if (window.scrollY > 40) nav.classList.add("scrolled");
     else nav.classList.remove("scrolled");
+    if (backToTopBtn) {
+      if (window.scrollY > 400) backToTopBtn.classList.add("visible");
+      else backToTopBtn.classList.remove("visible");
+    }
   }
   window.addEventListener("scroll", checkScroll, { passive: true });
   checkScroll();
+  if (backToTopBtn) {
+    backToTopBtn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
 
   /* ── Mobile Menu Toggle ───────────────────────── */
   var hamburger = document.getElementById("navHamburger");
@@ -26,7 +36,6 @@
       e.stopImmediatePropagation();
       if (_toggleLock) return;
       _toggleLock = true;
-      console.log("Hamburger clicked", e.type, "target:", e.target);
       toggleMobileMenu();
       setTimeout(function () {
         _toggleLock = false;
@@ -57,7 +66,6 @@
     if (closeBtn) {
       closeBtn.addEventListener("click", function (e) {
         e.stopPropagation();
-        console.log("Close button clicked");
         if (mobileMenu.classList.contains("open")) {
           toggleMobileMenu();
         }
@@ -107,52 +115,101 @@
     });
   });
 
-  /* ── What We Do Carousel ──────────────────────────── */
-  (function() {
-    var wrapper = document.querySelector(".carousel-wrapper");
-    var slides = document.querySelectorAll(".carousel-slide");
+  /* ── What We Do Carousel (infinite scroll) ───────── */
+  (function () {
     var track = document.querySelector(".carousel-slides");
-    
-    if (!slides.length) return;
+    if (!track) return;
+
+    var realSlides = Array.from(track.querySelectorAll(".carousel-slide"));
+    var realCount = realSlides.length;
+    if (!realCount) return;
+
+    // Append a clone of slide 0 so the loop can scroll past it seamlessly
+    var firstClone = realSlides[0].cloneNode(true);
+    firstClone.setAttribute("aria-hidden", "true");
+    firstClone.classList.remove("is-active");
+    track.appendChild(firstClone);
+
+    var allSlides = Array.from(track.querySelectorAll(".carousel-slide"));
+    var totalCount = allSlides.length; // realCount + 1
 
     var currentIndex = 0;
-    var totalSlides = slides.length;
+    var busy = false;
     var slideInterval = null;
-    var isMobile = window.innerWidth <= 900;
+    var TRANSITION_MS = 650; // slightly over the CSS 0.6s
 
-    function updateCarousel() {
-      slides.forEach(function(slide) {
-        slide.classList.remove("is-active");
-      });
-      slides[currentIndex].classList.add("is-active");
-      
-      // On mobile: slide the track
-      if (isMobile && track) {
-        track.style.transform = "translateX(-" + (currentIndex * (100 / 3)) + "%)";
-      } else if (!isMobile && track) {
-        track.style.transform = "translateX(0)";
+    function isMobile() { return window.innerWidth <= 900; }
+
+    // Set track/slide widths so each slide fills the viewport on mobile
+    function setMobileWidths() {
+      if (isMobile()) {
+        track.style.width = (totalCount * 100) + "%";
+        allSlides.forEach(function (s) {
+          s.style.width = (100 / totalCount) + "%";
+        });
+      } else {
+        track.style.width = "";
+        allSlides.forEach(function (s) { s.style.width = ""; });
       }
     }
 
-    function nextSlide() {
-      currentIndex = (currentIndex + 1) % totalSlides;
-      updateCarousel();
+    function updateActive() {
+      var idx = currentIndex % realCount;
+      realSlides.forEach(function (s) { s.classList.remove("is-active"); });
+      realSlides[idx].classList.add("is-active");
+      firstClone.classList.toggle("is-active", idx === 0);
+    }
+
+    function setPosition(idx, animate) {
+      if (!animate) {
+        track.style.transition = "none";
+        void track.offsetWidth; // flush so "none" takes effect immediately
+      } else {
+        track.style.transition = "";
+      }
+      track.style.transform = isMobile()
+        ? "translateX(-" + (idx / totalCount * 100) + "%)"
+        : "";
+      if (!animate) {
+        void track.offsetWidth; // flush the transform before re-enabling
+        track.style.transition = "";
+      }
+    }
+
+    function advance() {
+      if (busy) return;
+      busy = true;
+
+      currentIndex++;
+      updateActive();
+      setPosition(currentIndex, true);
+
+      if (isMobile() && currentIndex === realCount) {
+        // We're on the clone — after the animation, silently snap to real slide 0
+        setTimeout(function () {
+          currentIndex = 0;
+          setPosition(0, false);
+          busy = false;
+        }, TRANSITION_MS);
+      } else {
+        setTimeout(function () { busy = false; }, TRANSITION_MS);
+      }
     }
 
     function startInterval() {
       if (slideInterval) clearInterval(slideInterval);
-      slideInterval = setInterval(nextSlide, 3000);
+      slideInterval = setInterval(advance, 3000);
     }
 
-    // Check for resize
-    window.addEventListener("resize", function() {
-      isMobile = window.innerWidth <= 900;
-      updateCarousel();
+    window.addEventListener("resize", function () {
+      setMobileWidths();
+      setPosition(currentIndex, false);
     });
 
-    // Start auto-rotate
+    setMobileWidths();
+    updateActive();
+    setPosition(0, false);
     startInterval();
-    updateCarousel();
   })();
 
   /* ── Intersection Observer — Reveal ────────────── */
