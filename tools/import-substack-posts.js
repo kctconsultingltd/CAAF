@@ -31,7 +31,7 @@ async function uploadImage(imageUrl, filename) {
   return data[0].id;
 }
 
-async function createBlogLink({ title, url, description, coverImageId, order }) {
+async function createBlogLink({ title, url, description, coverImageId, postDate }) {
   const res = await fetch(STRAPI_URL + "/api/blog-links", {
     method: "POST",
     headers: {
@@ -39,7 +39,7 @@ async function createBlogLink({ title, url, description, coverImageId, order }) 
       Authorization: "Bearer " + STRAPI_TOKEN,
     },
     body: JSON.stringify({
-      data: { title, url, description, coverImage: coverImageId, order },
+      data: { title, url, description, coverImage: coverImageId, postDate },
     }),
   });
   if (!res.ok) throw new Error("Create failed: " + res.status + " " + (await res.text()));
@@ -62,7 +62,7 @@ async function main() {
         url: p.canonical_url,
         description: p.subtitle || "",
         coverImageId: imgId,
-        order: i,
+        postDate: p.post_date,
       });
       console.log("[" + (i + 1) + "/" + posts.length + "] Imported: " + p.title);
     } catch (err) {

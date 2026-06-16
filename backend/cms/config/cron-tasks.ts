@@ -2,9 +2,9 @@
 // that isn't already in the "Blog Link" content type, so new posts show up on
 // the website without anyone re-running the manual import script.
 //
-// Real posts always get a more-negative `order` than anything already in the
-// table (see tools/reorder-blog-links.js for why), so this never needs to
-// touch/renumber existing rows — it only ever computes currentMin - 1.
+// Each entry's `postDate` is the post's actual Substack publish date, and the
+// frontend sorts by postDate:desc — so a freshly imported post always sorts
+// first without any renumbering of existing rows.
 
 import fs from "fs";
 import os from "os";
@@ -40,13 +40,9 @@ export default {
 
       const existing = await strapi
         .documents("api::blog-link.blog-link")
-        .findMany({ fields: ["url", "order"], limit: -1 });
+        .findMany({ fields: ["url"], limit: -1 });
 
       const existingUrls = new Set(existing.map((e: any) => e.url));
-      let currentMin = existing.reduce(
-        (min: number, e: any) => Math.min(min, e.order ?? 0),
-        0
-      );
 
       const newPosts = posts
         .filter((p) => !existingUrls.has(p.canonical_url))
@@ -80,14 +76,13 @@ export default {
 
           await fs.promises.unlink(tmpPath);
 
-          currentMin -= 1;
           await strapi.documents("api::blog-link.blog-link").create({
             data: {
               title: p.title,
               url: p.canonical_url,
               description: p.subtitle || "",
               coverImage: uploaded.id,
-              order: currentMin,
+              postDate: p.post_date,
             },
           });
 

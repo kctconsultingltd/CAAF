@@ -211,17 +211,26 @@
     );
   }
 
+  function sortByPostDateDesc(items) {
+    items.sort(function (a, b) {
+      var da = a.postDate ? new Date(a.postDate).getTime() : -Infinity;
+      var db = b.postDate ? new Date(b.postDate).getTime() : -Infinity;
+      return db - da;
+    });
+  }
+
   function loadBlogLinks() {
     var el = document.getElementById("cms-blog-list");
     if (!el) return;
     setLoading(el);
-    apiFetch("/blog-links?populate=coverImage&sort=order:asc")
+    apiFetch("/blog-links?populate=coverImage&sort=postDate:desc")
       .then(function (json) {
         var items = json.data || [];
         if (!items.length) {
           el.innerHTML = "";
           return;
         }
+        sortByPostDateDesc(items);
         var rotateIndex = 0;
         function renderWindow() {
           var window = [];
@@ -253,13 +262,14 @@
     var el = document.getElementById("cms-blog-page-list");
     if (!el) return;
     setLoading(el);
-    apiFetch("/blog-links?populate=coverImage&sort=order:asc")
+    apiFetch("/blog-links?populate=coverImage&sort=postDate:desc")
       .then(function (json) {
         var items = json.data || [];
         if (!items.length) {
           el.innerHTML = "<p style=\"color:var(--muted)\">No posts yet.</p>";
           return;
         }
+        sortByPostDateDesc(items);
         el.innerHTML = items.map(renderBlogLink).join("");
       })
       .catch(function () {
