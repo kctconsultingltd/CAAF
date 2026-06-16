@@ -8,6 +8,10 @@
 //
 // After every run, a Telegram message is sent summarizing the result (set
 // TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID to enable; silently skipped otherwise).
+//
+// The schedule defaults to every 6 hours (UTC). Override per-environment with
+// SUBSTACK_CRON_RULE / SUBSTACK_CRON_TZ — e.g. staging runs once daily instead
+// of every 6 hours, to avoid duplicate notifications alongside production.
 
 import fs from "fs";
 import os from "os";
@@ -133,7 +137,8 @@ export default {
       await notifyTelegram(lines.join("\n"));
     },
     options: {
-      rule: "0 */6 * * *",
+      rule: process.env.SUBSTACK_CRON_RULE || "0 */6 * * *",
+      tz: process.env.SUBSTACK_CRON_TZ || "UTC",
     },
   },
 };
