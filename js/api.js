@@ -211,21 +211,46 @@
     );
   }
 
+  function sortByPostDateDesc(items) {
+    items.sort(function (a, b) {
+      var da = a.postDate ? new Date(a.postDate).getTime() : -Infinity;
+      var db = b.postDate ? new Date(b.postDate).getTime() : -Infinity;
+      return db - da;
+    });
+  }
+
   function loadBlogLinks() {
     var el = document.getElementById("cms-blog-list");
     if (!el) return;
     setLoading(el);
-    apiFetch("/blog-links?populate=coverImage&sort=order:asc")
+    apiFetch("/blog-links?populate=coverImage&sort=postDate:desc")
       .then(function (json) {
         var items = json.data || [];
         if (!items.length) {
           el.innerHTML = "";
           return;
         }
-        el.innerHTML = items.slice(0, 3).map(renderBlogLink).join("");
+        sortByPostDateDesc(items);
+        var rotateIndex = 0;
+        function renderWindow() {
+          var window = [];
+          for (var i = 0; i < 3 && i < items.length; i++) {
+            window.push(items[(rotateIndex + i) % items.length]);
+          }
+          el.innerHTML = window.map(renderBlogLink).join("");
+        }
+        renderWindow();
         if (items.length > 3) {
           var wrap = document.getElementById("cms-blog-more-wrap");
           if (wrap) wrap.hidden = false;
+          setInterval(function () {
+            el.style.opacity = "0";
+            setTimeout(function () {
+              rotateIndex = (rotateIndex + 1) % items.length;
+              renderWindow();
+              el.style.opacity = "1";
+            }, 300);
+          }, 8000);
         }
       })
       .catch(function () {
@@ -237,13 +262,14 @@
     var el = document.getElementById("cms-blog-page-list");
     if (!el) return;
     setLoading(el);
-    apiFetch("/blog-links?populate=coverImage&sort=order:asc")
+    apiFetch("/blog-links?populate=coverImage&sort=postDate:desc")
       .then(function (json) {
         var items = json.data || [];
         if (!items.length) {
           el.innerHTML = "<p style=\"color:var(--muted)\">No posts yet.</p>";
           return;
         }
+        sortByPostDateDesc(items);
         el.innerHTML = items.map(renderBlogLink).join("");
       })
       .catch(function () {
