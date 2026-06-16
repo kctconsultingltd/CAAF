@@ -2743,7 +2743,12 @@ to {
 .cms-blog-img {
   display: block;
   width: 100%;
+  height: 180px;
+  object-fit: cover;
   margin-bottom: 20px;
+}
+#cms-blog-list {
+  transition: opacity 0.3s;
 }
 .cms-blog-title {
   font-family: var(--serif);

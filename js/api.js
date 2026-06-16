@@ -222,10 +222,26 @@
           el.innerHTML = "";
           return;
         }
-        el.innerHTML = items.slice(0, 3).map(renderBlogLink).join("");
+        var rotateIndex = 0;
+        function renderWindow() {
+          var window = [];
+          for (var i = 0; i < 3 && i < items.length; i++) {
+            window.push(items[(rotateIndex + i) % items.length]);
+          }
+          el.innerHTML = window.map(renderBlogLink).join("");
+        }
+        renderWindow();
         if (items.length > 3) {
           var wrap = document.getElementById("cms-blog-more-wrap");
           if (wrap) wrap.hidden = false;
+          setInterval(function () {
+            el.style.opacity = "0";
+            setTimeout(function () {
+              rotateIndex = (rotateIndex + 1) % items.length;
+              renderWindow();
+              el.style.opacity = "1";
+            }, 300);
+          }, 8000);
         }
       })
       .catch(function () {
