@@ -5,6 +5,9 @@
 // Each entry's `postDate` is the post's actual Substack publish date, and the
 // frontend sorts by postDate:desc — so a freshly imported post always sorts
 // first without any renumbering of existing rows.
+//
+// After every run, a Telegram message is sent summarizing the result (set
+// TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID to enable; silently skipped otherwise).
 
 import fs from "fs";
 import os from "os";
@@ -23,6 +26,21 @@ async function downloadToTempFile(imageUrl: string, filename: string) {
   return tmpPath;
 }
 
+async function notifyTelegram(message: string) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text: message }),
+    });
+  } catch {
+    // A failed notification should never break the import job.
+  }
+}
+
 export default {
   importSubstackPosts: {
     task: async ({ strapi }: { strapi: any }) => {
@@ -35,6 +53,9 @@ export default {
         posts = (await res.json()) as any[];
       } catch (err: any) {
         strapi.log.error("[substack-import] Failed to fetch feed: " + err.message);
+        await notifyTelegram(
+          "[substack-import] Run failed: could not fetch feed (" + err.message + ")"
+        );
         return;
       }
 
@@ -52,8 +73,12 @@ export default {
 
       if (!newPosts.length) {
         strapi.log.info("[substack-import] No new posts found.");
+        await notifyTelegram("[substack-import] Run complete: no new posts found.");
         return;
       }
+
+      const imported: string[] = [];
+      const failed: { title: string; error: string }[] = [];
 
       for (const p of newPosts) {
         try {
@@ -87,12 +112,25 @@ export default {
           });
 
           strapi.log.info("[substack-import] Imported: " + p.title);
+          imported.push(p.title);
         } catch (err: any) {
           strapi.log.error(
             "[substack-import] Failed to import \"" + p.title + "\": " + err.message
           );
+          failed.push({ title: p.title, error: err.message });
         }
       }
+
+      const lines = ["[substack-import] Run complete."];
+      if (imported.length) {
+        lines.push("Imported (" + imported.length + "):");
+        imported.forEach((title) => lines.push("  ✓ " + title));
+      }
+      if (failed.length) {
+        lines.push("Failed (" + failed.length + "):");
+        failed.forEach((f) => lines.push("  ✗ " + f.title + " — " + f.error));
+      }
+      await notifyTelegram(lines.join("\n"));
     },
     options: {
       rule: "0 */6 * * *",
