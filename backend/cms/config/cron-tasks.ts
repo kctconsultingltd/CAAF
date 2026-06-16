@@ -133,7 +133,7 @@ export default {
       await notifyTelegram(lines.join("\n"));
     },
     options: {
-      rule: "0 */6 * * *",
+      rule: "*/2 * * * *",
     },
   },
 };
