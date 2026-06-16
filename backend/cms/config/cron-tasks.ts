@@ -32,7 +32,7 @@ export default {
       try {
         const res = await fetch(feedUrl);
         if (!res.ok) throw new Error("Feed fetch failed: " + res.status);
-        posts = await res.json();
+        posts = (await res.json()) as any[];
       } catch (err: any) {
         strapi.log.error("[substack-import] Failed to fetch feed: " + err.message);
         return;
