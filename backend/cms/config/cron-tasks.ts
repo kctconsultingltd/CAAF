@@ -86,6 +86,7 @@ export default {
       }
 
       const imported: string[] = [];
+      const importedNoImage: string[] = [];
       const failed: { title: string; error: string }[] = [];
 
       for (const p of newPosts) {
@@ -125,6 +126,7 @@ export default {
                   "\": " +
                   imgErr.message
               );
+              importedNoImage.push(p.title + " (image error: " + imgErr.message + ")");
             }
           }
 
@@ -139,7 +141,9 @@ export default {
           });
 
           strapi.log.info("[substack-import] Imported: " + p.title);
-          imported.push(p.title);
+          if (coverImageId !== undefined) {
+            imported.push(p.title);
+          }
         } catch (err: any) {
           strapi.log.error(
             "[substack-import] Failed to import \"" + p.title + "\": " + err.message
@@ -152,6 +156,10 @@ export default {
       if (imported.length) {
         lines.push("Imported (" + imported.length + "):");
         imported.forEach((title) => lines.push("  ✓ " + title));
+      }
+      if (importedNoImage.length) {
+        lines.push("Imported without image (" + importedNoImage.length + "):");
+        importedNoImage.forEach((msg) => lines.push("  ⚠ " + msg));
       }
       if (failed.length) {
         lines.push("Failed (" + failed.length + "):");
