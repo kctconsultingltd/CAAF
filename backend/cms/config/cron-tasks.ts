@@ -21,13 +21,17 @@ import crypto from "crypto";
 const DEFAULT_FEED_URL =
   "https://tochukwuezeukwu.substack.com/api/v1/posts?sort=new&limit=50";
 
+// Downloads an image to a unique temp subdirectory. Returns both the file path
+// and the directory so Strapi's upload plugin can clean up via tmpWorkingDirectory.
 async function downloadToTempFile(imageUrl: string, filename: string) {
   const res = await fetch(imageUrl);
   if (!res.ok) throw new Error("Image download failed: " + res.status);
   const buf = Buffer.from(await res.arrayBuffer());
-  const tmpPath = path.join(os.tmpdir(), crypto.randomUUID() + "-" + filename);
+  const workDir = path.join(os.tmpdir(), crypto.randomUUID());
+  await fs.promises.mkdir(workDir);
+  const tmpPath = path.join(workDir, filename);
   await fs.promises.writeFile(tmpPath, buf);
-  return tmpPath;
+  return { tmpPath, workDir };
 }
 
 async function notifyTelegram(message: string) {
@@ -86,31 +90,50 @@ export default {
 
       for (const p of newPosts) {
         try {
-          const slug = p.canonical_url.split("/").pop();
-          const tmpPath = await downloadToTempFile(p.cover_image, slug + ".jpg");
-          const stat = await fs.promises.stat(tmpPath);
+          const slug = p.canonical_url.split("/").pop() || "cover";
 
-          const [uploaded] = await strapi
-            .plugin("upload")
-            .service("upload")
-            .upload({
-              data: {},
-              files: {
-                path: tmpPath,
-                name: slug + ".jpg",
-                type: "image/jpeg",
-                size: stat.size,
-              },
-            });
+          // Upload cover image. If this fails, import the post without an image
+          // rather than skipping the post entirely.
+          let coverImageId: number | undefined;
+          if (p.cover_image) {
+            try {
+              const { tmpPath, workDir } = await downloadToTempFile(
+                p.cover_image,
+                slug + ".jpg"
+              );
+              const stat = await fs.promises.stat(tmpPath);
 
-          await fs.promises.unlink(tmpPath);
+              const [uploaded] = await strapi
+                .plugin("upload")
+                .service("upload")
+                .upload({
+                  data: {},
+                  files: {
+                    path: tmpPath,
+                    name: slug + ".jpg",
+                    type: "image/jpeg",
+                    size: stat.size,
+                    tmpWorkingDirectory: workDir,
+                  },
+                });
+
+              coverImageId = uploaded.id;
+            } catch (imgErr: any) {
+              strapi.log.warn(
+                "[substack-import] Cover image skipped for \"" +
+                  p.title +
+                  "\": " +
+                  imgErr.message
+              );
+            }
+          }
 
           await strapi.documents("api::blog-link.blog-link").create({
             data: {
               title: p.title,
               url: p.canonical_url,
               description: p.subtitle || "",
-              coverImage: uploaded.id,
+              ...(coverImageId !== undefined ? { coverImage: coverImageId } : {}),
               postDate: p.post_date,
             },
           });
