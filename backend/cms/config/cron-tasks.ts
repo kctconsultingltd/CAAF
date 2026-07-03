@@ -82,6 +82,7 @@ export default {
           // passing a Readable keeps us entirely out of fs operations.
           // If image upload fails, the post is still imported without an image.
           let coverImageId: number | undefined;
+          let coverImageUrl: string | undefined;
           if (p.cover_image) {
             try {
               const imageRes = await fetch(p.cover_image);
@@ -104,13 +105,16 @@ export default {
 
               coverImageId = uploaded.id;
             } catch (imgErr: any) {
+              // Upload failed — fall back to storing the original URL directly.
+              // The frontend uses coverImageUrl when coverImage is null.
+              coverImageUrl = p.cover_image;
               strapi.log.warn(
-                "[substack-import] Cover image skipped for \"" +
+                "[substack-import] Cover image upload failed for \"" +
                   p.title +
-                  "\": " +
+                  "\", using fallback URL: " +
                   imgErr.message
               );
-              importedNoImage.push(p.title + " (image error: " + imgErr.message + ")");
+              importedNoImage.push(p.title + " (used fallback URL, upload error: " + imgErr.message + ")");
             }
           }
 
@@ -120,6 +124,7 @@ export default {
               url: p.canonical_url,
               description: p.subtitle || "",
               ...(coverImageId !== undefined ? { coverImage: coverImageId } : {}),
+              ...(coverImageUrl !== undefined ? { coverImageUrl } : {}),
               postDate: p.post_date,
             },
           });
