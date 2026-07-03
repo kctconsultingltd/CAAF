@@ -13,26 +13,10 @@
 // SUBSTACK_CRON_RULE / SUBSTACK_CRON_TZ — e.g. staging runs once daily instead
 // of every 6 hours, to avoid duplicate notifications alongside production.
 
-import fs from "fs";
-import os from "os";
-import path from "path";
-import crypto from "crypto";
+import { Readable } from "stream";
 
 const DEFAULT_FEED_URL =
   "https://tochukwuezeukwu.substack.com/api/v1/posts?sort=new&limit=50";
-
-// Downloads an image to a unique temp subdirectory. Returns both the file path
-// and the directory so Strapi's upload plugin can clean up via tmpWorkingDirectory.
-async function downloadToTempFile(imageUrl: string, filename: string) {
-  const res = await fetch(imageUrl);
-  if (!res.ok) throw new Error("Image download failed: " + res.status);
-  const buf = Buffer.from(await res.arrayBuffer());
-  const workDir = path.join(os.tmpdir(), crypto.randomUUID());
-  await fs.promises.mkdir(workDir);
-  const tmpPath = path.join(workDir, filename);
-  await fs.promises.writeFile(tmpPath, buf);
-  return { tmpPath, workDir };
-}
 
 async function notifyTelegram(message: string) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -93,16 +77,17 @@ export default {
         try {
           const slug = p.canonical_url.split("/").pop() || "cover";
 
-          // Upload cover image. If this fails, import the post without an image
-          // rather than skipping the post entirely.
+          // Upload cover image via stream — avoids temp files and path issues.
+          // The Cloudinary provider prefers file.stream over file.path, so
+          // passing a Readable keeps us entirely out of fs operations.
+          // If image upload fails, the post is still imported without an image.
           let coverImageId: number | undefined;
           if (p.cover_image) {
             try {
-              const { tmpPath, workDir } = await downloadToTempFile(
-                p.cover_image,
-                slug + ".jpg"
-              );
-              const stat = await fs.promises.stat(tmpPath);
+              const imageRes = await fetch(p.cover_image);
+              if (!imageRes.ok)
+                throw new Error("Image download failed: " + imageRes.status);
+              const buf = Buffer.from(await imageRes.arrayBuffer());
 
               const [uploaded] = await strapi
                 .plugin("upload")
@@ -110,11 +95,10 @@ export default {
                 .upload({
                   data: {},
                   files: {
-                    path: tmpPath,
+                    stream: Readable.from(buf),
                     name: slug + ".jpg",
                     type: "image/jpeg",
-                    size: stat.size,
-                    tmpWorkingDirectory: workDir,
+                    size: buf.length,
                   },
                 });
 
