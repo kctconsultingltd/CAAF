@@ -185,14 +185,15 @@
   // Expected container: <div id="cms-blog-list"></div>
 
   function renderBlogLink(link) {
-    var imgHtml =
-      link.coverImage && link.coverImage.url
-        ? '<img src="' +
-          escHtml(link.coverImage.url) +
-          '" alt="' +
-          escHtml(link.title) +
-          '" class="cms-blog-img" loading="lazy" />'
-        : "";
+    var imgSrc =
+      (link.coverImage && link.coverImage.url) || link.coverImageUrl || "";
+    var imgHtml = imgSrc
+      ? '<img src="' +
+        escHtml(imgSrc) +
+        '" alt="' +
+        escHtml(link.title) +
+        '" class="cms-blog-img" loading="lazy" />'
+      : "";
     return (
       '<a href="' +
       escHtml(link.url) +
@@ -223,7 +224,7 @@
     var el = document.getElementById("cms-blog-list");
     if (!el) return;
     setLoading(el);
-    apiFetch("/blog-links?populate=coverImage&sort=postDate:desc")
+    apiFetch("/blog-links?populate=coverImage&fields[0]=title&fields[1]=url&fields[2]=description&fields[3]=postDate&fields[4]=coverImageUrl&sort=postDate:desc")
       .then(function (json) {
         var items = json.data || [];
         if (!items.length) {
@@ -262,7 +263,7 @@
     var el = document.getElementById("cms-blog-page-list");
     if (!el) return;
     setLoading(el);
-    apiFetch("/blog-links?populate=coverImage&sort=postDate:desc")
+    apiFetch("/blog-links?populate=coverImage&fields[0]=title&fields[1]=url&fields[2]=description&fields[3]=postDate&fields[4]=coverImageUrl&sort=postDate:desc")
       .then(function (json) {
         var items = json.data || [];
         if (!items.length) {
