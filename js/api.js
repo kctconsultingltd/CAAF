@@ -874,7 +874,12 @@
 
       document.body.appendChild(overlay);
       document.body.style.overflow = "hidden";
-      overlay.querySelector("#atf-email").focus();
+
+      if (localStorage.getItem("atf_subscribed")) {
+        revealDownload();
+      } else {
+        overlay.querySelector("#atf-email").focus();
+      }
 
       function closeAtfModal() {
         overlay.remove();
@@ -892,6 +897,7 @@
       document.addEventListener("keydown", onEsc);
 
       function revealDownload() {
+        localStorage.setItem("atf_subscribed", "1");
         overlay.querySelector("#atf-subscribe-wrap").style.display = "none";
         overlay.querySelector("#atf-download-wrap").style.display = "";
       }
