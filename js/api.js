@@ -830,6 +830,105 @@
       .catch(function () {});
   }
 
+  function loadAtfModal() {
+    var btn = document.getElementById("atf-learn-more");
+    if (!btn) return;
+
+    // Pre-fetch the PDF URL so it's ready when the modal opens
+    var pdfUrl = "";
+    var pdfLabel = "Download PDF";
+    apiFetch("/atf-resource?fields[0]=pdfUrl&fields[1]=pdfLabel")
+      .then(function (json) {
+        var d = json.data || json;
+        pdfUrl = d.pdfUrl || "";
+        pdfLabel = d.pdfLabel || "Download PDF";
+      })
+      .catch(function () {});
+
+    btn.addEventListener("click", function () {
+      if (document.getElementById("atf-modal-overlay")) return;
+
+      var overlay = document.createElement("div");
+      overlay.id = "atf-modal-overlay";
+      overlay.innerHTML =
+        '<div id="atf-modal">' +
+        '<button id="atf-modal-close" aria-label="Close">&times;</button>' +
+        '<div class="atf-modal-body">' +
+        '<p class="atf-modal-label">Access to Finance</p>' +
+        '<h2 class="atf-modal-title">Stay Informed</h2>' +
+        '<p class="atf-modal-desc">Enter your email to receive updates on capital access opportunities and download our briefing document.</p>' +
+        '<div id="atf-subscribe-wrap">' +
+        '<form id="atf-subscribe-form">' +
+        '<input type="email" id="atf-email" placeholder="your@email.com" required />' +
+        '<button type="submit" class="btn-gold">Subscribe <span class="arrow" aria-hidden="true">&rarr;</span></button>' +
+        "</form>" +
+        '<p id="atf-form-msg"></p>' +
+        "</div>" +
+        '<div id="atf-download-wrap" style="display:none">' +
+        '<p class="atf-success-msg">&#10003; You\'re subscribed! Your download is ready.</p>' +
+        '<a id="atf-pdf-link" href="#" target="_blank" rel="noopener noreferrer" class="btn-gold">' +
+        escHtml(pdfLabel) +
+        ' <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
+        "</div>" +
+        "</div></div>";
+
+      document.body.appendChild(overlay);
+      document.body.style.overflow = "hidden";
+      overlay.querySelector("#atf-email").focus();
+
+      function closeAtfModal() {
+        overlay.remove();
+        document.body.style.overflow = "";
+        document.removeEventListener("keydown", onEsc);
+      }
+      function onEsc(e) {
+        if (e.key === "Escape") closeAtfModal();
+      }
+
+      overlay.addEventListener("click", function (e) {
+        if (e.target === overlay) closeAtfModal();
+      });
+      overlay.querySelector("#atf-modal-close").addEventListener("click", closeAtfModal);
+      document.addEventListener("keydown", onEsc);
+
+      function revealDownload() {
+        overlay.querySelector("#atf-subscribe-wrap").style.display = "none";
+        var link = overlay.querySelector("#atf-pdf-link");
+        if (pdfUrl) link.href = pdfUrl;
+        overlay.querySelector("#atf-download-wrap").style.display = "";
+      }
+
+      overlay.querySelector("#atf-subscribe-form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var emailVal = overlay.querySelector("#atf-email").value.trim();
+        var submitBtn = overlay.querySelector('#atf-subscribe-form button[type="submit"]');
+        var msgEl = overlay.querySelector("#atf-form-msg");
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Submitting…";
+        msgEl.textContent = "";
+
+        apiFetch("/newsletter-subscribers", {
+          method: "POST",
+          body: JSON.stringify({ data: { email: emailVal, source: "access-to-finance" } }),
+        })
+          .then(function () {
+            revealDownload();
+          })
+          .catch(function (err) {
+            var msg = (err && err.message) || "";
+            if (msg.toLowerCase().indexOf("unique") !== -1 || msg.indexOf("400") !== -1) {
+              // Already subscribed — still give access to download
+              revealDownload();
+            } else {
+              msgEl.textContent = "Something went wrong. Please try again.";
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = 'Subscribe <span class="arrow" aria-hidden="true">&rarr;</span>';
+            }
+          });
+      });
+    });
+  }
+
   // ─── Init ─────────────────────────────────────────────────────────────────
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -838,5 +937,6 @@
     loadBlogPage();
     loadEventsPage();
     loadEventModal();
+    loadAtfModal();
   });
 })();
