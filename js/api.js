@@ -788,6 +788,28 @@
         document.body.appendChild(overlay);
         document.body.style.overflow = "hidden";
 
+        // Size modal width to match image aspect ratio so no black bars appear
+        var modalImg = overlay.querySelector("img");
+        if (modalImg) {
+          function sizeModal() {
+            var modal = document.getElementById("event-modal");
+            var body = modal.querySelector(".event-modal-body");
+            var bodyH = body ? body.offsetHeight : 0;
+            var availH = window.innerHeight * 0.8 - bodyH;
+            if (availH > 0 && modalImg.naturalHeight > 0) {
+              var ratio = modalImg.naturalWidth / modalImg.naturalHeight;
+              var ideal = Math.round(availH * ratio);
+              var max = Math.round(window.innerWidth * 0.92);
+              modal.style.width = Math.min(ideal, max) + "px";
+            }
+          }
+          if (modalImg.complete && modalImg.naturalWidth) {
+            sizeModal();
+          } else {
+            modalImg.addEventListener("load", sizeModal);
+          }
+        }
+
         function closeModal() {
           overlay.remove();
           document.body.style.overflow = "";

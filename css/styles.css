@@ -2796,6 +2796,7 @@ to {
 #event-modal {
   background: var(--bg2);
   width: 80vw;
+  max-width: 92vw;
   height: 80vh;
   border-radius: 4px;
   overflow: hidden;
@@ -2810,7 +2811,6 @@ to {
   width: 100%;
   object-fit: contain;
   display: block;
-  background: #000;
 }
 .event-modal-body {
   flex-shrink: 0;
