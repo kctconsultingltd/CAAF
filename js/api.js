@@ -866,9 +866,9 @@
         "</div>" +
         '<div id="atf-download-wrap" style="display:none">' +
         '<p class="atf-success-msg">&#10003; You\'re subscribed! Your download is ready.</p>' +
-        '<button id="atf-pdf-link" type="button" class="btn-gold">' +
+        '<a id="atf-pdf-link" href="/The_Rural_Lens_Fund_updated.pdf" download="The Rural Lens Fund.pdf" class="btn-gold">' +
         escHtml(pdfLabel) +
-        ' <span class="arrow" aria-hidden="true">&rarr;</span></button>' +
+        ' <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
         "</div>" +
         "</div></div>";
 
@@ -894,27 +894,6 @@
       function revealDownload() {
         overlay.querySelector("#atf-subscribe-wrap").style.display = "none";
         overlay.querySelector("#atf-download-wrap").style.display = "";
-        var dlBtn = overlay.querySelector("#atf-pdf-link");
-        dlBtn.addEventListener("click", function () {
-          if (!pdfUrl) return;
-          // Fetch as blob so browser saves the file rather than navigating to Cloudinary
-          fetch(pdfUrl)
-            .then(function (res) { return res.blob(); })
-            .then(function (blob) {
-              var blobUrl = URL.createObjectURL(blob);
-              var a = document.createElement("a");
-              a.href = blobUrl;
-              a.download = (pdfLabel || "document") + ".pdf";
-              document.body.appendChild(a);
-              a.click();
-              document.body.removeChild(a);
-              setTimeout(function () { URL.revokeObjectURL(blobUrl); }, 1000);
-            })
-            .catch(function () {
-              // CORS fallback — open in new tab
-              window.open(pdfUrl, "_blank");
-            });
-        });
       }
 
       overlay.querySelector("#atf-subscribe-form").addEventListener("submit", function (e) {
