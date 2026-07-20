@@ -783,7 +783,6 @@
           escHtml(evt.url) +
           '" target="_blank" rel="noopener noreferrer" class="btn-gold">' +
           'Get Tickets <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
-          '<button class="event-modal-dismiss">Close</button>' +
           "</div></div>";
 
         document.body.appendChild(overlay);
@@ -801,9 +800,6 @@
         });
         overlay
           .querySelector("#event-modal-close")
-          .addEventListener("click", closeModal);
-        overlay
-          .querySelector(".event-modal-dismiss")
           .addEventListener("click", closeModal);
         document.addEventListener("keydown", onEsc);
       })
