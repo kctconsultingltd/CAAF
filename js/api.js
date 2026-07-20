@@ -739,9 +739,8 @@
       });
   }
 
-  function loadHeroEvent() {
-    var container = document.querySelector(".hero .container");
-    if (!container) return;
+  function loadEventModal() {
+    if (!document.querySelector(".hero")) return;
     var now = new Date().toISOString();
     apiFetch(
       "/events?filters[eventDate][$gt]=" +
@@ -755,83 +754,60 @@
         if (!events.length) return;
         var evt = events[0];
 
-        // Build event slide and inject after the default slide
-        var defaultSlide = document.getElementById("hero-slide-default");
-        var eventSlide = document.createElement("div");
-        eventSlide.id = "hero-slide-event";
-        eventSlide.className = "hero-content";
-        eventSlide.style.display = "none";
-
+        var imgSrc =
+          (evt.coverImage && evt.coverImage.url) || evt.coverImageUrl || "";
         var meta = formatEventDate(evt.eventDate);
         if (evt.location) meta += " · " + evt.location;
 
-        eventSlide.innerHTML =
-          '<p class="hero-tag">Upcoming Event</p>' +
-          '<h2 class="hero-event-title">' +
+        var overlay = document.createElement("div");
+        overlay.id = "event-modal-overlay";
+        overlay.innerHTML =
+          '<div id="event-modal">' +
+          '<button id="event-modal-close" aria-label="Close">&times;</button>' +
+          (imgSrc
+            ? '<img src="' +
+              escHtml(imgSrc) +
+              '" alt="' +
+              escHtml(evt.title) +
+              '" />'
+            : "") +
+          '<div class="event-modal-body">' +
+          '<p class="event-modal-label">Upcoming Event</p>' +
+          '<h2 class="event-modal-title">' +
           escHtml(evt.title) +
           "</h2>" +
           (meta
-            ? '<p class="hero-event-meta">' + escHtml(meta) + "</p>"
+            ? '<p class="event-modal-meta">' + escHtml(meta) + "</p>"
             : "") +
-          (evt.description
-            ? '<p class="hero-sub" style="max-width:560px">' +
-              escHtml(evt.description) +
-              "</p>"
-            : "") +
-          '<div class="hero-btns" style="margin-top:2rem">' +
-          '<div style="display:flex;gap:2rem;align-items:center;">' +
           '<a href="' +
           escHtml(evt.url) +
-          '" target="_blank" rel="noopener noreferrer" class="btn-gold">Get Tickets <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
-          '<a href="/events" class="btn-ghost">All Events</a>' +
+          '" target="_blank" rel="noopener noreferrer" class="btn-gold">' +
+          'Get Tickets <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
+          '<button class="event-modal-dismiss">Close</button>' +
           "</div></div>";
 
-        container.appendChild(eventSlide);
+        document.body.appendChild(overlay);
 
-        // Dot indicators
-        var dots = document.createElement("div");
-        dots.className = "hero-dots";
-        dots.innerHTML =
-          '<button class="hero-dot active" aria-label="Video slide"></button>' +
-          '<button class="hero-dot" aria-label="Event slide"></button>';
-        document.getElementById("hero").appendChild(dots);
-        var dotEls = dots.querySelectorAll(".hero-dot");
-
-        // Carousel logic
-        var current = 0; // 0 = default, 1 = event
-        var slides = [defaultSlide, eventSlide];
-
-        function switchTo(next) {
-          var from = slides[current];
-          var to = slides[next];
-          from.style.opacity = "0";
-          setTimeout(function () {
-            from.style.display = "none";
-            to.style.display = "";
-            // force reflow so transition fires
-            to.offsetHeight; // eslint-disable-line no-unused-expressions
-            to.style.opacity = "1";
-            dotEls[current].classList.remove("active");
-            current = next;
-            dotEls[current].classList.add("active");
-          }, 400);
+        function closeModal() {
+          overlay.remove();
+          document.removeEventListener("keydown", onEsc);
+        }
+        function onEsc(e) {
+          if (e.key === "Escape") closeModal();
         }
 
-        // Allow clicking dots to jump directly
-        dotEls[0].addEventListener("click", function () {
-          if (current !== 0) switchTo(0);
+        overlay.addEventListener("click", function (e) {
+          if (e.target === overlay) closeModal();
         });
-        dotEls[1].addEventListener("click", function () {
-          if (current !== 1) switchTo(1);
-        });
-
-        setInterval(function () {
-          switchTo(current === 0 ? 1 : 0);
-        }, 7000);
+        overlay
+          .querySelector("#event-modal-close")
+          .addEventListener("click", closeModal);
+        overlay
+          .querySelector(".event-modal-dismiss")
+          .addEventListener("click", closeModal);
+        document.addEventListener("keydown", onEsc);
       })
-      .catch(function () {
-        // Silently skip if events API fails — hero stays as video only
-      });
+      .catch(function () {});
   }
 
   // ─── Init ─────────────────────────────────────────────────────────────────
@@ -841,6 +817,6 @@
     loadBlogLinks();
     loadBlogPage();
     loadEventsPage();
-    loadHeroEvent();
+    loadEventModal();
   });
 })();

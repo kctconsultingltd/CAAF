@@ -2781,43 +2781,83 @@ to {
 }
 
 /* ═══════════════════════════════════════════════
-   HERO CAROUSEL
+   EVENT MODAL
    ═══════════════════════════════════════════════ */
-.hero-content { transition: opacity 0.4s ease; }
-.hero-event-title {
-  font-family: var(--serif);
-  font-size: clamp(2rem, 4vw, 4rem);
-  color: var(--off-white);
-  margin-bottom: 0.5rem;
-  line-height: 1.15;
-}
-.hero-event-meta {
-  color: var(--gold);
-  font-size: 0.95rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin-bottom: 1.25rem;
-}
-.hero-dots {
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
+#event-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 1000;
   display: flex;
-  gap: 8px;
-  z-index: 3;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
 }
-.hero-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.35);
-  cursor: pointer;
+#event-modal {
+  background: var(--bg2);
+  max-width: 520px;
+  width: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+}
+#event-modal img {
+  width: 100%;
+  display: block;
+  max-height: 300px;
+  object-fit: cover;
+}
+.event-modal-body {
+  padding: 2rem;
+}
+.event-modal-label {
+  color: var(--gold);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+.event-modal-title {
+  font-family: var(--serif);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+.event-modal-meta {
+  color: var(--muted);
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+#event-modal-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  background: rgba(0, 0, 0, 0.45);
   border: none;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 28px;
+  text-align: center;
+  z-index: 1;
   padding: 0;
-  transition: background 0.3s;
 }
-.hero-dot.active { background: var(--gold); }
+.event-modal-dismiss {
+  display: block;
+  margin-top: 1rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.875rem;
+  padding: 0;
+  text-decoration: underline;
+}
 
 /* ═══════════════════════════════════════════════
    AUTO-ALTERNATING SECTION BACKGROUNDS
