@@ -2765,6 +2765,59 @@ to {
   line-height: 1.55;
   margin: 0;
 }
+.cms-events-date {
+  display: block;
+  color: var(--gold);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.cms-events-location {
+  display: block;
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-top: 8px;
+}
+
+/* ═══════════════════════════════════════════════
+   HERO CAROUSEL
+   ═══════════════════════════════════════════════ */
+.hero-content { transition: opacity 0.4s ease; }
+.hero-event-title {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 4rem);
+  color: var(--off-white);
+  margin-bottom: 0.5rem;
+  line-height: 1.15;
+}
+.hero-event-meta {
+  color: var(--gold);
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+.hero-dots {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 3;
+}
+.hero-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  transition: background 0.3s;
+}
+.hero-dot.active { background: var(--gold); }
 
 /* ═══════════════════════════════════════════════
    AUTO-ALTERNATING SECTION BACKGROUNDS

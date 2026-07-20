@@ -651,11 +651,196 @@
 
   */ // end deals & investor interest
 
+  // ─── Events ───────────────────────────────────────────────────────────────
+
+  function formatEventDate(iso) {
+    if (!iso) return "";
+    return new Date(iso).toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  }
+
+  function renderEvent(evt) {
+    var imgSrc =
+      (evt.coverImage && evt.coverImage.url) || evt.coverImageUrl || "";
+    var imgHtml = imgSrc
+      ? '<img src="' +
+        escHtml(imgSrc) +
+        '" alt="' +
+        escHtml(evt.title) +
+        '" class="cms-blog-img" loading="lazy" />'
+      : "";
+    var dateHtml = evt.eventDate
+      ? '<span class="cms-events-date">' +
+        escHtml(formatEventDate(evt.eventDate)) +
+        "</span>"
+      : "";
+    var locationHtml = evt.location
+      ? '<span class="cms-events-location">' +
+        escHtml(evt.location) +
+        "</span>"
+      : "";
+    var descHtml = evt.description
+      ? '<p class="cms-blog-desc">' + escHtml(evt.description) + "</p>"
+      : "";
+    return (
+      '<a href="' +
+      escHtml(evt.url) +
+      '" target="_blank" rel="noopener noreferrer" class="cms-blog-card" data-id="' +
+      escHtml(evt.documentId) +
+      '">' +
+      imgHtml +
+      dateHtml +
+      '<span class="cms-blog-title">' +
+      escHtml(evt.title) +
+      "</span>" +
+      descHtml +
+      locationHtml +
+      "</a>"
+    );
+  }
+
+  function loadEventsPage() {
+    var el = document.getElementById("cms-events-page-list");
+    if (!el) return;
+    apiFetch(
+      "/events?populate=coverImage" +
+        "&fields[0]=title&fields[1]=url&fields[2]=description" +
+        "&fields[3]=eventDate&fields[4]=location&fields[5]=coverImageUrl" +
+        "&sort=eventDate:asc&pagination[pageSize]=100"
+    )
+      .then(function (json) {
+        var items = json.data || [];
+        var now = Date.now();
+        var upcoming = items.filter(function (e) {
+          return e.eventDate && new Date(e.eventDate).getTime() > now;
+        });
+        var past = items.filter(function (e) {
+          return !e.eventDate || new Date(e.eventDate).getTime() <= now;
+        });
+        // upcoming: soonest first (already sorted asc from API)
+        // past: most recent first
+        past.sort(function (a, b) {
+          return (
+            new Date(b.eventDate || 0).getTime() -
+            new Date(a.eventDate || 0).getTime()
+          );
+        });
+        var all = upcoming.concat(past);
+        el.innerHTML = all.length
+          ? all.map(renderEvent).join("")
+          : '<p style="color:var(--muted)">No events yet.</p>';
+      })
+      .catch(function () {
+        el.innerHTML =
+          '<p style="color:var(--muted)">Could not load events.</p>';
+      });
+  }
+
+  function loadHeroEvent() {
+    var container = document.querySelector(".hero .container");
+    if (!container) return;
+    var now = new Date().toISOString();
+    apiFetch(
+      "/events?filters[eventDate][$gt]=" +
+        encodeURIComponent(now) +
+        "&sort=eventDate:asc&pagination[pageSize]=1&populate=coverImage" +
+        "&fields[0]=title&fields[1]=description&fields[2]=eventDate" +
+        "&fields[3]=location&fields[4]=url&fields[5]=coverImageUrl"
+    )
+      .then(function (json) {
+        var events = json.data || [];
+        if (!events.length) return;
+        var evt = events[0];
+
+        // Build event slide and inject after the default slide
+        var defaultSlide = document.getElementById("hero-slide-default");
+        var eventSlide = document.createElement("div");
+        eventSlide.id = "hero-slide-event";
+        eventSlide.className = "hero-content";
+        eventSlide.style.display = "none";
+
+        var meta = formatEventDate(evt.eventDate);
+        if (evt.location) meta += " · " + evt.location;
+
+        eventSlide.innerHTML =
+          '<p class="hero-tag">Upcoming Event</p>' +
+          '<h2 class="hero-event-title">' +
+          escHtml(evt.title) +
+          "</h2>" +
+          (meta
+            ? '<p class="hero-event-meta">' + escHtml(meta) + "</p>"
+            : "") +
+          (evt.description
+            ? '<p class="hero-sub" style="max-width:560px">' +
+              escHtml(evt.description) +
+              "</p>"
+            : "") +
+          '<div class="hero-btns" style="margin-top:2rem">' +
+          '<div style="display:flex;gap:2rem;align-items:center;">' +
+          '<a href="' +
+          escHtml(evt.url) +
+          '" target="_blank" rel="noopener noreferrer" class="btn-gold">Get Tickets <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
+          '<a href="/events" class="btn-ghost">All Events</a>' +
+          "</div></div>";
+
+        container.appendChild(eventSlide);
+
+        // Dot indicators
+        var dots = document.createElement("div");
+        dots.className = "hero-dots";
+        dots.innerHTML =
+          '<button class="hero-dot active" aria-label="Video slide"></button>' +
+          '<button class="hero-dot" aria-label="Event slide"></button>';
+        document.getElementById("hero").appendChild(dots);
+        var dotEls = dots.querySelectorAll(".hero-dot");
+
+        // Carousel logic
+        var current = 0; // 0 = default, 1 = event
+        var slides = [defaultSlide, eventSlide];
+
+        function switchTo(next) {
+          var from = slides[current];
+          var to = slides[next];
+          from.style.opacity = "0";
+          setTimeout(function () {
+            from.style.display = "none";
+            to.style.display = "";
+            // force reflow so transition fires
+            to.offsetHeight; // eslint-disable-line no-unused-expressions
+            to.style.opacity = "1";
+            dotEls[current].classList.remove("active");
+            current = next;
+            dotEls[current].classList.add("active");
+          }, 400);
+        }
+
+        // Allow clicking dots to jump directly
+        dotEls[0].addEventListener("click", function () {
+          if (current !== 0) switchTo(0);
+        });
+        dotEls[1].addEventListener("click", function () {
+          if (current !== 1) switchTo(1);
+        });
+
+        setInterval(function () {
+          switchTo(current === 0 ? 1 : 0);
+        }, 7000);
+      })
+      .catch(function () {
+        // Silently skip if events API fails — hero stays as video only
+      });
+  }
+
   // ─── Init ─────────────────────────────────────────────────────────────────
 
   document.addEventListener("DOMContentLoaded", function () {
     loadTeamMembers();
     loadBlogLinks();
     loadBlogPage();
+    loadEventsPage();
+    loadHeroEvent();
   });
 })();

@@ -138,24 +138,30 @@
     var slideInterval = null;
     var TRANSITION_MS = 650; // slightly over the CSS 0.6s
 
-    function isMobile() { return window.innerWidth <= 900; }
+    function isMobile() {
+      return window.innerWidth <= 900;
+    }
 
     // Set track/slide widths so each slide fills the viewport on mobile
     function setMobileWidths() {
       if (isMobile()) {
-        track.style.width = (totalCount * 100) + "%";
+        track.style.width = totalCount * 100 + "%";
         allSlides.forEach(function (s) {
-          s.style.width = (100 / totalCount) + "%";
+          s.style.width = 100 / totalCount + "%";
         });
       } else {
         track.style.width = "";
-        allSlides.forEach(function (s) { s.style.width = ""; });
+        allSlides.forEach(function (s) {
+          s.style.width = "";
+        });
       }
     }
 
     function updateActive() {
       var idx = currentIndex % realCount;
-      realSlides.forEach(function (s) { s.classList.remove("is-active"); });
+      realSlides.forEach(function (s) {
+        s.classList.remove("is-active");
+      });
       realSlides[idx].classList.add("is-active");
       firstClone.classList.toggle("is-active", idx === 0);
     }
@@ -168,7 +174,7 @@
         track.style.transition = "";
       }
       track.style.transform = isMobile()
-        ? "translateX(-" + (idx / totalCount * 100) + "%)"
+        ? "translateX(-" + (idx / totalCount) * 100 + "%)"
         : "";
       if (!animate) {
         void track.offsetWidth; // flush the transform before re-enabling
@@ -192,7 +198,9 @@
           busy = false;
         }, TRANSITION_MS);
       } else {
-        setTimeout(function () { busy = false; }, TRANSITION_MS);
+        setTimeout(function () {
+          busy = false;
+        }, TRANSITION_MS);
       }
     }
 
