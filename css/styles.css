@@ -2795,17 +2795,20 @@ to {
 }
 #event-modal {
   background: var(--bg2);
-  max-width: 520px;
-  width: 100%;
+  width: 80vw;
+  height: 80vh;
   border-radius: 4px;
   overflow: hidden;
   position: relative;
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
 }
 #event-modal img {
   width: 100%;
   display: block;
-  max-height: 300px;
+  flex: 1;
+  min-height: 0;
   object-fit: cover;
 }
 .event-modal-body {
