@@ -2796,19 +2796,25 @@ to {
 #event-modal {
   background: var(--bg2);
   width: 80vw;
-  max-height: 80vh;
+  height: 80vh;
   border-radius: 4px;
-  overflow-y: auto;
+  overflow: hidden;
   position: relative;
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
 }
 #event-modal img {
+  flex: 1;
+  min-height: 0;
   width: 100%;
-  height: auto;
+  object-fit: contain;
   display: block;
+  background: #000;
 }
 .event-modal-body {
-  padding: 2rem;
+  flex-shrink: 0;
+  padding: 1.5rem 2rem;
 }
 .event-modal-label {
   color: var(--gold);

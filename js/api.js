@@ -786,9 +786,11 @@
           "</div></div>";
 
         document.body.appendChild(overlay);
+        document.body.style.overflow = "hidden";
 
         function closeModal() {
           overlay.remove();
+          document.body.style.overflow = "";
           document.removeEventListener("keydown", onEsc);
         }
         function onEsc(e) {
