@@ -785,14 +785,6 @@
           'Get Tickets <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
           "</div></div>";
 
-        var COUNT_KEY = "eventModalCount";
-        var SESSION_KEY = "eventModalShown";
-        var count = Number(localStorage.getItem(COUNT_KEY) || 0);
-        if (count >= 5) return;
-        if (sessionStorage.getItem(SESSION_KEY)) return;
-        sessionStorage.setItem(SESSION_KEY, "1");
-        localStorage.setItem(COUNT_KEY, String(count + 1));
-
         document.body.appendChild(overlay);
         document.body.style.overflow = "hidden";
 
@@ -842,16 +834,7 @@
     var btn = document.getElementById("atf-learn-more");
     if (!btn) return;
 
-    // Pre-fetch the PDF URL so it's ready when the modal opens
-    var pdfUrl = "";
     var pdfLabel = "Download PDF";
-    apiFetch("/atf-resource?fields[0]=pdfUrl&fields[1]=pdfLabel")
-      .then(function (json) {
-        var d = json.data || json;
-        pdfUrl = d.pdfUrl || "";
-        pdfLabel = d.pdfLabel || "Download PDF";
-      })
-      .catch(function () {});
 
     btn.addEventListener("click", function () {
       if (document.getElementById("atf-modal-overlay")) return;
