@@ -651,11 +651,304 @@
 
   */ // end deals & investor interest
 
+  // ─── Events ───────────────────────────────────────────────────────────────
+
+  function formatEventDate(iso) {
+    if (!iso) return "";
+    return new Date(iso).toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  }
+
+  function renderEvent(evt) {
+    var imgSrc =
+      (evt.coverImage && evt.coverImage.url) || evt.coverImageUrl || "";
+    var imgHtml = imgSrc
+      ? '<img src="' +
+        escHtml(imgSrc) +
+        '" alt="' +
+        escHtml(evt.title) +
+        '" class="cms-blog-img" loading="lazy" />'
+      : "";
+    var dateHtml = evt.eventDate
+      ? '<span class="cms-events-date">' +
+        escHtml(formatEventDate(evt.eventDate)) +
+        "</span>"
+      : "";
+    var locationHtml = evt.location
+      ? '<span class="cms-events-location">' +
+        escHtml(evt.location) +
+        "</span>"
+      : "";
+    var descHtml = evt.description
+      ? '<p class="cms-blog-desc">' + escHtml(evt.description) + "</p>"
+      : "";
+    return (
+      '<a href="' +
+      escHtml(evt.url) +
+      '" target="_blank" rel="noopener noreferrer" class="cms-blog-card" data-id="' +
+      escHtml(evt.documentId) +
+      '">' +
+      imgHtml +
+      dateHtml +
+      '<span class="cms-blog-title">' +
+      escHtml(evt.title) +
+      "</span>" +
+      descHtml +
+      locationHtml +
+      "</a>"
+    );
+  }
+
+  function loadEventsPage() {
+    var el = document.getElementById("cms-events-page-list");
+    if (!el) return;
+    apiFetch(
+      "/events?populate=coverImage" +
+        "&fields[0]=title&fields[1]=url&fields[2]=description" +
+        "&fields[3]=eventDate&fields[4]=location&fields[5]=coverImageUrl" +
+        "&sort=eventDate:asc&pagination[pageSize]=100"
+    )
+      .then(function (json) {
+        var items = json.data || [];
+        var now = Date.now();
+        var upcoming = items.filter(function (e) {
+          return e.eventDate && new Date(e.eventDate).getTime() > now;
+        });
+        var past = items.filter(function (e) {
+          return !e.eventDate || new Date(e.eventDate).getTime() <= now;
+        });
+        // upcoming: soonest first (already sorted asc from API)
+        // past: most recent first
+        past.sort(function (a, b) {
+          return (
+            new Date(b.eventDate || 0).getTime() -
+            new Date(a.eventDate || 0).getTime()
+          );
+        });
+        var all = upcoming.concat(past);
+        el.innerHTML = all.length
+          ? all.map(renderEvent).join("")
+          : '<p style="color:var(--muted)">No events yet.</p>';
+      })
+      .catch(function () {
+        el.innerHTML =
+          '<p style="color:var(--muted)">Could not load events.</p>';
+      });
+  }
+
+  function loadEventModal() {
+    if (!document.querySelector(".hero")) return;
+    var now = new Date().toISOString();
+    apiFetch(
+      "/events?filters[eventDate][$gt]=" +
+        encodeURIComponent(now) +
+        "&sort=eventDate:asc&pagination[pageSize]=1&populate=coverImage" +
+        "&fields[0]=title&fields[1]=description&fields[2]=eventDate" +
+        "&fields[3]=location&fields[4]=url&fields[5]=coverImageUrl"
+    )
+      .then(function (json) {
+        var events = json.data || [];
+        if (!events.length) return;
+        var evt = events[0];
+
+        var imgSrc =
+          (evt.coverImage && evt.coverImage.url) || evt.coverImageUrl || "";
+        var meta = formatEventDate(evt.eventDate);
+        if (evt.location) meta += " · " + evt.location;
+
+        var overlay = document.createElement("div");
+        overlay.id = "event-modal-overlay";
+        overlay.innerHTML =
+          '<div id="event-modal">' +
+          '<button id="event-modal-close" aria-label="Close">&times;</button>' +
+          (imgSrc
+            ? '<img src="' +
+              escHtml(imgSrc) +
+              '" alt="' +
+              escHtml(evt.title) +
+              '" />'
+            : "") +
+          '<div class="event-modal-body">' +
+          '<p class="event-modal-label">Upcoming Event</p>' +
+          '<h2 class="event-modal-title">' +
+          escHtml(evt.title) +
+          "</h2>" +
+          (meta
+            ? '<p class="event-modal-meta">' + escHtml(meta) + "</p>"
+            : "") +
+          '<a href="' +
+          escHtml(evt.url) +
+          '" target="_blank" rel="noopener noreferrer" class="btn-gold">' +
+          'Get Tickets <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
+          "</div></div>";
+
+        var COUNT_KEY = "eventModalCount";
+        var SESSION_KEY = "eventModalShown";
+        var count = Number(localStorage.getItem(COUNT_KEY) || 0);
+        if (count >= 5) return;
+        if (sessionStorage.getItem(SESSION_KEY)) return;
+        sessionStorage.setItem(SESSION_KEY, "1");
+        localStorage.setItem(COUNT_KEY, String(count + 1));
+
+        document.body.appendChild(overlay);
+        document.body.style.overflow = "hidden";
+
+        // Size modal width to match image aspect ratio so no black bars appear
+        var modalImg = overlay.querySelector("img");
+        if (modalImg) {
+          function sizeModal() {
+            var modal = document.getElementById("event-modal");
+            var body = modal.querySelector(".event-modal-body");
+            var bodyH = body ? body.offsetHeight : 0;
+            var availH = window.innerHeight * 0.8 - bodyH;
+            if (availH > 0 && modalImg.naturalHeight > 0) {
+              var ratio = modalImg.naturalWidth / modalImg.naturalHeight;
+              var ideal = Math.round(availH * ratio);
+              var max = Math.round(window.innerWidth * 0.92);
+              modal.style.width = Math.min(ideal, max) + "px";
+            }
+          }
+          if (modalImg.complete && modalImg.naturalWidth) {
+            sizeModal();
+          } else {
+            modalImg.addEventListener("load", sizeModal);
+          }
+        }
+
+        function closeModal() {
+          overlay.remove();
+          document.body.style.overflow = "";
+          document.removeEventListener("keydown", onEsc);
+        }
+        function onEsc(e) {
+          if (e.key === "Escape") closeModal();
+        }
+
+        overlay.addEventListener("click", function (e) {
+          if (e.target === overlay) closeModal();
+        });
+        overlay
+          .querySelector("#event-modal-close")
+          .addEventListener("click", closeModal);
+        document.addEventListener("keydown", onEsc);
+      })
+      .catch(function () {});
+  }
+
+  function loadAtfModal() {
+    var btn = document.getElementById("atf-learn-more");
+    if (!btn) return;
+
+    // Pre-fetch the PDF URL so it's ready when the modal opens
+    var pdfUrl = "";
+    var pdfLabel = "Download PDF";
+    apiFetch("/atf-resource?fields[0]=pdfUrl&fields[1]=pdfLabel")
+      .then(function (json) {
+        var d = json.data || json;
+        pdfUrl = d.pdfUrl || "";
+        pdfLabel = d.pdfLabel || "Download PDF";
+      })
+      .catch(function () {});
+
+    btn.addEventListener("click", function () {
+      if (document.getElementById("atf-modal-overlay")) return;
+
+      var overlay = document.createElement("div");
+      overlay.id = "atf-modal-overlay";
+      overlay.innerHTML =
+        '<div id="atf-modal">' +
+        '<button id="atf-modal-close" aria-label="Close">&times;</button>' +
+        '<div class="atf-modal-body">' +
+        '<p class="atf-modal-label">Access to Finance</p>' +
+        '<h2 class="atf-modal-title">Stay Informed</h2>' +
+        '<p class="atf-modal-desc">Enter your email to receive updates on capital access opportunities and download our briefing document.</p>' +
+        '<div id="atf-subscribe-wrap">' +
+        '<form id="atf-subscribe-form">' +
+        '<input type="email" id="atf-email" placeholder="your@email.com" required />' +
+        '<button type="submit" class="btn-gold">Subscribe <span class="arrow" aria-hidden="true">&rarr;</span></button>' +
+        "</form>" +
+        '<p id="atf-form-msg"></p>' +
+        "</div>" +
+        '<div id="atf-download-wrap" style="display:none">' +
+        '<p class="atf-success-msg">&#10003; You\'re subscribed! Your download is ready.</p>' +
+        '<a id="atf-pdf-link" href="/The_Rural_Lens_Fund_updated.pdf" download="The Rural Lens Fund.pdf" class="btn-gold">' +
+        escHtml(pdfLabel) +
+        ' <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
+        "</div>" +
+        "</div></div>";
+
+      document.body.appendChild(overlay);
+      document.body.style.overflow = "hidden";
+
+      if (localStorage.getItem("atf_subscribed")) {
+        revealDownload();
+      } else {
+        overlay.querySelector("#atf-email").focus();
+      }
+
+      function closeAtfModal() {
+        overlay.remove();
+        document.body.style.overflow = "";
+        document.removeEventListener("keydown", onEsc);
+      }
+      function onEsc(e) {
+        if (e.key === "Escape") closeAtfModal();
+      }
+
+      overlay.addEventListener("click", function (e) {
+        if (e.target === overlay) closeAtfModal();
+      });
+      overlay.querySelector("#atf-modal-close").addEventListener("click", closeAtfModal);
+      document.addEventListener("keydown", onEsc);
+
+      function revealDownload() {
+        localStorage.setItem("atf_subscribed", "1");
+        overlay.querySelector("#atf-subscribe-wrap").style.display = "none";
+        overlay.querySelector("#atf-download-wrap").style.display = "";
+      }
+
+      overlay.querySelector("#atf-subscribe-form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var emailVal = overlay.querySelector("#atf-email").value.trim();
+        var submitBtn = overlay.querySelector('#atf-subscribe-form button[type="submit"]');
+        var msgEl = overlay.querySelector("#atf-form-msg");
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Submitting…";
+        msgEl.textContent = "";
+
+        apiFetch("/newsletter-subscribers", {
+          method: "POST",
+          body: JSON.stringify({ data: { email: emailVal, source: "access-to-finance" } }),
+        })
+          .then(function () {
+            revealDownload();
+          })
+          .catch(function (err) {
+            var msg = (err && err.message) || "";
+            if (msg.toLowerCase().indexOf("unique") !== -1 || msg.indexOf("400") !== -1) {
+              // Already subscribed — still give access to download
+              revealDownload();
+            } else {
+              msgEl.textContent = "Something went wrong. Please try again.";
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = 'Subscribe <span class="arrow" aria-hidden="true">&rarr;</span>';
+            }
+          });
+      });
+    });
+  }
+
   // ─── Init ─────────────────────────────────────────────────────────────────
 
   document.addEventListener("DOMContentLoaded", function () {
     loadTeamMembers();
     loadBlogLinks();
     loadBlogPage();
+    loadEventsPage();
+    loadEventModal();
+    loadAtfModal();
   });
 })();

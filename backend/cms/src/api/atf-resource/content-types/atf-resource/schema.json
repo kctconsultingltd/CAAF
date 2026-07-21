@@ -1,0 +1,14 @@
+{
+  "kind": "singleType",
+  "collectionName": "atf_resource",
+  "info": {
+    "singularName": "atf-resource",
+    "pluralName": "atf-resources",
+    "displayName": "ATF Resource"
+  },
+  "options": { "draftAndPublish": false },
+  "attributes": {
+    "pdfUrl":   { "type": "string" },
+    "pdfLabel": { "type": "string" }
+  }
+}
