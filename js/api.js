@@ -782,7 +782,7 @@
           '<a href="' +
           escHtml(evt.url) +
           '" target="_blank" rel="noopener noreferrer" class="btn-gold">' +
-          'Get Tickets <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
+          'Register <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
           "</div></div>";
 
         document.body.appendChild(overlay);
