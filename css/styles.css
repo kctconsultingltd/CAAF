@@ -2871,6 +2871,33 @@ to {
   z-index: 10;
   padding: 0;
 }
+@media (max-width: 640px) {
+  #event-modal {
+    width: 95vw;
+    max-width: 95vw;
+  }
+  .event-modal-body {
+    padding: 0.75rem 1rem;
+  }
+  .event-modal-label {
+    margin-bottom: 0.3rem;
+  }
+  .event-modal-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+  }
+  .event-modal-meta {
+    font-size: 0.8rem;
+    margin-bottom: 0.75rem;
+  }
+  #event-modal-close {
+    width: 30px;
+    height: 30px;
+    font-size: 1.1rem;
+    line-height: 30px;
+  }
+}
+
 /* ═══════════════════════════════════════════════
    ATF SUBSCRIBE MODAL
    ═══════════════════════════════════════════════ */

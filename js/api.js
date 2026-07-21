@@ -785,6 +785,14 @@
           'Get Tickets <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
           "</div></div>";
 
+        var COUNT_KEY = "eventModalCount";
+        var SESSION_KEY = "eventModalShown";
+        var count = Number(localStorage.getItem(COUNT_KEY) || 0);
+        if (count >= 5) return;
+        if (sessionStorage.getItem(SESSION_KEY)) return;
+        sessionStorage.setItem(SESSION_KEY, "1");
+        localStorage.setItem(COUNT_KEY, String(count + 1));
+
         document.body.appendChild(overlay);
         document.body.style.overflow = "hidden";
 
