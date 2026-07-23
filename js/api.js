@@ -705,6 +705,7 @@
   function loadEventsPage() {
     var el = document.getElementById("cms-events-page-list");
     if (!el) return;
+    var pastEl = document.getElementById("cms-events-past-list");
     apiFetch(
       "/events?populate=coverImage" +
         "&fields[0]=title&fields[1]=url&fields[2]=description" +
@@ -720,18 +721,20 @@
         var past = items.filter(function (e) {
           return !e.eventDate || new Date(e.eventDate).getTime() <= now;
         });
-        // upcoming: soonest first (already sorted asc from API)
-        // past: most recent first
         past.sort(function (a, b) {
           return (
             new Date(b.eventDate || 0).getTime() -
             new Date(a.eventDate || 0).getTime()
           );
         });
-        var all = upcoming.concat(past);
-        el.innerHTML = all.length
-          ? all.map(renderEvent).join("")
-          : '<p style="color:var(--muted)">No events yet.</p>';
+        el.innerHTML = upcoming.length
+          ? upcoming.map(renderEvent).join("")
+          : '<p style="color:var(--muted)">No upcoming events at this time.</p>';
+        if (pastEl) {
+          pastEl.innerHTML = past.length
+            ? past.map(renderEvent).join("")
+            : '<p style="color:var(--muted)">No past events.</p>';
+        }
       })
       .catch(function () {
         el.innerHTML =
