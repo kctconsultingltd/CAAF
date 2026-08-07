@@ -13,7 +13,9 @@
 // SUBSTACK_CRON_RULE / SUBSTACK_CRON_TZ — e.g. staging runs once daily instead
 // of every 6 hours, to avoid duplicate notifications alongside production.
 
-import { Readable } from "stream";
+import * as fs from "fs";
+import * as os from "os";
+import * as path from "path";
 
 const DEFAULT_FEED_URL =
   "https://tochukwuezeukwu.substack.com/api/v1/posts?sort=new&limit=50";
@@ -77,18 +79,22 @@ export default {
         try {
           const slug = p.canonical_url.split("/").pop() || "cover";
 
-          // Upload cover image via stream — avoids temp files and path issues.
-          // The Cloudinary provider prefers file.stream over file.path, so
-          // passing a Readable keeps us entirely out of fs operations.
+          // Upload cover image by writing to a temp file so Strapi's upload
+          // service can resolve a valid path (passing only a stream leaves
+          // file.path undefined and throws inside the provider).
           // If image upload fails, the post is still imported without an image.
           let coverImageId: number | undefined;
           let coverImageUrl: string | undefined;
           if (p.cover_image) {
+            let tmpPath: string | undefined;
             try {
               const imageRes = await fetch(p.cover_image);
               if (!imageRes.ok)
                 throw new Error("Image download failed: " + imageRes.status);
               const buf = Buffer.from(await imageRes.arrayBuffer());
+
+              tmpPath = path.join(os.tmpdir(), slug + "-" + Date.now() + ".jpg");
+              fs.writeFileSync(tmpPath, buf);
 
               const [uploaded] = await strapi
                 .plugin("upload")
@@ -96,7 +102,7 @@ export default {
                 .upload({
                   data: {},
                   files: {
-                    stream: Readable.from(buf),
+                    path: tmpPath,
                     name: slug + ".jpg",
                     type: "image/jpeg",
                     size: buf.length,
@@ -115,6 +121,10 @@ export default {
                   imgErr.message
               );
               importedNoImage.push(p.title + " (used fallback URL, upload error: " + imgErr.message + ")");
+            } finally {
+              if (tmpPath) {
+                try { fs.unlinkSync(tmpPath); } catch { /* ignore cleanup errors */ }
+              }
             }
           }
 
