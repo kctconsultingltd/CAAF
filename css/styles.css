@@ -2158,7 +2158,7 @@ to {
 
 .offering-title {
   font-family: var(--condensed);
-  font-size: 11px;
+  font-size: 16px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--gold);
@@ -2175,7 +2175,7 @@ to {
 }
 
 .offering-desc {
-  font-size: 13.5px;
+  font-size: 14px;
   color: var(--muted);
   line-height: 1.72;
   margin-bottom: 10px;
@@ -2186,7 +2186,7 @@ to {
   align-items: center;
   gap: 7px;
   font-family: var(--condensed);
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--gold);
@@ -2448,6 +2448,53 @@ to {
 #pitchForm .input-with-prefix input:focus {
   outline: none;
   border: none;
+}
+
+.pitch-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px 0 16px;
+  gap: 16px;
+}
+
+.pitch-success[hidden] { display: none; }
+
+.pitch-success-icon svg {
+  width: 80px;
+  height: 80px;
+  display: block;
+}
+
+@keyframes pitchCircle {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes pitchCheck {
+  to { stroke-dashoffset: 0; }
+}
+
+.pitch-tick-circle {
+  animation: pitchCircle 0.55s ease-out 0.1s forwards;
+}
+
+.pitch-tick-check {
+  animation: pitchCheck 0.35s ease-out 0.65s forwards;
+}
+
+.pitch-success-title {
+  font-family: var(--serif);
+  font-size: 1.7rem;
+  color: var(--gold);
+  margin: 0;
+}
+
+.pitch-success-sub {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 0;
+  max-width: 320px;
+  line-height: 1.6;
 }
 
 @media (max-width: 540px) {

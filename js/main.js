@@ -204,6 +204,38 @@
       });
     });
 
+    var successEl = document.getElementById("pitchSuccess");
+    var doneBtnWired = false;
+
+    function showSuccess() {
+      form.style.display = "none";
+      if (successEl) successEl.removeAttribute("hidden");
+      if (!doneBtnWired) {
+        doneBtnWired = true;
+        document.getElementById("pitchSuccessDone").addEventListener("click", function () {
+          closeModal();
+          form.style.display = "";
+          form.reset();
+          if (successEl) successEl.setAttribute("hidden", "");
+          status.textContent = "";
+          status.className = "pitch-form-status";
+          submitBtn.disabled = false;
+        });
+      }
+    }
+
+    // Also reset success state when overlay is closed via backdrop/escape
+    var _origClose = closeModal;
+    closeModal = function () {
+      _origClose();
+      form.style.display = "";
+      form.reset();
+      if (successEl) successEl.setAttribute("hidden", "");
+      status.textContent = "";
+      status.className = "pitch-form-status";
+      submitBtn.disabled = false;
+    };
+
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var data = new FormData(form);
@@ -219,6 +251,12 @@
         return;
       }
 
+      // Strip commas from formatted currency fields before sending
+      ["currentTurnover", "fundingRequest"].forEach(function (name) {
+        var raw = data.get(name);
+        if (raw) data.set(name, raw.toString().replace(/,/g, ""));
+      });
+
       submitBtn.disabled = true;
       status.className = "pitch-form-status";
       status.textContent = "Submitting…";
@@ -226,10 +264,7 @@
       fetch(API + "/pitch-submissions", { method: "POST", body: data })
         .then(function (r) {
           if (!r.ok) throw new Error("Server error " + r.status);
-          status.textContent = "Pitch received! We’ll be in touch.";
-          status.className = "pitch-form-status success";
-          form.reset();
-          setTimeout(closeModal, 3000);
+          showSuccess();
         })
         .catch(function () {
           status.textContent = "Submission failed — please email info@capitalasaforce.com";
