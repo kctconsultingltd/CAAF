@@ -161,6 +161,51 @@
     window.addEventListener("resize", calibrateHeight);
   })();
 
+  /* ── Pitch Modal ────────────────────────────────── */
+  (function () {
+    var overlay   = document.getElementById("pitchModalOverlay");
+    var closeBtn  = document.getElementById("pitchModalClose");
+    var trigger   = document.querySelector(".pitch-trigger");
+    var form      = document.getElementById("pitchForm");
+    var status    = document.getElementById("pitchFormStatus");
+    var submitBtn = document.getElementById("pitchSubmitBtn");
+    if (!overlay || !trigger) return;
+
+    var API = "https://admin-staging.capitalasaforce.com/api";
+
+    function openModal()  { overlay.removeAttribute("hidden"); document.body.style.overflow = "hidden"; }
+    function closeModal() { overlay.setAttribute("hidden", ""); document.body.style.overflow = ""; }
+
+    trigger.addEventListener("click", openModal);
+    closeBtn.addEventListener("click", closeModal);
+    overlay.addEventListener("click", function (e) { if (e.target === overlay) closeModal(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !overlay.hasAttribute("hidden")) closeModal();
+    });
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var data = new FormData(form);
+      submitBtn.disabled = true;
+      status.className = "pitch-form-status";
+      status.textContent = "Submitting…";
+
+      fetch(API + "/pitch-submissions", { method: "POST", body: data })
+        .then(function (r) {
+          if (!r.ok) throw new Error("Server error " + r.status);
+          status.textContent = "Pitch received! We’ll be in touch.";
+          status.className = "pitch-form-status success";
+          form.reset();
+          setTimeout(closeModal, 3000);
+        })
+        .catch(function () {
+          status.textContent = "Something went wrong — email us at info@capitalasaforce.com";
+          status.className = "pitch-form-status error";
+          submitBtn.disabled = false;
+        });
+    });
+  })();
+
   /* ── Intersection Observer — Reveal ────────────── */
   var reveals = document.querySelectorAll(".reveal");
   if ("IntersectionObserver" in window) {

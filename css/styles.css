@@ -2228,6 +2228,10 @@ to {
   opacity: 1;
 }
 
+.services-img[data-idx="0"] { object-position: center 40%; }
+.services-img[data-idx="1"] { object-position: center 25%; }
+.services-img[data-idx="2"] { object-position: center center; }
+
 .services-img-caption {
   position: absolute;
   bottom: 0;
@@ -2257,6 +2261,178 @@ to {
   .services-img-panel {
     aspect-ratio: 4 / 3;
     height: auto !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   PITCH MODAL
+   ═══════════════════════════════════════════════ */
+.pitch-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 17, 31, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.pitch-modal-overlay[hidden] {
+  display: none;
+}
+
+.pitch-modal-card {
+  background: var(--bg2);
+  border: 1px solid var(--line-solid);
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 680px;
+  width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-solid) transparent;
+}
+
+.pitch-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.6rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+
+.pitch-modal-close:hover {
+  color: var(--gold);
+}
+
+.pitch-modal-title {
+  font-family: var(--serif);
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.pitch-modal-sub {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+
+.pitch-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+#pitchForm label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.72rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+#pitchForm input,
+#pitchForm textarea {
+  background: var(--bg);
+  border: 1px solid var(--line-solid);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--white);
+  font-size: 0.9rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+#pitchForm input:focus,
+#pitchForm textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+#pitchForm textarea {
+  resize: vertical;
+}
+
+#pitchForm input[type="file"] {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.pitch-field-full {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.pitch-form-footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.pitch-submit {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--condensed);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  color: var(--bg);
+  padding: 14px 30px;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: transform 0.3s, filter 0.3s;
+}
+
+.pitch-submit:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.12);
+}
+
+.pitch-submit:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.pitch-form-status {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.pitch-form-status.success { color: #5cb85c; }
+.pitch-form-status.error   { color: #e74c3c; }
+
+@media (max-width: 540px) {
+  .pitch-field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .pitch-modal-card {
+    padding: 28px 20px;
   }
 }
 

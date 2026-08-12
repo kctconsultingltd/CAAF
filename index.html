@@ -362,7 +362,7 @@
                       <div class="offering">
                         <div class="offering-title">Pitch Your Business</div>
                         <div class="offering-desc">If you are actively trying to raise capital for your business and want to reach more investors, pitch here.</div>
-                        <a class="offering-cta" href="#" target="_blank" rel="noopener noreferrer">Pitch now &rarr;</a>
+                        <button class="offering-cta pitch-trigger" type="button">Pitch now &rarr;</button>
                       </div>
                     </div>
                   </div>
@@ -383,7 +383,7 @@
                     <p class="acc-tagline">Implement sustainable development programs with perspectives that multiply impact.</p>
                     <div class="offerings">
                       <div class="offering">
-                        <a class="offering-cta" href="mailto:info@capitalasaforce.com">Contact us now &rarr;</a>
+                        <!-- <a class="offering-cta" href="mailto:info@capitalasaforce.com">Contact us now &rarr;</a> -->
                       </div>
                       <div class="offering">
                         <div class="offering-title">Fund an SME Market Data Infrastructure</div>
@@ -433,7 +433,7 @@
               <img class="services-img is-active" data-idx="0" src="img/handshake.webp" alt="Finance" loading="lazy">
               <img class="services-img" data-idx="1" src="img/solardiscussion.webp" alt="Development" loading="lazy">
               <img class="services-img" data-idx="2" src="img/blackglobe2hands.webp" alt="Impact" loading="lazy">
-              <div class="services-img-caption" id="servicesImgCaption">Finance</div>
+              <!-- <div class="services-img-caption" id="servicesImgCaption">Finance</div> -->
             </div>
           </div>
 
@@ -821,6 +821,51 @@
         </div>
       </div>
     </footer>
+
+    <!-- Pitch Modal -->
+    <div class="pitch-modal-overlay" id="pitchModalOverlay" role="dialog" aria-modal="true" aria-labelledby="pitchModalTitle" hidden>
+      <div class="pitch-modal-card">
+        <button class="pitch-modal-close" id="pitchModalClose" aria-label="Close">&times;</button>
+        <h2 class="pitch-modal-title" id="pitchModalTitle">Pitch Your Business</h2>
+        <p class="pitch-modal-sub">Tell us about your venture. We review every submission.</p>
+        <form id="pitchForm" novalidate>
+          <div class="pitch-field-row">
+            <label>Full Name <span aria-hidden="true">*</span>
+              <input type="text" name="fullName" required placeholder="Jane Doe" />
+            </label>
+            <label>Email <span aria-hidden="true">*</span>
+              <input type="email" name="email" required placeholder="jane@example.com" />
+            </label>
+          </div>
+          <div class="pitch-field-row">
+            <label>Phone Number
+              <input type="tel" name="phone" placeholder="+1 555 000 0000" />
+            </label>
+            <label>Business Name <span aria-hidden="true">*</span>
+              <input type="text" name="businessName" required placeholder="Acme Ltd" />
+            </label>
+          </div>
+          <div class="pitch-field-row">
+            <label>Current Turnover (USD)
+              <input type="text" name="currentTurnover" placeholder="e.g. $500,000" />
+            </label>
+            <label>Funding Request (USD) <span aria-hidden="true">*</span>
+              <input type="text" name="fundingRequest" required placeholder="e.g. $2,000,000" />
+            </label>
+          </div>
+          <label class="pitch-field-full">Deal Description <span aria-hidden="true">*</span>
+            <textarea name="dealDescription" required rows="4" placeholder="Describe your business and the investment opportunity&hellip;"></textarea>
+          </label>
+          <label class="pitch-field-full">Pitch Deck (PDF / PPT &mdash; max 20&nbsp;MB)
+            <input type="file" name="deck" accept=".pdf,.ppt,.pptx" />
+          </label>
+          <div class="pitch-form-footer">
+            <button type="submit" class="pitch-submit" id="pitchSubmitBtn">Submit Pitch</button>
+            <p class="pitch-form-status" id="pitchFormStatus" aria-live="polite"></p>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <!-- ═══════════════════════════════════════════════
       JAVASCRIPT
