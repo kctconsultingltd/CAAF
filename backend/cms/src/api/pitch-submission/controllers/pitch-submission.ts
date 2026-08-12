@@ -59,13 +59,20 @@ export default factories.createCoreController(
             tmpPath      = path.join(os.tmpdir(), `pitch-deck-${Date.now()}${ext}`);
             fs.copyFileSync(srcPath, tmpPath);
 
+            // Strapi v5 upload service calls file.getStream() internally (formidable v3
+            // style) — provide it explicitly so it doesn't fall back to this.filepath
+            // which would be undefined on a plain descriptor object.
             const [uploaded] = await strapi.plugin('upload').service('upload').upload({
               data: {},
               files: {
                 path: tmpPath,
+                filepath: tmpPath,
                 name: fileName,
+                originalFilename: fileName,
                 type: mimeType,
+                mimetype: mimeType,
                 size: fileSize,
+                getStream: () => fs.createReadStream(tmpPath),
               },
             });
             deckId  = uploaded.id;
