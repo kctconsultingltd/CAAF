@@ -183,9 +183,42 @@
       if (e.key === "Escape" && !overlay.hasAttribute("hidden")) closeModal();
     });
 
+    // Comma formatting for currency inputs
+    function fmtNumber(raw) {
+      var digits = raw.replace(/[^0-9]/g, "");
+      return digits ? Number(digits).toLocaleString("en-US") : "";
+    }
+    ["currentTurnover", "fundingRequest"].forEach(function (name) {
+      var el = form.querySelector("[name=’" + name + "’]");
+      if (!el) return;
+      el.addEventListener("input", function () {
+        var digits = this.value.replace(/[^0-9]/g, "");
+        var beforeCursor = this.value.slice(0, this.selectionStart).replace(/[^0-9]/g, "").length;
+        this.value = fmtNumber(this.value);
+        var pos = 0, count = 0;
+        for (var i = 0; i < this.value.length; i++) {
+          if (this.value[i] !== ",") count++;
+          if (count === beforeCursor) { pos = i + 1; break; }
+        }
+        if (digits) this.setSelectionRange(pos, pos);
+      });
+    });
+
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var data = new FormData(form);
+
+      var requiredNames = ["fullName", "email", "businessName", "dealDescription", "fundingRequest"];
+      var incomplete = requiredNames.some(function (n) {
+        var v = data.get(n);
+        return !v || !v.toString().trim();
+      });
+      if (incomplete) {
+        status.textContent = "Please complete all required fields.";
+        status.className = "pitch-form-status error";
+        return;
+      }
+
       submitBtn.disabled = true;
       status.className = "pitch-form-status";
       status.textContent = "Submitting…";
@@ -199,7 +232,7 @@
           setTimeout(closeModal, 3000);
         })
         .catch(function () {
-          status.textContent = "Something went wrong — email us at info@capitalasaforce.com";
+          status.textContent = "Submission failed — please email info@capitalasaforce.com";
           status.className = "pitch-form-status error";
           submitBtn.disabled = false;
         });

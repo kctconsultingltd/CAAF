@@ -2320,7 +2320,7 @@ to {
   font-family: var(--serif);
   font-size: clamp(1.4rem, 3vw, 1.9rem);
   font-weight: 600;
-  color: var(--white);
+  color: var(--gold);
   margin-bottom: 6px;
 }
 
@@ -2425,6 +2425,30 @@ to {
 
 .pitch-form-status.success { color: #5cb85c; }
 .pitch-form-status.error   { color: #e74c3c; }
+
+/* $ prefix wrapper — override global .input-with-prefix to match pitch form aesthetic */
+#pitchForm .input-with-prefix {
+  background: var(--bg);
+  border: 1px solid var(--line-solid);
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+
+#pitchForm .input-with-prefix:focus-within {
+  border-color: var(--gold);
+}
+
+#pitchForm .input-with-prefix input {
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 10px 14px 10px 4px;
+}
+
+#pitchForm .input-with-prefix input:focus {
+  outline: none;
+  border: none;
+}
 
 @media (max-width: 540px) {
   .pitch-field-row {

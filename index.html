@@ -830,33 +830,39 @@
         <p class="pitch-modal-sub">Tell us about your venture. We review every submission.</p>
         <form id="pitchForm" novalidate>
           <div class="pitch-field-row">
-            <label>Full Name <span aria-hidden="true">*</span>
+            <label><span>Full Name <span aria-hidden="true">*</span></span>
               <input type="text" name="fullName" required placeholder="Jane Doe" />
             </label>
-            <label>Email <span aria-hidden="true">*</span>
+            <label><span>Email <span aria-hidden="true">*</span></span>
               <input type="email" name="email" required placeholder="jane@example.com" />
             </label>
           </div>
           <div class="pitch-field-row">
-            <label>Phone Number
-              <input type="tel" name="phone" placeholder="+1 555 000 0000" />
+            <label><span>Phone Number</span>
+              <input type="tel" name="phone" placeholder="+234 800 000 0000" />
             </label>
-            <label>Business Name <span aria-hidden="true">*</span>
+            <label><span>Business Name <span aria-hidden="true">*</span></span>
               <input type="text" name="businessName" required placeholder="Acme Ltd" />
             </label>
           </div>
           <div class="pitch-field-row">
-            <label>Current Turnover (USD)
-              <input type="text" name="currentTurnover" placeholder="e.g. $500,000" />
+            <label><span>Current Turnover (USD)</span>
+              <div class="input-with-prefix">
+                <span class="input-prefix">$</span>
+                <input type="text" inputmode="numeric" name="currentTurnover" placeholder="500,000" />
+              </div>
             </label>
-            <label>Funding Request (USD) <span aria-hidden="true">*</span>
-              <input type="text" name="fundingRequest" required placeholder="e.g. $2,000,000" />
+            <label><span>Funding Request (USD) <span aria-hidden="true">*</span></span>
+              <div class="input-with-prefix">
+                <span class="input-prefix">$</span>
+                <input type="text" inputmode="numeric" name="fundingRequest" required placeholder="2,000,000" />
+              </div>
             </label>
           </div>
-          <label class="pitch-field-full">Deal Description <span aria-hidden="true">*</span>
+          <label class="pitch-field-full"><span>Deal Description <span aria-hidden="true">*</span></span>
             <textarea name="dealDescription" required rows="4" placeholder="Describe your business and the investment opportunity&hellip;"></textarea>
           </label>
-          <label class="pitch-field-full">Pitch Deck (PDF / PPT &mdash; max 20&nbsp;MB)
+          <label class="pitch-field-full"><span>Pitch Deck (PDF / PPT &mdash; max 20&nbsp;MB)</span>
             <input type="file" name="deck" accept=".pdf,.ppt,.pptx" />
           </label>
           <div class="pitch-form-footer">
