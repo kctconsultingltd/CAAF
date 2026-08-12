@@ -183,33 +183,46 @@
     var successEl = document.getElementById("pitchSuccess");
     var doneBtnWired = false;
 
+    var modalTitle = document.getElementById("pitchModalTitle");
+    var modalSub   = overlay.querySelector(".pitch-modal-sub");
+
+    function hideHeader() {
+      if (modalTitle) modalTitle.style.display = "none";
+      if (modalSub)   modalSub.style.display   = "none";
+    }
+    function showHeader() {
+      if (modalTitle) modalTitle.style.display = "";
+      if (modalSub)   modalSub.style.display   = "";
+    }
+
+    function resetModal() {
+      form.style.display = "";
+      form.reset();
+      showHeader();
+      if (successEl) successEl.setAttribute("hidden", "");
+      status.textContent = "";
+      status.className = "pitch-form-status";
+      submitBtn.disabled = false;
+    }
+
     function showSuccess() {
       form.style.display = "none";
+      hideHeader();
       if (successEl) successEl.removeAttribute("hidden");
       if (!doneBtnWired) {
         doneBtnWired = true;
         document.getElementById("pitchSuccessDone").addEventListener("click", function () {
           closeModal();
-          form.style.display = "";
-          form.reset();
-          if (successEl) successEl.setAttribute("hidden", "");
-          status.textContent = "";
-          status.className = "pitch-form-status";
-          submitBtn.disabled = false;
+          resetModal();
         });
       }
     }
 
-    // Also reset success state when overlay is closed via backdrop/escape
+    // Also reset when overlay closes via backdrop/escape
     var _origClose = closeModal;
     closeModal = function () {
       _origClose();
-      form.style.display = "";
-      form.reset();
-      if (successEl) successEl.setAttribute("hidden", "");
-      status.textContent = "";
-      status.className = "pitch-form-status";
-      submitBtn.disabled = false;
+      resetModal();
     };
 
     form.addEventListener("submit", function (e) {
