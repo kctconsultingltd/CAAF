@@ -117,32 +117,11 @@
 
   /* ── What We Do Accordion ───────────────────────── */
   (function () {
-    var items   = document.querySelectorAll(".acc-item");
+    var items  = document.querySelectorAll(".acc-item");
     if (!items.length) return;
     var images  = document.querySelectorAll(".services-img");
     var caption = document.getElementById("servicesImgCaption");
-    var leftCol = document.getElementById("servicesLeft");
-    var panel   = document.getElementById("servicesImgPanel");
     var titles  = ["Finance", "Development", "Impact"];
-
-    function calibrateHeight() {
-      if (!leftCol || !panel) return;
-      if (window.innerWidth <= 860) { panel.style.height = ""; return; }
-      leftCol.classList.add("measuring");
-      var savedIdx = (document.querySelector(".acc-item.is-open") || items[0]).dataset.idx;
-      var maxH = 0;
-      items.forEach(function (item) {
-        items.forEach(function (i) { i.classList.remove("is-open"); });
-        item.classList.add("is-open");
-        leftCol.getBoundingClientRect();
-        maxH = Math.max(maxH, leftCol.scrollHeight);
-      });
-      items.forEach(function (i) { i.classList.remove("is-open"); });
-      var restore = document.querySelector(".acc-item[data-idx='" + savedIdx + "']");
-      if (restore) restore.classList.add("is-open");
-      leftCol.classList.remove("measuring");
-      panel.style.height = maxH + "px";
-    }
 
     items.forEach(function (item) {
       item.querySelector(".acc-header").addEventListener("click", function () {
@@ -156,9 +135,6 @@
         if (caption) caption.textContent = titles[activeIdx];
       });
     });
-
-    window.addEventListener("load", calibrateHeight);
-    window.addEventListener("resize", calibrateHeight);
   })();
 
   /* ── Pitch Modal ────────────────────────────────── */
