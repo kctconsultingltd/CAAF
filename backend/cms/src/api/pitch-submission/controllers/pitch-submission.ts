@@ -2,7 +2,7 @@ import { factories } from '@strapi/strapi';
 import * as fs from 'fs';
 
 export default factories.createCoreController(
-  'api::pitch-submission.pitch-submission',
+  'api::pitch-submission.pitch-submission' as any,
   ({ strapi }) => ({
     async create(ctx) {
       const body  = ctx.request.body  as Record<string, string>;
@@ -45,7 +45,7 @@ export default factories.createCoreController(
         }
       }
 
-      const entry = await strapi.documents('api::pitch-submission.pitch-submission').create({
+      const entry = await (strapi.documents as any)('api::pitch-submission.pitch-submission').create({
         data: {
           fullName:        body.fullName.trim(),
           email:           body.email.trim().toLowerCase(),

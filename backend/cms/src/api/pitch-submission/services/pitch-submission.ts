@@ -40,7 +40,7 @@ async function sendViaZeptoMail(payload: {
 }
 
 export default factories.createCoreService(
-  'api::pitch-submission.pitch-submission',
+  'api::pitch-submission.pitch-submission' as any,
   ({ strapi }) => ({
     async notifyAdmin(submission: PitchPayload): Promise<void> {
       const token     = process.env.ZEPTO_MAIL_API_TOKEN;
