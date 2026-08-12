@@ -115,109 +115,50 @@
     });
   });
 
-  /* ── What We Do Carousel (infinite scroll) ───────── */
+  /* ── What We Do Accordion ───────────────────────── */
   (function () {
-    var track = document.querySelector(".carousel-slides");
-    if (!track) return;
+    var items   = document.querySelectorAll(".acc-item");
+    if (!items.length) return;
+    var images  = document.querySelectorAll(".services-img");
+    var caption = document.getElementById("servicesImgCaption");
+    var leftCol = document.getElementById("servicesLeft");
+    var panel   = document.getElementById("servicesImgPanel");
+    var titles  = ["Finance", "Development", "Impact"];
 
-    var realSlides = Array.from(track.querySelectorAll(".carousel-slide"));
-    var realCount = realSlides.length;
-    if (!realCount) return;
-
-    // Append a clone of slide 0 so the loop can scroll past it seamlessly
-    var firstClone = realSlides[0].cloneNode(true);
-    firstClone.setAttribute("aria-hidden", "true");
-    firstClone.classList.remove("is-active");
-    track.appendChild(firstClone);
-
-    var allSlides = Array.from(track.querySelectorAll(".carousel-slide"));
-    var totalCount = allSlides.length; // realCount + 1
-
-    var currentIndex = 0;
-    var busy = false;
-    var slideInterval = null;
-    var TRANSITION_MS = 650; // slightly over the CSS 0.6s
-
-    function isMobile() {
-      return window.innerWidth <= 900;
-    }
-
-    // Set track/slide widths so each slide fills the viewport on mobile
-    function setMobileWidths() {
-      if (isMobile()) {
-        track.style.width = totalCount * 100 + "%";
-        allSlides.forEach(function (s) {
-          s.style.width = 100 / totalCount + "%";
-        });
-      } else {
-        track.style.width = "";
-        allSlides.forEach(function (s) {
-          s.style.width = "";
-        });
-      }
-    }
-
-    function updateActive() {
-      var idx = currentIndex % realCount;
-      realSlides.forEach(function (s) {
-        s.classList.remove("is-active");
+    function calibrateHeight() {
+      if (!leftCol || !panel) return;
+      if (window.innerWidth <= 860) { panel.style.height = ""; return; }
+      leftCol.classList.add("measuring");
+      var savedIdx = (document.querySelector(".acc-item.is-open") || items[0]).dataset.idx;
+      var maxH = 0;
+      items.forEach(function (item) {
+        items.forEach(function (i) { i.classList.remove("is-open"); });
+        item.classList.add("is-open");
+        leftCol.getBoundingClientRect();
+        maxH = Math.max(maxH, leftCol.scrollHeight);
       });
-      realSlides[idx].classList.add("is-active");
-      firstClone.classList.toggle("is-active", idx === 0);
+      items.forEach(function (i) { i.classList.remove("is-open"); });
+      var restore = document.querySelector(".acc-item[data-idx='" + savedIdx + "']");
+      if (restore) restore.classList.add("is-open");
+      leftCol.classList.remove("measuring");
+      panel.style.height = maxH + "px";
     }
 
-    function setPosition(idx, animate) {
-      if (!animate) {
-        track.style.transition = "none";
-        void track.offsetWidth; // flush so "none" takes effect immediately
-      } else {
-        track.style.transition = "";
-      }
-      track.style.transform = isMobile()
-        ? "translateX(-" + (idx / totalCount) * 100 + "%)"
-        : "";
-      if (!animate) {
-        void track.offsetWidth; // flush the transform before re-enabling
-        track.style.transition = "";
-      }
-    }
-
-    function advance() {
-      if (busy) return;
-      busy = true;
-
-      currentIndex++;
-      updateActive();
-      setPosition(currentIndex, true);
-
-      if (isMobile() && currentIndex === realCount) {
-        // We're on the clone — after the animation, silently snap to real slide 0
-        setTimeout(function () {
-          currentIndex = 0;
-          setPosition(0, false);
-          busy = false;
-        }, TRANSITION_MS);
-      } else {
-        setTimeout(function () {
-          busy = false;
-        }, TRANSITION_MS);
-      }
-    }
-
-    function startInterval() {
-      if (slideInterval) clearInterval(slideInterval);
-      slideInterval = setInterval(advance, 3000);
-    }
-
-    window.addEventListener("resize", function () {
-      setMobileWidths();
-      setPosition(currentIndex, false);
+    items.forEach(function (item) {
+      item.querySelector(".acc-header").addEventListener("click", function () {
+        var idx = +item.dataset.idx;
+        var wasOpen = item.classList.contains("is-open");
+        items.forEach(function (i) { i.classList.remove("is-open"); });
+        images.forEach(function (img) { img.classList.remove("is-active"); });
+        var activeIdx = wasOpen ? 0 : idx;
+        document.querySelector(".acc-item[data-idx='" + activeIdx + "']").classList.add("is-open");
+        document.querySelector(".services-img[data-idx='" + activeIdx + "']").classList.add("is-active");
+        if (caption) caption.textContent = titles[activeIdx];
+      });
     });
 
-    setMobileWidths();
-    updateActive();
-    setPosition(0, false);
-    startInterval();
+    window.addEventListener("load", calibrateHeight);
+    window.addEventListener("resize", calibrateHeight);
   })();
 
   /* ── Intersection Observer — Reveal ────────────── */
