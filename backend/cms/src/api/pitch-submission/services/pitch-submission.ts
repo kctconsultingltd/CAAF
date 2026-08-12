@@ -21,7 +21,7 @@ async function sendViaZeptoMail(payload: {
   const res = await fetch('https://api.zeptomail.com/v1.1/email', {
     method: 'POST',
     headers: {
-      Authorization: `Zoho-enczapikey ${payload.token}`,
+      Authorization: payload.token,
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
