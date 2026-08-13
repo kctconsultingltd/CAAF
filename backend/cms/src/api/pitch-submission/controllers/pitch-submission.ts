@@ -128,9 +128,18 @@ export default factories.createCoreController(
       const key = String(ctx.query.key ?? '');
       const exportKey = process.env.EXPORT_KEY;
 
-      if (!exportKey || key !== exportKey) {
+      strapi.log.info(
+        `[pitch-submission] exportData — exportKey:${exportKey ? 'SET(len=' + exportKey.length + ')' : 'MISSING'} | key len:${key.length}`
+      );
+
+      if (!exportKey) {
         ctx.status = 401;
-        ctx.body = 'Unauthorized';
+        ctx.body = 'EXPORT_KEY is not configured on the server';
+        return;
+      }
+      if (key !== exportKey) {
+        ctx.status = 401;
+        ctx.body = 'Invalid export key';
         return;
       }
 
