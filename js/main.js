@@ -167,16 +167,23 @@
     ["currentTurnover", "fundingRequest"].forEach(function (name) {
       var el = form.querySelector("[name=’" + name + "’]");
       if (!el) return;
+      // Block non-digits before the DOM updates (handles keyboard input)
+      el.addEventListener("beforeinput", function (e) {
+        if (e.data && /[^0-9]/.test(e.data)) e.preventDefault();
+      });
+      // Strip and reformat after input (handles paste)
       el.addEventListener("input", function () {
-        var digits = this.value.replace(/[^0-9]/g, "");
         var beforeCursor = this.value.slice(0, this.selectionStart).replace(/[^0-9]/g, "").length;
-        this.value = fmtNumber(this.value);
-        var pos = 0, count = 0;
-        for (var i = 0; i < this.value.length; i++) {
-          if (this.value[i] !== ",") count++;
-          if (count === beforeCursor) { pos = i + 1; break; }
+        var digits = this.value.replace(/[^0-9]/g, "");
+        this.value = digits ? Number(digits).toLocaleString("en-US") : "";
+        if (digits) {
+          var pos = 0, count = 0;
+          for (var i = 0; i < this.value.length; i++) {
+            if (this.value[i] !== ",") count++;
+            if (count === beforeCursor) { pos = i + 1; break; }
+          }
+          this.setSelectionRange(pos, pos);
         }
-        if (digits) this.setSelectionRange(pos, pos);
       });
     });
 
