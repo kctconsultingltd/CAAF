@@ -130,10 +130,7 @@ p {
   color: var(--gold);
 }
 .section-label::after {
-  content: "";
-  width: 40px;
-  height: 1px;
-  background: var(--gold);
+  display: none;
 }
 
 /* ── Gold Borders ────────────────────────────────── */
@@ -601,10 +598,7 @@ p {
   margin-bottom: 18px;
 }
 .hero-tag::before {
-  content: "";
-  width: 32px;
-  height: 1px;
-  background: var(--gold);
+  display: none;
 }
 .hero-eq {
   font-family: var(--serif);
@@ -1944,10 +1938,7 @@ to {
   margin-bottom: 18px;
 }
 .hero-tag::before {
-  content: "";
-  width: 32px;
-  height: 1px;
-  background: var(--gold);
+  display: none;
 }
 .hero-eq {
   font-family: var(--serif);
