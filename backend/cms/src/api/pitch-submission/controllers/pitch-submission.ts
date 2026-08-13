@@ -114,7 +114,7 @@ export default factories.createCoreController(
           dealDescription: String(body.dealDescription).trim(),
           currentTurnover: String(body.currentTurnover ?? '').trim() || null,
           fundingRequest:  String(body.fundingRequest).trim(),
-          deckUrl:         deckUrl ? adminBase + deckUrl : null,
+          deckUrl:         deckUrl ? (deckUrl.startsWith('http') ? deckUrl : adminBase + deckUrl) : null,
         })
         .catch((err: Error) =>
           strapi.log.error('[pitch-submission] Admin notification failed:', err.message)
