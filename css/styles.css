@@ -2505,6 +2505,7 @@ to {
 /* ── Event Sponsors Marquee ──────────────────────── */
 .sponsors-strip-wrap {
   padding: 32px 0;
+  background: var(--bg2);
   border-top: 1px solid var(--line-solid);
   border-bottom: 1px solid var(--line-solid);
   overflow: hidden;
