@@ -2520,21 +2520,12 @@ to {
   margin-bottom: 28px;
 }
 
-.sponsors-strip {
-  overflow: hidden;
-  width: 100%;
-}
-
-.sponsors-track {
+.sponsors-static {
   display: flex;
   align-items: center;
-  gap: 60px;
-  width: max-content;
-  animation: sponsorScroll 18s linear infinite;
-}
-
-.sponsors-track:hover {
-  animation-play-state: paused;
+  justify-content: center;
+  gap: 80px;
+  flex-wrap: wrap;
 }
 
 .sponsor-logo {
@@ -2552,14 +2543,6 @@ to {
   opacity: 1;
 }
 
-@keyframes sponsorScroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sponsors-track { animation: none; }
-}
 
 /* ── Event Speakers Carousel ─────────────────────── */
 .speakers-section { background: var(--bg); }
