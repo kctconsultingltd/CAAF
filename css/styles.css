@@ -2537,7 +2537,7 @@ to {
 
 
 /* ── Event Speakers Carousel ─────────────────────── */
-.speakers-section { background: #221700 !important; }
+.speakers-section { background: var(--bg); }
 
 .speakers-carousel-wrap {
   position: relative;
