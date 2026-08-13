@@ -180,6 +180,49 @@
       });
     });
 
+    // Full name: strip digits on input
+    var nameEl = form.querySelector("[name='fullName']");
+    if (nameEl) {
+      nameEl.addEventListener("input", function () {
+        var pos = this.selectionStart;
+        var cleaned = this.value.replace(/[0-9]/g, "");
+        if (cleaned !== this.value) {
+          this.value = cleaned;
+          this.setSelectionRange(pos - 1, pos - 1);
+        }
+      });
+    }
+
+    // Phone: allow only digits, +, -, spaces, parentheses
+    var phoneEl = form.querySelector("[name='phone']");
+    if (phoneEl) {
+      phoneEl.addEventListener("input", function () {
+        var pos = this.selectionStart;
+        var cleaned = this.value.replace(/[^0-9+\-\s()]/g, "");
+        if (cleaned !== this.value) {
+          this.value = cleaned;
+          this.setSelectionRange(pos - 1, pos - 1);
+        }
+      });
+    }
+
+    // Email: validate format on blur
+    var emailEl = form.querySelector("[name='email']");
+    var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailEl) {
+      emailEl.addEventListener("blur", function () {
+        if (this.value.trim() && !emailRe.test(this.value.trim())) {
+          this.setCustomValidity("Please enter a valid email address.");
+          this.reportValidity();
+        } else {
+          this.setCustomValidity("");
+        }
+      });
+      emailEl.addEventListener("input", function () {
+        this.setCustomValidity("");
+      });
+    }
+
     var successEl  = document.getElementById("pitchSuccess");
     var loadingEl  = document.getElementById("pitchLoading");
     var doneBtnWired = false;
@@ -246,6 +289,12 @@
       });
       if (incomplete) {
         status.textContent = "Please complete all required fields.";
+        status.className = "pitch-form-status error";
+        return;
+      }
+      var emailVal = (data.get("email") || "").toString().trim();
+      if (!emailRe.test(emailVal)) {
+        status.textContent = "Please enter a valid email address.";
         status.className = "pitch-form-status error";
         return;
       }
