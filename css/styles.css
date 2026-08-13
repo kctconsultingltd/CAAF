@@ -2043,6 +2043,12 @@ to {
   align-items: stretch;
 }
 
+/* Prevent grid children from overflowing their column */
+.services-left,
+.services-right {
+  min-width: 0;
+}
+
 /* ── Left: accordion ── */
 .services-left .acc-item:first-of-type {
   border-top: 1px solid var(--line-solid);
@@ -2153,6 +2159,8 @@ to {
   color: var(--gold);
   margin-bottom: 7px;
   font-weight: 700;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .offering-subtitle {
@@ -2168,6 +2176,7 @@ to {
   color: var(--muted);
   line-height: 1.72;
   margin-bottom: 10px;
+  overflow-wrap: break-word;
 }
 
 .offering-cta {
