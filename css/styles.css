@@ -2502,6 +2502,65 @@ to {
   animation: pitchCircle 0.55s ease-out 0.1s forwards;
 }
 
+/* ── Event Sponsors Marquee ──────────────────────── */
+.sponsors-strip-wrap {
+  padding: 40px 0;
+  border-top: 1px solid var(--line-solid);
+  border-bottom: 1px solid var(--line-solid);
+  overflow: hidden;
+}
+
+.sponsors-eyebrow {
+  text-align: center;
+  font-family: var(--condensed);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+
+.sponsors-strip {
+  overflow: hidden;
+  width: 100%;
+}
+
+.sponsors-track {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+  width: max-content;
+  animation: sponsorScroll 18s linear infinite;
+}
+
+.sponsors-track:hover {
+  animation-play-state: paused;
+}
+
+.sponsor-logo {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+  filter: grayscale(1) brightness(1.8);
+  opacity: 0.7;
+  transition: filter 0.3s, opacity 0.3s;
+  flex-shrink: 0;
+}
+
+.sponsor-logo:hover {
+  filter: grayscale(0) brightness(1);
+  opacity: 1;
+}
+
+@keyframes sponsorScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sponsors-track { animation: none; }
+}
+
 /* ── Event Speakers Carousel ─────────────────────── */
 .speakers-section { background: var(--bg); }
 
