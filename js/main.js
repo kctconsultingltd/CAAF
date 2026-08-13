@@ -493,24 +493,30 @@
       hideHeader();
       if (loadingEl) loadingEl.removeAttribute("hidden");
 
-      setTimeout(function () {
-        // Trigger download
-        var a = document.createElement("a");
-        a.href = "/The_Rural_Lens_Fund_updated.pdf";
-        a.download = "The_Rural_Lens_Fund.pdf";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+      fetch("https://admin-staging.capitalasaforce.com/api/newsletter-subscribers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, source: "rural-lens-fund-deck" }),
+      })
+        .catch(function () { /* non-blocking — download proceeds regardless */ })
+        .finally(function () {
+          // Trigger download
+          var a = document.createElement("a");
+          a.href = "/The_Rural_Lens_Fund_updated.pdf";
+          a.download = "The_Rural_Lens_Fund.pdf";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
 
-        // Show success
-        if (loadingEl) loadingEl.setAttribute("hidden", "");
-        if (successEl) successEl.removeAttribute("hidden");
+          // Show success
+          if (loadingEl) loadingEl.setAttribute("hidden", "");
+          if (successEl) successEl.removeAttribute("hidden");
 
-        if (!doneBtnWired) {
-          doneBtnWired = true;
-          document.getElementById("deckSuccessDone").addEventListener("click", closeModal);
-        }
-      }, 700);
+          if (!doneBtnWired) {
+            doneBtnWired = true;
+            document.getElementById("deckSuccessDone").addEventListener("click", closeModal);
+          }
+        });
     });
   })();
 
