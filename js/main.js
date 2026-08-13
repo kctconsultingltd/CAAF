@@ -432,6 +432,88 @@
     startAuto();
   })();
 
+  /* ── Deck Request Modal ─────────────────────────── */
+  (function () {
+    var overlay    = document.getElementById("deckModalOverlay");
+    var closeBtn   = document.getElementById("deckModalClose");
+    var trigger    = document.querySelector(".deck-trigger");
+    var form       = document.getElementById("deckForm");
+    var status     = document.getElementById("deckFormStatus");
+    var submitBtn  = document.getElementById("deckSubmitBtn");
+    var loadingEl  = document.getElementById("deckLoading");
+    var successEl  = document.getElementById("deckSuccess");
+    var modalTitle = document.getElementById("deckModalTitle");
+    var modalSub   = overlay ? overlay.querySelector(".pitch-modal-sub") : null;
+    if (!overlay || !trigger) return;
+
+    var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function openModal()  { overlay.removeAttribute("hidden"); document.body.style.overflow = "hidden"; }
+    function closeModal() { overlay.setAttribute("hidden", ""); document.body.style.overflow = ""; resetModal(); }
+
+    function hideHeader() {
+      if (modalTitle) modalTitle.style.display = "none";
+      if (modalSub)   modalSub.style.display   = "none";
+    }
+    function showHeader() {
+      if (modalTitle) modalTitle.style.display = "";
+      if (modalSub)   modalSub.style.display   = "";
+    }
+
+    function resetModal() {
+      form.style.display = "";
+      form.reset();
+      showHeader();
+      if (loadingEl) loadingEl.setAttribute("hidden", "");
+      if (successEl) successEl.setAttribute("hidden", "");
+      status.textContent = "";
+      status.className = "pitch-form-status";
+      submitBtn.disabled = false;
+    }
+
+    trigger.addEventListener("click", function (e) { e.preventDefault(); openModal(); });
+    closeBtn.addEventListener("click", closeModal);
+    overlay.addEventListener("click", function (e) { if (e.target === overlay) closeModal(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !overlay.hasAttribute("hidden")) closeModal();
+    });
+
+    var doneBtnWired = false;
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var email = form.querySelector("[name='email']").value.trim();
+      if (!emailRe.test(email)) {
+        status.textContent = "Please enter a valid email address.";
+        status.className = "pitch-form-status error";
+        return;
+      }
+
+      submitBtn.disabled = true;
+      form.style.display = "none";
+      hideHeader();
+      if (loadingEl) loadingEl.removeAttribute("hidden");
+
+      setTimeout(function () {
+        // Trigger download
+        var a = document.createElement("a");
+        a.href = "/The_Rural_Lens_Fund_updated.pdf";
+        a.download = "The_Rural_Lens_Fund.pdf";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        // Show success
+        if (loadingEl) loadingEl.setAttribute("hidden", "");
+        if (successEl) successEl.removeAttribute("hidden");
+
+        if (!doneBtnWired) {
+          doneBtnWired = true;
+          document.getElementById("deckSuccessDone").addEventListener("click", closeModal);
+        }
+      }, 700);
+    });
+  })();
+
   /* ── Intersection Observer — Reveal ────────────── */
   var reveals = document.querySelectorAll(".reveal");
   if ("IntersectionObserver" in window) {

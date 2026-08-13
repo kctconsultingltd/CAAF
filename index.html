@@ -416,7 +416,7 @@
                         <div class="offering-title">The Rural Lens Fund</div>
                         <div class="offering-subtitle">Financing Africa&rsquo;s Industrial Base</div>
                         <div class="offering-desc">A $10m impact fund investing in opportunities that deepen the industrialization of rural economies. To invest or partner, request a deck.</div>
-                        <a class="offering-cta" href="#contact">Request a deck &rarr;</a>
+                        <a class="offering-cta deck-trigger" href="#">Request a deck &rarr;</a>
                       </div>
                     </div>
                   </div>
@@ -926,6 +926,52 @@
           <h3 class="pitch-success-title">Pitch Received!</h3>
           <p class="pitch-success-sub">We&rsquo;ll review your submission and be in touch shortly.</p>
           <button class="pitch-submit" id="pitchSuccessDone">Done</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deck Request Modal -->
+    <div class="pitch-modal-overlay" id="deckModalOverlay" role="dialog" aria-modal="true" aria-labelledby="deckModalTitle" hidden>
+      <div class="pitch-modal-card">
+        <button class="pitch-modal-close" id="deckModalClose" aria-label="Close">&times;</button>
+        <h2 class="pitch-modal-title" id="deckModalTitle">Request the Deck</h2>
+        <p class="pitch-modal-sub">Enter your email to download The Rural Lens Fund deck.</p>
+
+        <form id="deckForm" novalidate>
+          <div class="pitch-field">
+            <label class="pitch-label" for="deckEmail">Email Address <span class="pitch-req">*</span></label>
+            <input class="pitch-input" type="email" id="deckEmail" name="email" placeholder="you@example.com" required />
+          </div>
+          <p class="pitch-form-status" id="deckFormStatus"></p>
+          <button type="submit" class="pitch-submit" id="deckSubmitBtn">Download Deck &rarr;</button>
+        </form>
+
+        <!-- Loading screen -->
+        <div class="pitch-loading" id="deckLoading" hidden>
+          <div class="pitch-loading-icon">
+            <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="26" cy="26" r="23" stroke="rgba(200,158,42,0.2)" stroke-width="3"/>
+              <path d="M26 3 a23 23 0 0 1 23 23" stroke="#c89e2a" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="pitch-success-title">Preparing&hellip;</h3>
+          <p class="pitch-success-sub">Your download is being prepared.</p>
+        </div>
+
+        <!-- Success screen -->
+        <div class="pitch-success" id="deckSuccess" hidden>
+          <div class="pitch-success-icon">
+            <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle class="pitch-tick-circle" cx="26" cy="26" r="25" stroke="#22c55e" stroke-width="2"
+                      stroke-dasharray="157" stroke-dashoffset="157"/>
+              <path   class="pitch-tick-check"  d="M14 27l9 9 15-18" stroke="#22c55e" stroke-width="2.5"
+                      stroke-linecap="round" stroke-linejoin="round"
+                      stroke-dasharray="50" stroke-dashoffset="50"/>
+            </svg>
+          </div>
+          <h3 class="pitch-success-title">Download Starting!</h3>
+          <p class="pitch-success-sub">The Rural Lens Fund deck is downloading. Check your downloads folder.</p>
+          <button class="pitch-submit" id="deckSuccessDone">Done</button>
         </div>
       </div>
     </div>
