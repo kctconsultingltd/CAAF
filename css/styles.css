@@ -43,6 +43,7 @@ section[id] {
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
 }
 body {
   font-family: var(--sans);
@@ -50,6 +51,7 @@ body {
   color: var(--white);
   background: var(--bg);
   line-height: 1.6;
+  overflow-x: hidden;
   overflow-x: hidden;
 }
 img,
@@ -2245,7 +2247,9 @@ to {
 
   .services-right {
     padding-left: 0;
-    margin-top: 32px;
+    margin-top: 0;
+    margin-bottom: 32px;
+    order: -1; /* image panel above accordion on mobile */
   }
 
   .services-img-panel {
@@ -2497,6 +2501,7 @@ to {
 
 .speakers-track-outer {
   overflow: hidden;
+  width: 100%;
 }
 
 .speakers-track {
