@@ -180,7 +180,8 @@
       });
     });
 
-    var successEl = document.getElementById("pitchSuccess");
+    var successEl  = document.getElementById("pitchSuccess");
+    var loadingEl  = document.getElementById("pitchLoading");
     var doneBtnWired = false;
 
     var modalTitle = document.getElementById("pitchModalTitle");
@@ -195,10 +196,20 @@
       if (modalSub)   modalSub.style.display   = "";
     }
 
+    function showLoading() {
+      form.style.display = "none";
+      hideHeader();
+      if (loadingEl) loadingEl.removeAttribute("hidden");
+    }
+    function hideLoading() {
+      if (loadingEl) loadingEl.setAttribute("hidden", "");
+    }
+
     function resetModal() {
       form.style.display = "";
       form.reset();
       showHeader();
+      hideLoading();
       if (successEl) successEl.setAttribute("hidden", "");
       status.textContent = "";
       status.className = "pitch-form-status";
@@ -206,8 +217,7 @@
     }
 
     function showSuccess() {
-      form.style.display = "none";
-      hideHeader();
+      hideLoading();
       if (successEl) successEl.removeAttribute("hidden");
       if (!doneBtnWired) {
         doneBtnWired = true;
@@ -247,8 +257,7 @@
       });
 
       submitBtn.disabled = true;
-      status.className = "pitch-form-status";
-      status.textContent = "Submitting…";
+      showLoading();
 
       fetch(API + "/pitch-submissions", { method: "POST", body: data })
         .then(function (r) {
@@ -256,6 +265,9 @@
           showSuccess();
         })
         .catch(function () {
+          hideLoading();
+          form.style.display = "";
+          showHeader();
           status.textContent = "Submission failed — please email info@capitalasaforce.com";
           status.className = "pitch-form-status error";
           submitBtn.disabled = false;

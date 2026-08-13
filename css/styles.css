@@ -2440,6 +2440,25 @@ to {
   border: none;
 }
 
+.pitch-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px 0 8px;
+  gap: 16px;
+}
+.pitch-loading[hidden] { display: none; }
+.pitch-loading-icon svg {
+  width: 72px;
+  height: 72px;
+  display: block;
+  animation: pitchSpin 0.85s linear infinite;
+}
+@keyframes pitchSpin {
+  to { transform: rotate(360deg); }
+}
+
 .pitch-success {
   display: flex;
   flex-direction: column;
