@@ -13,11 +13,11 @@ export default factories.createCoreController(
 
       try {
         await (strapi.documents as any)('api::newsletter-subscriber.newsletter-subscriber').create({
-          data: { email, source: source || undefined },
+          data: { email, source: source || null },
         });
         strapi.log.info(`[newsletter-subscriber] saved: ${email} | source: ${source || 'none'}`);
-      } catch {
-        strapi.log.info(`[newsletter-subscriber] duplicate or error for: ${email}, proceeding`);
+      } catch (err: any) {
+        strapi.log.info(`[newsletter-subscriber] skipped (likely duplicate): ${email} — ${err?.message}`);
       }
 
       ctx.body = { ok: true };
@@ -34,14 +34,23 @@ export default factories.createCoreController(
       }
 
       const source = String(ctx.query.source ?? '');
-      const filters: Record<string, any> = source ? { source } : {};
+      const filters: Record<string, any> = source ? { source: { $eq: source } } : {};
 
+      strapi.log.info(`[export] source="${source}" filters=${JSON.stringify(filters)}`);
+
+      // Strapi v5 document service: sort is an array, limit is top-level
       const entries = await (strapi.documents as any)(
         'api::newsletter-subscriber.newsletter-subscriber'
-      ).findMany({ filters, sort: { createdAt: 'desc' }, pagination: { limit: 10000 } });
+      ).findMany({
+        filters,
+        sort: ['createdAt:desc'],
+        limit: 10000,
+      });
+
+      strapi.log.info(`[export] found ${entries?.length ?? 0} entries`);
 
       const rows = [['Email', 'Source', 'Date']];
-      for (const e of entries) {
+      for (const e of (entries ?? [])) {
         rows.push([
           e.email ?? '',
           e.source ?? '',
