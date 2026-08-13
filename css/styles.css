@@ -2504,20 +2504,10 @@ to {
 
 /* ── Event Sponsors Marquee ──────────────────────── */
 .sponsors-strip-wrap {
-  padding: 40px 0;
+  padding: 32px 0;
   border-top: 1px solid var(--line-solid);
   border-bottom: 1px solid var(--line-solid);
   overflow: hidden;
-}
-
-.sponsors-eyebrow {
-  text-align: center;
-  font-family: var(--condensed);
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 28px;
 }
 
 .sponsors-static {
@@ -2526,11 +2516,13 @@ to {
   justify-content: center;
   gap: 80px;
   flex-wrap: wrap;
+  height: 100%;
 }
 
 .sponsor-logo {
-  height: 100px;
+  height: 160px;
   width: auto;
+  max-width: 300px;
   object-fit: contain;
   filter: grayscale(1) brightness(1.8);
   opacity: 0.7;
