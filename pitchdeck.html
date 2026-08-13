@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pitch Submissions — CAAF Admin</title>
+  <link rel="icon" href="img/favicon.ico" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #06111f;
+      color: #e8f0f8;
+      min-height: 100vh;
+    }
+
+    /* ── Auth gate ── */
+    .gate {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .gate-card {
+      background: #081629;
+      border: 1px solid rgba(200,150,42,.25);
+      border-radius: 10px;
+      padding: 40px;
+      width: 100%;
+      max-width: 380px;
+    }
+    .logo-label { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: #7a8fa6; margin-bottom: 8px; }
+    .gate-card h1 { font-size: 1.3rem; font-weight: 600; color: #c8962a; margin-bottom: 28px; }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.72rem;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: #7a8fa6;
+      margin-bottom: 16px;
+    }
+    input {
+      background: #06111f;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 6px;
+      padding: 10px 14px;
+      color: #e8f0f8;
+      font-size: 0.9rem;
+      width: 100%;
+    }
+    input:focus { outline: none; border-color: #c8962a; }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #f0c040, #c8962a);
+      color: #06111f;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: filter .2s;
+      margin-top: 8px;
+    }
+    .btn:hover { filter: brightness(1.1); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; filter: none; }
+
+    .msg { margin-top: 12px; font-size: 0.82rem; text-align: center; min-height: 18px; }
+    .msg.error { color: #f87171; }
+
+    /* ── Dashboard ── */
+    #dashboard { display: none; }
+
+    .topbar {
+      background: #081629;
+      border-bottom: 1px solid rgba(200,150,42,.2);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .topbar-title { font-size: 1rem; font-weight: 600; color: #c8962a; }
+    .topbar-sub { font-size: 0.75rem; color: #7a8fa6; margin-top: 2px; }
+    .topbar-actions { display: flex; gap: 10px; align-items: center; }
+
+    .btn-sm {
+      padding: 9px 20px;
+      background: linear-gradient(135deg, #f0c040, #c8962a);
+      color: #06111f;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: filter .2s;
+    }
+    .btn-sm:hover { filter: brightness(1.1); }
+
+    .count-badge {
+      font-size: 0.75rem;
+      color: #7a8fa6;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 20px;
+      padding: 4px 12px;
+    }
+
+    .table-wrap {
+      padding: 24px 32px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      min-width: 900px;
+    }
+    thead th {
+      text-align: left;
+      font-size: 0.68rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #7a8fa6;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(200,150,42,.2);
+      white-space: nowrap;
+    }
+    tbody tr {
+      border-bottom: 1px solid rgba(255,255,255,.05);
+      transition: background .15s;
+    }
+    tbody tr:hover { background: rgba(255,255,255,.03); }
+    td {
+      padding: 12px 14px;
+      color: #e8f0f8;
+      vertical-align: top;
+      max-width: 260px;
+    }
+    td.muted { color: #7a8fa6; }
+    td.desc {
+      font-size: 0.78rem;
+      color: #7a8fa6;
+      white-space: pre-wrap;
+      max-width: 300px;
+    }
+    .deck-link {
+      color: #c8962a;
+      text-decoration: none;
+      font-size: 0.75rem;
+      border: 1px solid rgba(200,150,42,.35);
+      border-radius: 3px;
+      padding: 3px 8px;
+      white-space: nowrap;
+    }
+    .deck-link:hover { background: rgba(200,150,42,.1); }
+    .no-deck { color: #3a4a5a; font-size: 0.75rem; }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 24px;
+      color: #7a8fa6;
+    }
+    .empty-state p { margin-top: 8px; font-size: 0.85rem; }
+
+    @media (max-width: 600px) {
+      .topbar { padding: 14px 16px; }
+      .table-wrap { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Auth gate -->
+  <div class="gate" id="gate">
+    <div class="gate-card">
+      <div class="logo-label">Capital As A Force</div>
+      <h1>Pitch Submissions</h1>
+      <label>
+        Export Key
+        <input type="password" id="keyInput" placeholder="Enter export key" />
+      </label>
+      <button class="btn" id="loadBtn">Load Submissions</button>
+      <p class="msg" id="gateMsg"></p>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Pitch Submissions</div>
+        <div class="topbar-sub">Capital As A Force — Admin</div>
+      </div>
+      <div class="topbar-actions">
+        <span class="count-badge" id="countBadge">0 submissions</span>
+        <button class="btn-sm" id="csvBtn">Download CSV</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="submissionsTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Business</th>
+            <th>Funding Request</th>
+            <th>Turnover</th>
+            <th>Description</th>
+            <th>Deck</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyState" style="display:none">
+        <strong>No submissions yet</strong>
+        <p>Pitch submissions will appear here once received.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var API_BASE = window.location.hostname.includes('staging')
+      ? 'https://admin-staging.capitalasaforce.com/api'
+      : 'https://admin.capitalasaforce.com/api';
+
+    var exportKey = '';
+
+    document.getElementById('keyInput').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') document.getElementById('loadBtn').click();
+    });
+
+    document.getElementById('loadBtn').addEventListener('click', function () {
+      var key = document.getElementById('keyInput').value.trim();
+      var msg = document.getElementById('gateMsg');
+      var btn = document.getElementById('loadBtn');
+      if (!key) { msg.textContent = 'Please enter the export key.'; msg.className = 'msg error'; return; }
+
+      msg.textContent = 'Loading…';
+      msg.className = 'msg';
+      btn.disabled = true;
+
+      fetch(API_BASE + '/pitch-submissions/export?key=' + encodeURIComponent(key))
+        .then(function (r) {
+          if (r.status === 401) throw new Error('Invalid export key.');
+          if (!r.ok) throw new Error('Server error ' + r.status);
+          return r.json();
+        })
+        .then(function (data) {
+          exportKey = key;
+          document.getElementById('gate').style.display = 'none';
+          document.getElementById('dashboard').style.display = 'block';
+          renderTable(data);
+        })
+        .catch(function (err) {
+          msg.textContent = err.message;
+          msg.className = 'msg error';
+        })
+        .finally(function () { btn.disabled = false; });
+    });
+
+    function renderTable(data) {
+      var tbody = document.getElementById('tableBody');
+      var badge = document.getElementById('countBadge');
+      var empty = document.getElementById('emptyState');
+      badge.textContent = data.length + ' submission' + (data.length !== 1 ? 's' : '');
+
+      if (!data.length) {
+        empty.style.display = 'block';
+        return;
+      }
+
+      tbody.innerHTML = data.map(function (r) {
+        var deck = r.deckUrl
+          ? '<a class="deck-link" href="' + r.deckUrl + '" target="_blank" rel="noopener">View Deck &rarr;</a>'
+          : '<span class="no-deck">—</span>';
+        return '<tr>' +
+          '<td class="muted">' + esc(r.date) + '</td>' +
+          '<td>' + esc(r.fullName) + '</td>' +
+          '<td><a href="mailto:' + esc(r.email) + '" style="color:#c8962a;text-decoration:none;">' + esc(r.email) + '</a></td>' +
+          '<td class="muted">' + esc(r.phone || '—') + '</td>' +
+          '<td>' + esc(r.businessName) + '</td>' +
+          '<td>$' + esc(r.fundingRequest) + '</td>' +
+          '<td class="muted">' + (r.currentTurnover ? '$' + esc(r.currentTurnover) : '—') + '</td>' +
+          '<td class="desc">' + esc(r.dealDescription) + '</td>' +
+          '<td>' + deck + '</td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    document.getElementById('csvBtn').addEventListener('click', function () {
+      var url = API_BASE + '/pitch-submissions/export?key=' + encodeURIComponent(exportKey) + '&format=csv';
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'pitch-submissions-' + new Date().toISOString().split('T')[0] + '.csv';
+      a.click();
+    });
+
+    function esc(s) {
+      return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>

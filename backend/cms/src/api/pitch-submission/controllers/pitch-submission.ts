@@ -104,7 +104,6 @@ export default factories.createCoreController(
       const svc = strapi.service('api::pitch-submission.pitch-submission') as {
         notifyAdmin: (p: object) => Promise<void>;
       };
-      const adminBase = process.env.ADMIN_URL ?? 'https://admin-staging.capitalasaforce.com';
       svc
         .notifyAdmin({
           fullName:        String(body.fullName).trim(),
@@ -114,7 +113,6 @@ export default factories.createCoreController(
           dealDescription: String(body.dealDescription).trim(),
           currentTurnover: String(body.currentTurnover ?? '').trim() || null,
           fundingRequest:  String(body.fundingRequest).trim(),
-          deckUrl:         deckUrl ? (deckUrl.startsWith('http') ? deckUrl : adminBase + deckUrl) : null,
         })
         .catch((err: Error) =>
           strapi.log.error('[pitch-submission] Admin notification failed:', err.message)
@@ -124,6 +122,70 @@ export default factories.createCoreController(
         data: { documentId: entry.documentId ?? null },
         message: 'Your pitch has been received. We will review it and be in touch.',
       };
+    },
+
+    async exportData(ctx) {
+      const key = String(ctx.query.key ?? '');
+      const exportKey = process.env.EXPORT_KEY;
+
+      if (!exportKey || key !== exportKey) {
+        ctx.status = 401;
+        ctx.body = 'Unauthorized';
+        return;
+      }
+
+      const entries = await (strapi.documents as any)(
+        'api::pitch-submission.pitch-submission'
+      ).findMany({
+        sort: ['createdAt:desc'],
+        limit: 10000,
+        populate: ['deck'],
+      });
+
+      strapi.log.info(`[pitch-submission] export — found ${entries?.length ?? 0} entries`);
+
+      const format = String(ctx.query.format ?? 'json');
+
+      if (format === 'csv') {
+        const header = ['Date', 'Full Name', 'Email', 'Phone', 'Business', 'Funding Request', 'Current Turnover', 'Deal Description', 'Deck URL'];
+        const rows = [header];
+        for (const e of (entries ?? [])) {
+          const deckUrl = e.deck?.url
+            ? (e.deck.url.startsWith('http') ? e.deck.url : `https://admin.capitalasaforce.com${e.deck.url}`)
+            : '';
+          rows.push([
+            e.createdAt ? new Date(e.createdAt).toISOString().split('T')[0] : '',
+            e.fullName ?? '',
+            e.email ?? '',
+            e.phone ?? '',
+            e.businessName ?? '',
+            e.fundingRequest ?? '',
+            e.currentTurnover ?? '',
+            e.dealDescription ?? '',
+            deckUrl,
+          ]);
+        }
+        const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+        ctx.set('Content-Type', 'text/csv; charset=utf-8');
+        ctx.set('Content-Disposition', `attachment; filename="pitch-submissions-${Date.now()}.csv"`);
+        ctx.body = csv;
+        return;
+      }
+
+      // JSON response for the table view
+      ctx.body = (entries ?? []).map((e: any) => ({
+        date:            e.createdAt ? new Date(e.createdAt).toISOString().split('T')[0] : '',
+        fullName:        e.fullName ?? '',
+        email:           e.email ?? '',
+        phone:           e.phone ?? '',
+        businessName:    e.businessName ?? '',
+        fundingRequest:  e.fundingRequest ?? '',
+        currentTurnover: e.currentTurnover ?? '',
+        dealDescription: e.dealDescription ?? '',
+        deckUrl:         e.deck?.url
+          ? (e.deck.url.startsWith('http') ? e.deck.url : `https://admin.capitalasaforce.com${e.deck.url}`)
+          : '',
+      }));
     },
   })
 );

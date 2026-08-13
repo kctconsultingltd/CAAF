@@ -8,7 +8,6 @@ interface PitchPayload {
   dealDescription: string;
   currentTurnover?: string | null;
   fundingRequest: string;
-  deckUrl?: string | null;
 }
 
 function esc(s: string): string {
@@ -36,9 +35,6 @@ function buildHtmlEmail(s: PitchPayload): string {
   const white = '#e8f0f8';
 
   const emailLink = `<a href="mailto:${esc(s.email)}" style="color:${gold};text-decoration:none;">${esc(s.email)}</a>`;
-  const deckLink  = s.deckUrl
-    ? `<a href="${esc(s.deckUrl)}" style="color:${gold};text-decoration:none;">View uploaded deck &rarr;</a>`
-    : null;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -79,7 +75,6 @@ function buildHtmlEmail(s: PitchPayload): string {
             <div style="margin-top:12px;height:1px;background:rgba(200,150,42,.15);"></div>
           </td>
         </tr>
-        ${deckLink ? field('Pitch Deck', deckLink, true) : ''}
       </table>
     </td>
   </tr>
