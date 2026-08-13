@@ -2125,7 +2125,7 @@ to {
 }
 
 .acc-body-content {
-  padding: 16px 0 28px;
+  padding: 8px 0 20px;
   border-bottom: 1px solid var(--line-solid);
 }
 
@@ -2133,13 +2133,13 @@ to {
   font-style: italic;
   color: var(--muted);
   font-size: 14px;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .offerings {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 14px;
 }
 
 .offering {
