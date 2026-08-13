@@ -10,8 +10,8 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
         api_secret: env('CLOUDINARY_SECRET'),
       },
       actionOptions: {
-        upload: {},
-        uploadStream: {},
+        upload: { resource_type: 'auto' },
+        uploadStream: { resource_type: 'auto' },
         delete: {},
       },
     },
