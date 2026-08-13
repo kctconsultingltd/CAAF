@@ -2264,6 +2264,8 @@ to {
   .services-img-panel {
     aspect-ratio: 4 / 3;
     flex: none;
+    min-height: 0;
+    width: 100%;
   }
 }
 
