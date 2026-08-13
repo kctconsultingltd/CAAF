@@ -337,53 +337,89 @@
     var dotsWrap = document.getElementById("speakersDots");
     if (!track) return;
 
-    var slides   = track.querySelectorAll(".speaker-slide");
-    var prevBtn  = document.querySelector(".speakers-prev");
-    var nextBtn  = document.querySelector(".speakers-next");
-    var total    = slides.length;
-    var current  = 0;
-    var timer    = null;
+    var realSlides = Array.prototype.slice.call(track.querySelectorAll(".speaker-slide"));
+    var N       = realSlides.length;
+    var prevBtn = document.querySelector(".speakers-prev");
+    var nextBtn = document.querySelector(".speakers-next");
+    var current = N; // starts at first real slide
+    var timer   = null;
 
-    // Build dots
-    for (var d = 0; d < total; d++) {
+    // Build clone buffers so the loop never has to jump back visually.
+    // Layout after cloning: [prepend clones 0..N-1] [real 0..N-1] [append clones 0..N-1]
+    // Prepend in reverse so index 0 = clone of real[0], index N-1 = clone of real[N-1]
+    for (var i = N - 1; i >= 0; i--) {
+      var pre = realSlides[i].cloneNode(true);
+      pre.setAttribute("aria-hidden", "true");
+      track.insertBefore(pre, track.firstChild);
+    }
+    realSlides.forEach(function (s) {
+      var app = s.cloneNode(true);
+      app.setAttribute("aria-hidden", "true");
+      track.appendChild(app);
+    });
+
+    // Build dots (one per real slide only)
+    for (var d = 0; d < N; d++) {
       var dot = document.createElement("button");
-      dot.className = "speakers-dot" + (d === 0 ? " is-active" : "");
-      dot.setAttribute("aria-label", "Go to slide " + (d + 1));
+      dot.className = "speakers-dot";
+      dot.setAttribute("aria-label", "Slide " + (d + 1));
       dot.dataset.idx = d;
       dotsWrap.appendChild(dot);
     }
     var dots = dotsWrap.querySelectorAll(".speakers-dot");
 
-    function slideWidth() {
-      return slides[0].offsetWidth + 20; // 20px matches gap
+    function sw() {
+      return track.querySelector(".speaker-slide").offsetWidth + 20;
+    }
+
+    function updateDots() {
+      var ri = ((current - N) % N + N) % N;
+      dots.forEach(function (d, i) { d.classList.toggle("is-active", i === ri); });
+    }
+
+    // Move without animation (used to silently reset after crossing a boundary)
+    function snap(idx) {
+      track.style.transition = "none";
+      current = idx;
+      track.style.transform = "translateX(-" + (current * sw()) + "px)";
+      track.offsetHeight; // force reflow before re-enabling transition
+      track.style.transition = "";
+      updateDots();
     }
 
     function goTo(idx) {
-      current = ((idx % total) + total) % total; // wrap around
-      track.style.transform = "translateX(-" + (current * slideWidth()) + "px)";
-      dots.forEach(function (d, i) { d.classList.toggle("is-active", i === current); });
-      if (prevBtn) prevBtn.disabled = false;
-      if (nextBtn) nextBtn.disabled = false;
+      current = idx;
+      track.style.transform = "translateX(-" + (current * sw()) + "px)";
+      updateDots();
     }
 
+    // After each animated transition, silently snap into the real-slide zone if needed
+    track.addEventListener("transitionend", function (e) {
+      if (e.propertyName !== "transform") return;
+      if (current >= 2 * N) snap(current - N);
+      else if (current < N) snap(current + N);
+    });
+
     function startAuto() {
+      clearInterval(timer);
       timer = setInterval(function () { goTo(current + 1); }, 3500);
     }
-    function stopAuto() {
-      clearInterval(timer);
-    }
+    function stopAuto() { clearInterval(timer); }
 
     if (prevBtn) prevBtn.addEventListener("click", function () { stopAuto(); goTo(current - 1); startAuto(); });
     if (nextBtn) nextBtn.addEventListener("click", function () { stopAuto(); goTo(current + 1); startAuto(); });
     dots.forEach(function (dot) {
-      dot.addEventListener("click", function () { stopAuto(); goTo(+this.dataset.idx); startAuto(); });
+      dot.addEventListener("click", function () {
+        stopAuto();
+        goTo(N + +this.dataset.idx);
+        startAuto();
+      });
     });
 
-    // Pause on hover
-    track.closest(".speakers-carousel-wrap").addEventListener("mouseenter", stopAuto);
-    track.closest(".speakers-carousel-wrap").addEventListener("mouseleave", startAuto);
+    var wrap = track.closest(".speakers-carousel-wrap");
+    wrap.addEventListener("mouseenter", stopAuto);
+    wrap.addEventListener("mouseleave", startAuto);
 
-    // Touch/swipe
     var startX = 0;
     track.addEventListener("touchstart", function (e) { stopAuto(); startX = e.touches[0].clientX; }, { passive: true });
     track.addEventListener("touchend", function (e) {
@@ -392,7 +428,7 @@
       startAuto();
     });
 
-    goTo(0);
+    snap(N); // initialise at real slide 0 without animation
     startAuto();
   })();
 
