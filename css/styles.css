@@ -2487,6 +2487,97 @@ to {
   animation: pitchCircle 0.55s ease-out 0.1s forwards;
 }
 
+/* ── Event Speakers Carousel ─────────────────────── */
+.speakers-section { background: var(--bg); }
+
+.speakers-carousel-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.speakers-track-outer {
+  flex: 1;
+  overflow: hidden;
+}
+
+.speakers-track {
+  display: flex;
+  gap: 16px;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.speaker-slide {
+  flex: 0 0 calc(25% - 12px);
+  border-radius: 4px;
+  overflow: hidden;
+  aspect-ratio: 3/4;
+  background: var(--surface);
+}
+
+.speaker-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+.speakers-arrow {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--line-solid);
+  background: transparent;
+  color: var(--gold);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+.speakers-arrow:hover {
+  background: rgba(200, 158, 42, 0.1);
+  border-color: var(--gold);
+}
+.speakers-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.speakers-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+.speakers-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--line-solid);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s, transform 0.2s;
+}
+.speakers-dot.is-active {
+  background: var(--gold);
+  transform: scale(1.3);
+}
+
+@media (max-width: 900px) {
+  .speaker-slide { flex: 0 0 calc(50% - 8px); }
+}
+@media (max-width: 540px) {
+  .speaker-slide { flex: 0 0 100%; }
+  .speakers-arrow { display: none; }
+}
+
 .pitch-tick-check {
   animation: pitchCheck 0.35s ease-out 0.65s forwards;
 }

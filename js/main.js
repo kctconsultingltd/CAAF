@@ -331,6 +331,56 @@
     });
   })();
 
+  /* ── Event Speakers Carousel ───────────────────── */
+  (function () {
+    var track    = document.getElementById("speakersTrack");
+    var dotsWrap = document.getElementById("speakersDots");
+    if (!track) return;
+
+    var slides     = track.querySelectorAll(".speaker-slide");
+    var prevBtn    = document.querySelector(".speakers-prev");
+    var nextBtn    = document.querySelector(".speakers-next");
+    var perView    = window.innerWidth <= 540 ? 1 : window.innerWidth <= 900 ? 2 : 4;
+    var total      = slides.length;
+    var maxIdx     = Math.max(0, total - perView);
+    var current    = 0;
+
+    // Build dots
+    for (var d = 0; d <= maxIdx; d++) {
+      var dot = document.createElement("button");
+      dot.className = "speakers-dot" + (d === 0 ? " is-active" : "");
+      dot.setAttribute("aria-label", "Go to slide " + (d + 1));
+      dot.dataset.idx = d;
+      dotsWrap.appendChild(dot);
+    }
+    var dots = dotsWrap.querySelectorAll(".speakers-dot");
+
+    function goTo(idx) {
+      current = Math.max(0, Math.min(idx, maxIdx));
+      var slideWidth = slides[0].offsetWidth + 16;
+      track.style.transform = "translateX(-" + (current * slideWidth) + "px)";
+      dots.forEach(function (d, i) { d.classList.toggle("is-active", i === current); });
+      if (prevBtn) prevBtn.disabled = current === 0;
+      if (nextBtn) nextBtn.disabled = current === maxIdx;
+    }
+
+    if (prevBtn) prevBtn.addEventListener("click", function () { goTo(current - 1); });
+    if (nextBtn) nextBtn.addEventListener("click", function () { goTo(current + 1); });
+    dots.forEach(function (dot) {
+      dot.addEventListener("click", function () { goTo(+this.dataset.idx); });
+    });
+
+    // Touch/swipe
+    var startX = 0;
+    track.addEventListener("touchstart", function (e) { startX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener("touchend", function (e) {
+      var diff = startX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) goTo(current + (diff > 0 ? 1 : -1));
+    });
+
+    goTo(0);
+  })();
+
   /* ── Intersection Observer — Reveal ────────────── */
   var reveals = document.querySelectorAll(".reveal");
   if ("IntersectionObserver" in window) {

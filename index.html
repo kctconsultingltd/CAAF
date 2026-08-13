@@ -443,7 +443,33 @@
 
 
     <!-- ═══════════════════════════════════════════════
-     4. OUR SOLUTIONS
+     4. EVENT SPEAKERS
+     ═══════════════════════════════════════════════ -->
+    <section class="section-pad speakers-section reveal" id="speakers">
+      <div class="container">
+        <div class="section-label"><span>Event Speakers</span></div>
+        <div class="speakers-carousel-wrap">
+          <button class="speakers-arrow speakers-prev" aria-label="Previous">&#8592;</button>
+          <div class="speakers-track-outer">
+            <div class="speakers-track" id="speakersTrack">
+              <div class="speaker-slide"><img src="img/event images/1.png" alt="Event Speaker 1" /></div>
+              <div class="speaker-slide"><img src="img/event images/2.png" alt="Event Speaker 2" /></div>
+              <div class="speaker-slide"><img src="img/event images/3.png" alt="Event Speaker 3" /></div>
+              <div class="speaker-slide"><img src="img/event images/4.png" alt="Event Speaker 4" /></div>
+              <div class="speaker-slide"><img src="img/event images/5.png" alt="Event Speaker 5" /></div>
+              <div class="speaker-slide"><img src="img/event images/6.png" alt="Event Speaker 6" /></div>
+              <div class="speaker-slide"><img src="img/event images/7.png" alt="Event Speaker 7" /></div>
+              <div class="speaker-slide"><img src="img/event images/8.png" alt="Event Speaker 8" /></div>
+            </div>
+          </div>
+          <button class="speakers-arrow speakers-next" aria-label="Next">&#8594;</button>
+        </div>
+        <div class="speakers-dots" id="speakersDots"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+     5. OUR SOLUTIONS
      ═══════════════════════════════════════════════ -->
     <section class="section-pad" id="services">
       <div class="container">
@@ -848,13 +874,13 @@
             <label><span>Current Turnover (USD)</span>
               <div class="input-with-prefix">
                 <span class="input-prefix">$</span>
-                <input type="text" inputmode="numeric" name="currentTurnover" placeholder="500,000" />
+                <input type="number" inputmode="numeric" name="currentTurnover" placeholder="500,000" />
               </div>
             </label>
             <label><span>Funding Request (USD) <span aria-hidden="true">*</span></span>
               <div class="input-with-prefix">
                 <span class="input-prefix">$</span>
-                <input type="text" inputmode="numeric" name="fundingRequest" required placeholder="2,000,000" />
+                <input type="number" inputmode="numeric" name="fundingRequest" required placeholder="2,000,000" />
               </div>
             </label>
           </div>
@@ -879,7 +905,7 @@
             </svg>
           </div>
           <h3 class="pitch-success-title">Submitting&hellip;</h3>
-          <p class="pitch-success-sub">Sending your pitch — this will only take a moment.</p>
+          <p class="pitch-success-sub">Sending your pitch, this will only take a moment.</p>
         </div>
 
         <!-- Success screen -->
