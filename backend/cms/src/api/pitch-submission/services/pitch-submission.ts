@@ -119,24 +119,31 @@ async function sendViaZeptoMail(payload: {
   htmlbody: string;
   token: string;
 }): Promise<void> {
+  // ZeptoMail requires "Zoho-enczapikey <key>" — prefix it if the user only stored the key itself
+  const authHeader = payload.token.startsWith('Zoho-enczapikey ')
+    ? payload.token
+    : `Zoho-enczapikey ${payload.token}`;
+
+  const body = JSON.stringify({
+    from: { address: payload.from },
+    to: [{ email_address: { address: payload.to } }],
+    subject: payload.subject,
+    htmlbody: payload.htmlbody,
+  });
+
   const res = await fetch('https://api.zeptomail.com/v1.1/email', {
     method: 'POST',
     headers: {
-      Authorization: payload.token,
+      Authorization: authHeader,
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
-    body: JSON.stringify({
-      from: { address: payload.from },
-      to: [{ email_address: { address: payload.to } }],
-      subject: payload.subject,
-      htmlbody: payload.htmlbody,
-    }),
+    body,
   });
 
   if (!res.ok) {
-    const body = await res.text().catch(() => '(unreadable)');
-    throw new Error(`Zepto Mail error ${res.status}: ${body}`);
+    const resBody = await res.text().catch(() => '(unreadable)');
+    throw new Error(`ZeptoMail ${res.status}: ${resBody}`);
   }
 }
 
@@ -148,21 +155,24 @@ export default factories.createCoreService(
       const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
       const from       = process.env.EMAIL_FROM ?? 'noreply@capitalasaforce.com';
 
-      const subject  = `New Pitch Submission: ${submission.businessName}`;
-      const htmlbody = buildHtmlEmail(submission);
+      strapi.log.info(
+        `[pitch-submission] notifyAdmin — token:${token ? 'SET' : 'MISSING'} | to:${adminEmail ?? 'MISSING'} | from:${from}`
+      );
 
-      if (token && adminEmail) {
-        await sendViaZeptoMail({ to: adminEmail, from, subject, htmlbody, token });
-        strapi.log.info(`[pitch-submission] Admin notification sent to ${adminEmail}`);
+      if (!token || !adminEmail) {
+        strapi.log.warn(
+          '[pitch-submission] Email not sent — missing env vars:' +
+            (!token ? ' ZEPTO_MAIL_API_TOKEN' : '') +
+            (!adminEmail ? ' ADMIN_NOTIFICATION_EMAIL' : '')
+        );
         return;
       }
 
-      strapi.log.info(
-        '[pitch-submission] Email mock' +
-          (adminEmail ? '' : ' (set ADMIN_NOTIFICATION_EMAIL to enable)') +
-          (token ? '' : ' (set ZEPTO_MAIL_API_TOKEN to enable)') +
-          `:\nSubject: ${subject}\n(HTML body suppressed in mock mode)`
-      );
+      const subject  = `New Pitch Submission: ${submission.businessName}`;
+      const htmlbody = buildHtmlEmail(submission);
+
+      await sendViaZeptoMail({ to: adminEmail, from, subject, htmlbody, token });
+      strapi.log.info(`[pitch-submission] Email sent to ${adminEmail}`);
     },
   })
 );
