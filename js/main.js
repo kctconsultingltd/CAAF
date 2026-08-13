@@ -276,6 +276,7 @@
           resetModal();
         });
       }
+      setTimeout(function () { closeModal(); resetModal(); }, 4000);
     }
 
     // Also reset when overlay closes via backdrop/escape
@@ -516,6 +517,7 @@
             doneBtnWired = true;
             document.getElementById("deckSuccessDone").addEventListener("click", closeModal);
           }
+          setTimeout(closeModal, 4000);
         });
     });
   })();
