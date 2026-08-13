@@ -1,7 +1,9 @@
 (function () {
   "use strict";
 
-  var API_BASE = "https://admin.capitalasaforce.com/api";
+  var API_BASE = window.location.hostname.includes("staging")
+    ? "https://admin-staging.capitalasaforce.com/api"
+    : "https://admin.capitalasaforce.com/api";
 
   // ─── Core fetch wrapper ───────────────────────────────────────────────────
 

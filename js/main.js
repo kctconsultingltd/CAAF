@@ -147,7 +147,9 @@
     var submitBtn = document.getElementById("pitchSubmitBtn");
     if (!overlay || !trigger) return;
 
-    var API = "https://admin.capitalasaforce.com/api";
+    var API = window.location.hostname.includes("staging")
+      ? "https://admin-staging.capitalasaforce.com/api"
+      : "https://admin.capitalasaforce.com/api";
 
     function openModal()  { overlay.removeAttribute("hidden"); document.body.style.overflow = "hidden"; }
     function closeModal() { overlay.setAttribute("hidden", ""); document.body.style.overflow = ""; }
@@ -494,7 +496,10 @@
       hideHeader();
       if (loadingEl) loadingEl.removeAttribute("hidden");
 
-      fetch("https://admin.capitalasaforce.com/api/newsletter-subscribers", {
+      var nlAPI = window.location.hostname.includes("staging")
+        ? "https://admin-staging.capitalasaforce.com/api"
+        : "https://admin.capitalasaforce.com/api";
+      fetch(nlAPI + "/newsletter-subscribers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email, source: "rural-lens-fund-deck" }),
