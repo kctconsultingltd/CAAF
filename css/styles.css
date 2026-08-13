@@ -2491,70 +2491,47 @@ to {
 .speakers-section { background: var(--bg); }
 
 .speakers-carousel-wrap {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+  position: relative;
   margin-top: 32px;
 }
 
 .speakers-track-outer {
-  flex: 1;
   overflow: hidden;
 }
 
 .speakers-track {
   display: flex;
-  gap: 16px;
-  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 20px;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
 }
 
+/* One full image + 1/3 of the next peeking */
 .speaker-slide {
-  flex: 0 0 calc(25% - 12px);
+  flex: 0 0 calc(75% - 8px);
   border-radius: 4px;
   overflow: hidden;
-  aspect-ratio: 3/4;
   background: var(--surface);
 }
 
 .speaker-slide img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
+  height: auto;
   display: block;
 }
 
-.speakers-arrow {
-  flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid var(--line-solid);
-  background: transparent;
-  color: var(--gold);
-  font-size: 18px;
-  cursor: pointer;
+.speakers-nav {
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: background 0.2s, border-color 0.2s;
-}
-.speakers-arrow:hover {
-  background: rgba(200, 158, 42, 0.1);
-  border-color: var(--gold);
-}
-.speakers-arrow:disabled {
-  opacity: 0.3;
-  cursor: default;
+  justify-content: space-between;
+  margin-top: 20px;
 }
 
 .speakers-dots {
   display: flex;
-  justify-content: center;
   gap: 8px;
-  margin-top: 20px;
 }
+
 .speakers-dot {
   width: 6px;
   height: 6px;
@@ -2570,12 +2547,36 @@ to {
   transform: scale(1.3);
 }
 
-@media (max-width: 900px) {
-  .speaker-slide { flex: 0 0 calc(50% - 8px); }
+.speakers-arrows {
+  display: flex;
+  gap: 10px;
 }
-@media (max-width: 540px) {
-  .speaker-slide { flex: 0 0 100%; }
-  .speakers-arrow { display: none; }
+
+.speakers-arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line-solid);
+  background: transparent;
+  color: var(--gold);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+.speakers-arrow:hover {
+  background: rgba(200, 158, 42, 0.1);
+  border-color: var(--gold);
+}
+.speakers-arrow:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+@media (max-width: 640px) {
+  .speaker-slide { flex: 0 0 calc(80% - 8px); }
 }
 
 .pitch-tick-check {

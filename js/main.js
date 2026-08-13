@@ -337,16 +337,15 @@
     var dotsWrap = document.getElementById("speakersDots");
     if (!track) return;
 
-    var slides     = track.querySelectorAll(".speaker-slide");
-    var prevBtn    = document.querySelector(".speakers-prev");
-    var nextBtn    = document.querySelector(".speakers-next");
-    var perView    = window.innerWidth <= 540 ? 1 : window.innerWidth <= 900 ? 2 : 4;
-    var total      = slides.length;
-    var maxIdx     = Math.max(0, total - perView);
-    var current    = 0;
+    var slides   = track.querySelectorAll(".speaker-slide");
+    var prevBtn  = document.querySelector(".speakers-prev");
+    var nextBtn  = document.querySelector(".speakers-next");
+    var total    = slides.length;
+    var current  = 0;
+    var timer    = null;
 
     // Build dots
-    for (var d = 0; d <= maxIdx; d++) {
+    for (var d = 0; d < total; d++) {
       var dot = document.createElement("button");
       dot.className = "speakers-dot" + (d === 0 ? " is-active" : "");
       dot.setAttribute("aria-label", "Go to slide " + (d + 1));
@@ -355,30 +354,46 @@
     }
     var dots = dotsWrap.querySelectorAll(".speakers-dot");
 
-    function goTo(idx) {
-      current = Math.max(0, Math.min(idx, maxIdx));
-      var slideWidth = slides[0].offsetWidth + 16;
-      track.style.transform = "translateX(-" + (current * slideWidth) + "px)";
-      dots.forEach(function (d, i) { d.classList.toggle("is-active", i === current); });
-      if (prevBtn) prevBtn.disabled = current === 0;
-      if (nextBtn) nextBtn.disabled = current === maxIdx;
+    function slideWidth() {
+      return slides[0].offsetWidth + 20; // 20px matches gap
     }
 
-    if (prevBtn) prevBtn.addEventListener("click", function () { goTo(current - 1); });
-    if (nextBtn) nextBtn.addEventListener("click", function () { goTo(current + 1); });
+    function goTo(idx) {
+      current = ((idx % total) + total) % total; // wrap around
+      track.style.transform = "translateX(-" + (current * slideWidth()) + "px)";
+      dots.forEach(function (d, i) { d.classList.toggle("is-active", i === current); });
+      if (prevBtn) prevBtn.disabled = false;
+      if (nextBtn) nextBtn.disabled = false;
+    }
+
+    function startAuto() {
+      timer = setInterval(function () { goTo(current + 1); }, 3500);
+    }
+    function stopAuto() {
+      clearInterval(timer);
+    }
+
+    if (prevBtn) prevBtn.addEventListener("click", function () { stopAuto(); goTo(current - 1); startAuto(); });
+    if (nextBtn) nextBtn.addEventListener("click", function () { stopAuto(); goTo(current + 1); startAuto(); });
     dots.forEach(function (dot) {
-      dot.addEventListener("click", function () { goTo(+this.dataset.idx); });
+      dot.addEventListener("click", function () { stopAuto(); goTo(+this.dataset.idx); startAuto(); });
     });
+
+    // Pause on hover
+    track.closest(".speakers-carousel-wrap").addEventListener("mouseenter", stopAuto);
+    track.closest(".speakers-carousel-wrap").addEventListener("mouseleave", startAuto);
 
     // Touch/swipe
     var startX = 0;
-    track.addEventListener("touchstart", function (e) { startX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener("touchstart", function (e) { stopAuto(); startX = e.touches[0].clientX; }, { passive: true });
     track.addEventListener("touchend", function (e) {
       var diff = startX - e.changedTouches[0].clientX;
       if (Math.abs(diff) > 40) goTo(current + (diff > 0 ? 1 : -1));
+      startAuto();
     });
 
     goTo(0);
+    startAuto();
   })();
 
   /* ── Intersection Observer — Reveal ────────────── */
