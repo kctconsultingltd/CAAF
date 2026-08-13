@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "collectionName": "pitch_submissions",
+  "info": {
+    "singularName": "pitch-submission",
+    "pluralName": "pitch-submissions",
+    "displayName": "Pitch Submission",
+    "description": "Inbound business pitches submitted via the homepage modal"
+  },
+  "options": { "draftAndPublish": false },
+  "pluginOptions": {},
+  "attributes": {
+    "fullName":        { "type": "string", "required": true },
+    "email":           { "type": "email",  "required": true },
+    "phone":           { "type": "string" },
+    "businessName":    { "type": "string", "required": true },
+    "dealDescription": { "type": "text",   "required": true },
+    "currentTurnover": { "type": "string" },
+    "fundingRequest":  { "type": "string", "required": true },
+    "deck":            { "type": "media",  "multiple": false, "required": false, "allowedTypes": ["files"] }
+  }
+}

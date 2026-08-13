@@ -57,6 +57,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/styles.css" />
+    <link rel="icon" type="image/svg+xml" href="img/favicon.svg" />
     <link rel="icon" href="img/favicon.ico" />
     <link
       rel="icon"
@@ -325,45 +326,155 @@
     
 
     <!-- ═══════════════════════════════════════════════
-     WHAT WE DO BANNER CAROUSEL
+     WHAT WE DO — SERVICES ACCORDION
     ═══════════════════════════════════════════════ -->
-    <section class="solutions-banner">
+    <section class="services-section" id="services">
       <div class="container">
-        <div class="section-label"><span>What We Do</span></div>
-      </div>
-      <div class="container">
-        <div class="carousel-wrapper">
-          <div class="carousel-slides">
-            <div class="carousel-slide is-active">
-              <img src="img/handshake.webp" alt="Access to Finance" loading="lazy">
-              <div class="slide-overlay">
-                <h3>Access to Finance</h3>
-                <p>Unlock capital into qualifying deals/opportunities.</p>
+        <div class="services-layout">
+
+          <!-- Left: accordion -->
+          <div class="services-left" id="servicesLeft">
+            <div class="section-label reveal"><span>What We Do</span></div>
+            <h2 class="services-heading reveal">Finance. Development. Impact.</h2>
+
+            <!-- 01 FINANCE -->
+            <div class="acc-item is-open" data-idx="0">
+              <div class="acc-header">
+                <span class="acc-num">[01]</span>
+                <span class="acc-title">Finance</span>
+                <svg class="acc-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="acc-body">
+                <div class="acc-body-inner">
+                  <div class="acc-body-content">
+                    <p class="acc-tagline">Unlock Finance at Scale</p>
+                    <div class="offerings">
+                      <div class="offering">
+                        <div class="offering-title">Finance &amp; Investment Advisory</div>
+                        <div class="offering-desc">Capital raise, Blended Finance, Transaction Structuring.</div>
+                        <a class="offering-cta" href="#contact">Contact us today &rarr;</a>
+                      </div>
+                      <div class="offering">
+                        <div class="offering-title">Hire a Fractional CFO</div>
+                        <div class="offering-desc">Achieve the finance needs of your enterprise without the cost of a full-time hire.</div>
+                        <a class="offering-cta" href="#contact">Contact us today &rarr;</a>
+                      </div>
+                      <div class="offering">
+                        <div class="offering-title">Pitch Your Business</div>
+                        <div class="offering-desc">If you are actively trying to raise capital for your business and want to reach more investors, pitch here.</div>
+                        <button class="offering-cta pitch-trigger" type="button">Pitch now &rarr;</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="carousel-slide">
-              <img src="img/solardiscussion.webp" alt="Development Programming" loading="lazy">
-              <div class="slide-overlay">
-                <h3>Development Programming</h3>
-                <p>Implement sustainable development programs with perspectives that multiply impact.</p>
+
+            <!-- 02 DEVELOPMENT -->
+            <div class="acc-item" data-idx="1">
+              <div class="acc-header">
+                <span class="acc-num">[02]</span>
+                <span class="acc-title">Development</span>
+                <svg class="acc-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="acc-body">
+                <div class="acc-body-inner">
+                  <div class="acc-body-content">
+                    <p class="acc-tagline">Implement sustainable development programs with perspectives that multiply impact.</p>
+                    <div class="offerings">
+                      <div class="offering">
+                        <!-- <a class="offering-cta" href="#contact">Contact us now &rarr;</a> -->
+                      </div>
+                      <div class="offering">
+                        <div class="offering-title">Fund an SME Market Data Infrastructure</div>
+                        <div class="offering-desc">Investors continue to face a recurring problem when they turn to African opportunities: high-quality investment data is unavailable compared to other emerging markets. To assess a deal in Africa, they often have to make numerous phone calls, hire local experts, fly in for on-the-ground research, and collect data themselves. Even with the recent growth of AI research tools, African markets remain so poorly documented online that AI cannot source verifiable information about them. This is a major barrier to capital flowing into the continent, especially as other emerging markets produce high-quality data to justify their investment attractiveness. If you are an investor willing to help solve this problem, partner with us.</div>
+                        <a class="offering-cta" href="#contact">Partner with us &rarr;</a>
+                      </div>
+                      <div class="offering">
+                        <div class="offering-title">CAAF Lumpsum Giving</div>
+                        <div class="offering-desc">A cash donation program that collapses years of capital formation into a single gift. If you are a donor willing to pull vulnerable populations out of poverty through intelligent philanthropy, then partner with us today.</div>
+                        <a class="offering-cta" href="#contact">Partner with us today &rarr;</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="carousel-slide">
-              <img src="img/blackglobe2hands.webp" alt="Impact Strategy" loading="lazy">
-              <div class="slide-overlay">
-                <h3>Impact Strategy</h3>
-                <p>Move impact from marginal agenda to core business logic.</p>
+
+            <!-- 03 IMPACT -->
+            <div class="acc-item" data-idx="2">
+              <div class="acc-header">
+                <span class="acc-num">[03]</span>
+                <span class="acc-title">Impact</span>
+                <svg class="acc-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </div>
+              <div class="acc-body">
+                <div class="acc-body-inner">
+                  <div class="acc-body-content">
+                    <p class="acc-tagline">Capital for People and Planet</p>
+                    <div class="offerings">
+                      <div class="offering">
+                        <div class="offering-title">The Rural Lens Fund</div>
+                        <div class="offering-subtitle">Financing Africa&rsquo;s Industrial Base</div>
+                        <div class="offering-desc">A $10m impact fund investing in opportunities that deepen the industrialization of rural economies. To invest or partner, request a deck.</div>
+                        <a class="offering-cta deck-trigger" href="#">Request a deck &rarr;</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /services-left -->
+
+          <!-- Right: image panel -->
+          <div class="services-right">
+            <div class="services-img-panel" id="servicesImgPanel">
+              <img class="services-img is-active" data-idx="0" src="img/handshake.webp" alt="Finance" loading="lazy">
+              <img class="services-img" data-idx="1" src="img/solardiscussion.webp" alt="Development" loading="lazy">
+              <img class="services-img" data-idx="2" src="img/blackglobe2hands.webp" alt="Impact" loading="lazy">
+              <!-- <div class="services-img-caption" id="servicesImgCaption">Finance</div> -->
             </div>
           </div>
-        </div>
+
+        </div><!-- /services-layout -->
       </div>
     </section>
 
 
 
     <!-- ═══════════════════════════════════════════════
-     4. OUR SOLUTIONS
+     4. EVENT SPEAKERS
+     ═══════════════════════════════════════════════ -->
+    <section class="section-pad speakers-section" id="speakers">
+      <div class="container">
+        <div class="section-label"><span>Event Speakers</span></div>
+        <div class="speakers-carousel-wrap">
+          <div class="speakers-track-outer">
+            <div class="speakers-track" id="speakersTrack">
+              <div class="speaker-slide"><img src="img/event images/1.png" alt="Event Speaker 1" /></div>
+              <div class="speaker-slide"><img src="img/event images/2.png" alt="Event Speaker 2" /></div>
+              <div class="speaker-slide"><img src="img/event images/3.png" alt="Event Speaker 3" /></div>
+              <div class="speaker-slide"><img src="img/event images/4.png" alt="Event Speaker 4" /></div>
+              <div class="speaker-slide"><img src="img/event images/5.png" alt="Event Speaker 5" /></div>
+              <div class="speaker-slide"><img src="img/event images/6.png" alt="Event Speaker 6" /></div>
+              <div class="speaker-slide"><img src="img/event images/7.png" alt="Event Speaker 7" /></div>
+              <div class="speaker-slide"><img src="img/event images/8.png" alt="Event Speaker 8" /></div>
+            </div>
+          </div>
+          <div class="speakers-nav">
+            <div class="speakers-dots" id="speakersDots"></div>
+            <div class="speakers-arrows">
+              <button class="speakers-arrow speakers-prev" aria-label="Previous">&#8592;</button>
+              <button class="speakers-arrow speakers-next" aria-label="Next">&#8594;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+     5. OUR SOLUTIONS
      ═══════════════════════════════════════════════ -->
     <section class="section-pad" id="services">
       <div class="container">
@@ -740,6 +851,135 @@
         </div>
       </div>
     </footer>
+
+    <!-- Pitch Modal -->
+    <div class="pitch-modal-overlay" id="pitchModalOverlay" role="dialog" aria-modal="true" aria-labelledby="pitchModalTitle" hidden>
+      <div class="pitch-modal-card">
+        <button class="pitch-modal-close" id="pitchModalClose" aria-label="Close">&times;</button>
+        <h2 class="pitch-modal-title" id="pitchModalTitle">Pitch Your Business</h2>
+        <p class="pitch-modal-sub">Tell us about your venture. We review every submission.</p>
+        <form id="pitchForm" novalidate>
+          <div class="pitch-field-row">
+            <label><span>Full Name <span aria-hidden="true">*</span></span>
+              <input type="text" name="fullName" required placeholder="Jane Doe" />
+            </label>
+            <label><span>Email <span aria-hidden="true">*</span></span>
+              <input type="email" name="email" required placeholder="jane@example.com" />
+            </label>
+          </div>
+          <div class="pitch-field-row">
+            <label><span>Phone Number</span>
+              <input type="tel" name="phone" placeholder="+234 800 000 0000" />
+            </label>
+            <label><span>Business Name <span aria-hidden="true">*</span></span>
+              <input type="text" name="businessName" required placeholder="Acme Ltd" />
+            </label>
+          </div>
+          <div class="pitch-field-row">
+            <label><span>Current Turnover (USD)</span>
+              <div class="input-with-prefix">
+                <span class="input-prefix">$</span>
+                <input type="number" inputmode="numeric" name="currentTurnover" placeholder="500,000" />
+              </div>
+            </label>
+            <label><span>Funding Request (USD) <span aria-hidden="true">*</span></span>
+              <div class="input-with-prefix">
+                <span class="input-prefix">$</span>
+                <input type="number" inputmode="numeric" name="fundingRequest" required placeholder="2,000,000" />
+              </div>
+            </label>
+          </div>
+          <label class="pitch-field-full"><span>Deal Description <span aria-hidden="true">*</span></span>
+            <textarea name="dealDescription" required rows="4" placeholder="Describe your business and the investment opportunity&hellip;"></textarea>
+          </label>
+          <label class="pitch-field-full"><span>Pitch Deck (PDF / PPT &mdash; max 20&nbsp;MB)</span>
+            <input type="file" name="deck" accept=".pdf,.ppt,.pptx" />
+          </label>
+          <div class="pitch-form-footer">
+            <button type="submit" class="pitch-submit" id="pitchSubmitBtn">Submit Pitch</button>
+            <p class="pitch-form-status" id="pitchFormStatus" aria-live="polite"></p>
+          </div>
+        </form>
+
+        <!-- Loading screen -->
+        <div class="pitch-loading" id="pitchLoading" hidden>
+          <div class="pitch-loading-icon">
+            <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="26" cy="26" r="23" stroke="rgba(200,158,42,0.2)" stroke-width="3"/>
+              <path d="M26 3 a23 23 0 0 1 23 23" stroke="#c89e2a" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="pitch-success-title">Submitting&hellip;</h3>
+          <p class="pitch-success-sub">Sending your pitch, this will only take a moment.</p>
+        </div>
+
+        <!-- Success screen -->
+        <div class="pitch-success" id="pitchSuccess" hidden>
+          <div class="pitch-success-icon">
+            <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle class="pitch-tick-circle" cx="26" cy="26" r="25" stroke="#22c55e" stroke-width="2"
+                      stroke-dasharray="157" stroke-dashoffset="157"/>
+              <path   class="pitch-tick-check"  d="M14 27l9 9 15-18" stroke="#22c55e" stroke-width="2.5"
+                      stroke-linecap="round" stroke-linejoin="round"
+                      stroke-dasharray="50" stroke-dashoffset="50"/>
+            </svg>
+          </div>
+          <h3 class="pitch-success-title">Pitch Received!</h3>
+          <p class="pitch-success-sub">We&rsquo;ll review your submission and be in touch shortly.</p>
+          <button class="pitch-submit" id="pitchSuccessDone">Done</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deck Request Modal -->
+    <div class="pitch-modal-overlay" id="deckModalOverlay" role="dialog" aria-modal="true" aria-labelledby="deckModalTitle" hidden>
+      <div class="pitch-modal-card">
+        <button class="pitch-modal-close" id="deckModalClose" aria-label="Close">&times;</button>
+        <h2 class="pitch-modal-title" id="deckModalTitle">Request the Deck</h2>
+        <p class="pitch-modal-sub">Enter your email to download The Rural Lens Fund deck.</p>
+
+        <form id="deckForm" novalidate>
+          <div class="pitch-field-row" style="grid-template-columns:1fr;margin-bottom:0">
+            <label>
+              <span>Email Address <span aria-hidden="true">*</span></span>
+              <input type="email" name="email" placeholder="you@example.com" required />
+            </label>
+          </div>
+          <div class="pitch-form-footer">
+            <button type="submit" class="pitch-submit" id="deckSubmitBtn">Download Deck &rarr;</button>
+            <p class="pitch-form-status" id="deckFormStatus" aria-live="polite"></p>
+          </div>
+        </form>
+
+        <!-- Loading screen -->
+        <div class="pitch-loading" id="deckLoading" hidden>
+          <div class="pitch-loading-icon">
+            <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="26" cy="26" r="23" stroke="rgba(200,158,42,0.2)" stroke-width="3"/>
+              <path d="M26 3 a23 23 0 0 1 23 23" stroke="#c89e2a" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="pitch-success-title">Preparing&hellip;</h3>
+          <p class="pitch-success-sub">Your download is being prepared.</p>
+        </div>
+
+        <!-- Success screen -->
+        <div class="pitch-success" id="deckSuccess" hidden>
+          <div class="pitch-success-icon">
+            <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle class="pitch-tick-circle" cx="26" cy="26" r="25" stroke="#22c55e" stroke-width="2"
+                      stroke-dasharray="157" stroke-dashoffset="157"/>
+              <path   class="pitch-tick-check"  d="M14 27l9 9 15-18" stroke="#22c55e" stroke-width="2.5"
+                      stroke-linecap="round" stroke-linejoin="round"
+                      stroke-dasharray="50" stroke-dashoffset="50"/>
+            </svg>
+          </div>
+          <h3 class="pitch-success-title">Download Starting!</h3>
+          <p class="pitch-success-sub">The Rural Lens Fund deck is downloading. Check your downloads folder.</p>
+          <button class="pitch-submit" id="deckSuccessDone">Done</button>
+        </div>
+      </div>
+    </div>
 
     <!-- ═══════════════════════════════════════════════
       JAVASCRIPT

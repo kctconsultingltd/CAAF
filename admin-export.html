@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Export — CAAF Admin</title>
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg" />
+  <link rel="icon" href="img/favicon.ico" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #06111f;
+      color: #e8f0f8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #081629;
+      border: 1px solid rgba(200,150,42,.25);
+      border-radius: 10px;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+    }
+    .logo {
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: #7a8fa6;
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #c8962a;
+      margin-bottom: 28px;
+    }
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.72rem;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: #7a8fa6;
+      margin-bottom: 16px;
+    }
+    input, select {
+      background: #06111f;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 6px;
+      padding: 10px 14px;
+      color: #e8f0f8;
+      font-size: 0.9rem;
+      width: 100%;
+      transition: border-color .2s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #c8962a;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      margin-top: 24px;
+      padding: 14px;
+      background: linear-gradient(135deg, #f0c040, #c8962a);
+      color: #06111f;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: filter .2s;
+    }
+    .btn:hover { filter: brightness(1.1); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; filter: none; }
+    .msg {
+      margin-top: 14px;
+      font-size: 0.82rem;
+      min-height: 20px;
+      text-align: center;
+    }
+    .msg.error { color: #f87171; }
+    .msg.ok    { color: #4ade80; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">Capital As A Force</div>
+    <h1>Export Subscribers</h1>
+
+    <label>
+      Export Key
+      <input type="password" id="keyInput" placeholder="Enter export key" />
+    </label>
+
+    <label>
+      Filter by Source
+      <select id="sourceSelect">
+        <option value="rural-lens-fund-deck">Rural Lens Fund Deck Requests</option>
+        <option value="">All Subscribers</option>
+      </select>
+    </label>
+
+    <button class="btn" id="exportBtn">Download CSV</button>
+    <p class="msg" id="msg"></p>
+  </div>
+
+  <script>
+    var API = 'https://admin.capitalasaforce.com/api/newsletter-subscribers/export';
+
+    document.getElementById('exportBtn').addEventListener('click', function () {
+      var key    = document.getElementById('keyInput').value.trim();
+      var source = document.getElementById('sourceSelect').value;
+      var msg    = document.getElementById('msg');
+      var btn    = document.getElementById('exportBtn');
+
+      if (!key) {
+        msg.textContent = 'Please enter the export key.';
+        msg.className = 'msg error';
+        return;
+      }
+
+      msg.textContent = 'Preparing download…';
+      msg.className = 'msg';
+      btn.disabled = true;
+
+      var url = API + '?key=' + encodeURIComponent(key) + (source ? '&source=' + encodeURIComponent(source) : '');
+
+      fetch(url)
+        .then(function (r) {
+          if (r.status === 401) throw new Error('Invalid export key.');
+          if (!r.ok) throw new Error('Server error ' + r.status);
+          return r.blob();
+        })
+        .then(function (blob) {
+          var a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'subscribers-' + new Date().toISOString().split('T')[0] + '.csv';
+          a.click();
+          URL.revokeObjectURL(a.href);
+          msg.textContent = 'Downloaded.';
+          msg.className = 'msg ok';
+        })
+        .catch(function (err) {
+          msg.textContent = err.message;
+          msg.className = 'msg error';
+        })
+        .finally(function () { btn.disabled = false; });
+    });
+  </script>
+</body>
+</html>

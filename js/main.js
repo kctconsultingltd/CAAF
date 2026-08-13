@@ -115,109 +115,411 @@
     });
   });
 
-  /* ── What We Do Carousel (infinite scroll) ───────── */
+  /* ── What We Do Accordion ───────────────────────── */
   (function () {
-    var track = document.querySelector(".carousel-slides");
-    if (!track) return;
+    var items  = document.querySelectorAll(".acc-item");
+    if (!items.length) return;
+    var images  = document.querySelectorAll(".services-img");
+    var caption = document.getElementById("servicesImgCaption");
+    var titles  = ["Finance", "Development", "Impact"];
 
-    var realSlides = Array.from(track.querySelectorAll(".carousel-slide"));
-    var realCount = realSlides.length;
-    if (!realCount) return;
-
-    // Append a clone of slide 0 so the loop can scroll past it seamlessly
-    var firstClone = realSlides[0].cloneNode(true);
-    firstClone.setAttribute("aria-hidden", "true");
-    firstClone.classList.remove("is-active");
-    track.appendChild(firstClone);
-
-    var allSlides = Array.from(track.querySelectorAll(".carousel-slide"));
-    var totalCount = allSlides.length; // realCount + 1
-
-    var currentIndex = 0;
-    var busy = false;
-    var slideInterval = null;
-    var TRANSITION_MS = 650; // slightly over the CSS 0.6s
-
-    function isMobile() {
-      return window.innerWidth <= 900;
-    }
-
-    // Set track/slide widths so each slide fills the viewport on mobile
-    function setMobileWidths() {
-      if (isMobile()) {
-        track.style.width = totalCount * 100 + "%";
-        allSlides.forEach(function (s) {
-          s.style.width = 100 / totalCount + "%";
-        });
-      } else {
-        track.style.width = "";
-        allSlides.forEach(function (s) {
-          s.style.width = "";
-        });
-      }
-    }
-
-    function updateActive() {
-      var idx = currentIndex % realCount;
-      realSlides.forEach(function (s) {
-        s.classList.remove("is-active");
+    items.forEach(function (item) {
+      item.querySelector(".acc-header").addEventListener("click", function () {
+        var idx = +item.dataset.idx;
+        var wasOpen = item.classList.contains("is-open");
+        items.forEach(function (i) { i.classList.remove("is-open"); });
+        images.forEach(function (img) { img.classList.remove("is-active"); });
+        var activeIdx = wasOpen ? 0 : idx;
+        document.querySelector(".acc-item[data-idx='" + activeIdx + "']").classList.add("is-open");
+        document.querySelector(".services-img[data-idx='" + activeIdx + "']").classList.add("is-active");
+        if (caption) caption.textContent = titles[activeIdx];
       });
-      realSlides[idx].classList.add("is-active");
-      firstClone.classList.toggle("is-active", idx === 0);
-    }
+    });
+  })();
 
-    function setPosition(idx, animate) {
-      if (!animate) {
-        track.style.transition = "none";
-        void track.offsetWidth; // flush so "none" takes effect immediately
-      } else {
-        track.style.transition = "";
-      }
-      track.style.transform = isMobile()
-        ? "translateX(-" + (idx / totalCount) * 100 + "%)"
-        : "";
-      if (!animate) {
-        void track.offsetWidth; // flush the transform before re-enabling
-        track.style.transition = "";
-      }
-    }
+  /* ── Pitch Modal ────────────────────────────────── */
+  (function () {
+    var overlay   = document.getElementById("pitchModalOverlay");
+    var closeBtn  = document.getElementById("pitchModalClose");
+    var trigger   = document.querySelector(".pitch-trigger");
+    var form      = document.getElementById("pitchForm");
+    var status    = document.getElementById("pitchFormStatus");
+    var submitBtn = document.getElementById("pitchSubmitBtn");
+    if (!overlay || !trigger) return;
 
-    function advance() {
-      if (busy) return;
-      busy = true;
+    var API = "https://admin.capitalasaforce.com/api";
 
-      currentIndex++;
-      updateActive();
-      setPosition(currentIndex, true);
+    function openModal()  { overlay.removeAttribute("hidden"); document.body.style.overflow = "hidden"; }
+    function closeModal() { overlay.setAttribute("hidden", ""); document.body.style.overflow = ""; }
 
-      if (isMobile() && currentIndex === realCount) {
-        // We're on the clone — after the animation, silently snap to real slide 0
-        setTimeout(function () {
-          currentIndex = 0;
-          setPosition(0, false);
-          busy = false;
-        }, TRANSITION_MS);
-      } else {
-        setTimeout(function () {
-          busy = false;
-        }, TRANSITION_MS);
-      }
-    }
-
-    function startInterval() {
-      if (slideInterval) clearInterval(slideInterval);
-      slideInterval = setInterval(advance, 3000);
-    }
-
-    window.addEventListener("resize", function () {
-      setMobileWidths();
-      setPosition(currentIndex, false);
+    trigger.addEventListener("click", openModal);
+    closeBtn.addEventListener("click", closeModal);
+    overlay.addEventListener("click", function (e) { if (e.target === overlay) closeModal(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !overlay.hasAttribute("hidden")) closeModal();
     });
 
-    setMobileWidths();
-    updateActive();
-    setPosition(0, false);
-    startInterval();
+    // Comma formatting for currency inputs
+    function fmtNumber(raw) {
+      var digits = raw.replace(/[^0-9]/g, "");
+      return digits ? Number(digits).toLocaleString("en-US") : "";
+    }
+    ["currentTurnover", "fundingRequest"].forEach(function (name) {
+      var el = form.querySelector("[name=’" + name + "’]");
+      if (!el) return;
+      // Block non-digits before the DOM updates (handles keyboard input)
+      el.addEventListener("beforeinput", function (e) {
+        if (e.data && /[^0-9]/.test(e.data)) e.preventDefault();
+      });
+      // Strip and reformat after input (handles paste)
+      el.addEventListener("input", function () {
+        var beforeCursor = this.value.slice(0, this.selectionStart).replace(/[^0-9]/g, "").length;
+        var digits = this.value.replace(/[^0-9]/g, "");
+        this.value = digits ? Number(digits).toLocaleString("en-US") : "";
+        if (digits) {
+          var pos = 0, count = 0;
+          for (var i = 0; i < this.value.length; i++) {
+            if (this.value[i] !== ",") count++;
+            if (count === beforeCursor) { pos = i + 1; break; }
+          }
+          this.setSelectionRange(pos, pos);
+        }
+      });
+    });
+
+    // Full name: strip digits on input
+    var nameEl = form.querySelector("[name='fullName']");
+    if (nameEl) {
+      nameEl.addEventListener("input", function () {
+        var pos = this.selectionStart;
+        var cleaned = this.value.replace(/[0-9]/g, "");
+        if (cleaned !== this.value) {
+          this.value = cleaned;
+          this.setSelectionRange(pos - 1, pos - 1);
+        }
+      });
+    }
+
+    // Phone: allow only digits, +, -, spaces, parentheses
+    var phoneEl = form.querySelector("[name='phone']");
+    if (phoneEl) {
+      phoneEl.addEventListener("input", function () {
+        var pos = this.selectionStart;
+        var cleaned = this.value.replace(/[^0-9+\-\s()]/g, "");
+        if (cleaned !== this.value) {
+          this.value = cleaned;
+          this.setSelectionRange(pos - 1, pos - 1);
+        }
+      });
+    }
+
+    // Email: validate format on blur
+    var emailEl = form.querySelector("[name='email']");
+    var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailEl) {
+      emailEl.addEventListener("blur", function () {
+        if (this.value.trim() && !emailRe.test(this.value.trim())) {
+          this.setCustomValidity("Please enter a valid email address.");
+          this.reportValidity();
+        } else {
+          this.setCustomValidity("");
+        }
+      });
+      emailEl.addEventListener("input", function () {
+        this.setCustomValidity("");
+      });
+    }
+
+    var successEl  = document.getElementById("pitchSuccess");
+    var loadingEl  = document.getElementById("pitchLoading");
+    var doneBtnWired = false;
+
+    var modalTitle = document.getElementById("pitchModalTitle");
+    var modalSub   = overlay.querySelector(".pitch-modal-sub");
+
+    function hideHeader() {
+      if (modalTitle) modalTitle.style.display = "none";
+      if (modalSub)   modalSub.style.display   = "none";
+    }
+    function showHeader() {
+      if (modalTitle) modalTitle.style.display = "";
+      if (modalSub)   modalSub.style.display   = "";
+    }
+
+    function showLoading() {
+      form.style.display = "none";
+      hideHeader();
+      if (loadingEl) loadingEl.removeAttribute("hidden");
+    }
+    function hideLoading() {
+      if (loadingEl) loadingEl.setAttribute("hidden", "");
+    }
+
+    function resetModal() {
+      form.style.display = "";
+      form.reset();
+      showHeader();
+      hideLoading();
+      if (successEl) successEl.setAttribute("hidden", "");
+      status.textContent = "";
+      status.className = "pitch-form-status";
+      submitBtn.disabled = false;
+    }
+
+    function showSuccess() {
+      hideLoading();
+      if (successEl) successEl.removeAttribute("hidden");
+      if (!doneBtnWired) {
+        doneBtnWired = true;
+        document.getElementById("pitchSuccessDone").addEventListener("click", function () {
+          closeModal();
+          resetModal();
+        });
+      }
+      setTimeout(function () { closeModal(); resetModal(); }, 4000);
+    }
+
+    // Also reset when overlay closes via backdrop/escape
+    var _origClose = closeModal;
+    closeModal = function () {
+      _origClose();
+      resetModal();
+    };
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var data = new FormData(form);
+
+      var requiredNames = ["fullName", "email", "businessName", "dealDescription", "fundingRequest"];
+      var incomplete = requiredNames.some(function (n) {
+        var v = data.get(n);
+        return !v || !v.toString().trim();
+      });
+      if (incomplete) {
+        status.textContent = "Please complete all required fields.";
+        status.className = "pitch-form-status error";
+        return;
+      }
+      var emailVal = (data.get("email") || "").toString().trim();
+      if (!emailRe.test(emailVal)) {
+        status.textContent = "Please enter a valid email address.";
+        status.className = "pitch-form-status error";
+        return;
+      }
+
+      // Strip commas from formatted currency fields before sending
+      ["currentTurnover", "fundingRequest"].forEach(function (name) {
+        var raw = data.get(name);
+        if (raw) data.set(name, raw.toString().replace(/,/g, ""));
+      });
+
+      submitBtn.disabled = true;
+      showLoading();
+
+      fetch(API + "/pitch-submissions", { method: "POST", body: data })
+        .then(function (r) {
+          if (!r.ok) throw new Error("Server error " + r.status);
+          showSuccess();
+        })
+        .catch(function () {
+          hideLoading();
+          form.style.display = "";
+          showHeader();
+          status.textContent = "Submission failed — please email info@capitalasaforce.com";
+          status.className = "pitch-form-status error";
+          submitBtn.disabled = false;
+        });
+    });
+  })();
+
+  /* ── Event Speakers Carousel ───────────────────── */
+  (function () {
+    var track    = document.getElementById("speakersTrack");
+    var dotsWrap = document.getElementById("speakersDots");
+    if (!track) return;
+
+    var realSlides = Array.prototype.slice.call(track.querySelectorAll(".speaker-slide"));
+    var N       = realSlides.length;
+    var prevBtn = document.querySelector(".speakers-prev");
+    var nextBtn = document.querySelector(".speakers-next");
+    var current = N; // starts at first real slide
+    var timer   = null;
+
+    // Build clone buffers so the loop never has to jump back visually.
+    // Layout after cloning: [prepend clones 0..N-1] [real 0..N-1] [append clones 0..N-1]
+    // Prepend in reverse so index 0 = clone of real[0], index N-1 = clone of real[N-1]
+    for (var i = N - 1; i >= 0; i--) {
+      var pre = realSlides[i].cloneNode(true);
+      pre.setAttribute("aria-hidden", "true");
+      track.insertBefore(pre, track.firstChild);
+    }
+    realSlides.forEach(function (s) {
+      var app = s.cloneNode(true);
+      app.setAttribute("aria-hidden", "true");
+      track.appendChild(app);
+    });
+
+    // Build dots (one per real slide only)
+    for (var d = 0; d < N; d++) {
+      var dot = document.createElement("button");
+      dot.className = "speakers-dot";
+      dot.setAttribute("aria-label", "Slide " + (d + 1));
+      dot.dataset.idx = d;
+      dotsWrap.appendChild(dot);
+    }
+    var dots = dotsWrap.querySelectorAll(".speakers-dot");
+
+    function sw() {
+      return track.querySelector(".speaker-slide").offsetWidth + 20;
+    }
+
+    function updateDots() {
+      var ri = ((current - N) % N + N) % N;
+      dots.forEach(function (d, i) { d.classList.toggle("is-active", i === ri); });
+    }
+
+    // Move without animation (used to silently reset after crossing a boundary)
+    function snap(idx) {
+      track.style.transition = "none";
+      current = idx;
+      track.style.transform = "translateX(-" + (current * sw()) + "px)";
+      track.offsetHeight; // force reflow before re-enabling transition
+      track.style.transition = "";
+      updateDots();
+    }
+
+    function goTo(idx) {
+      current = idx;
+      track.style.transform = "translateX(-" + (current * sw()) + "px)";
+      updateDots();
+    }
+
+    // After each animated transition, silently snap into the real-slide zone if needed
+    track.addEventListener("transitionend", function (e) {
+      if (e.propertyName !== "transform") return;
+      if (current >= 2 * N) snap(current - N);
+      else if (current < N) snap(current + N);
+    });
+
+    function startAuto() {
+      clearInterval(timer);
+      timer = setInterval(function () { goTo(current + 1); }, 3500);
+    }
+    function stopAuto() { clearInterval(timer); }
+
+    if (prevBtn) prevBtn.addEventListener("click", function () { stopAuto(); goTo(current - 1); startAuto(); });
+    if (nextBtn) nextBtn.addEventListener("click", function () { stopAuto(); goTo(current + 1); startAuto(); });
+    dots.forEach(function (dot) {
+      dot.addEventListener("click", function () {
+        stopAuto();
+        goTo(N + +this.dataset.idx);
+        startAuto();
+      });
+    });
+
+    var wrap = track.closest(".speakers-carousel-wrap");
+    wrap.addEventListener("mouseenter", stopAuto);
+    wrap.addEventListener("mouseleave", startAuto);
+
+    var startX = 0;
+    track.addEventListener("touchstart", function (e) { stopAuto(); startX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener("touchend", function (e) {
+      var diff = startX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) goTo(current + (diff > 0 ? 1 : -1));
+      startAuto();
+    });
+
+    snap(N); // initialise at real slide 0 without animation
+    startAuto();
+  })();
+
+  /* ── Deck Request Modal ─────────────────────────── */
+  (function () {
+    var overlay    = document.getElementById("deckModalOverlay");
+    var closeBtn   = document.getElementById("deckModalClose");
+    var trigger    = document.querySelector(".deck-trigger");
+    var form       = document.getElementById("deckForm");
+    var status     = document.getElementById("deckFormStatus");
+    var submitBtn  = document.getElementById("deckSubmitBtn");
+    var loadingEl  = document.getElementById("deckLoading");
+    var successEl  = document.getElementById("deckSuccess");
+    var modalTitle = document.getElementById("deckModalTitle");
+    var modalSub   = overlay ? overlay.querySelector(".pitch-modal-sub") : null;
+    if (!overlay || !trigger) return;
+
+    var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function openModal()  { overlay.removeAttribute("hidden"); document.body.style.overflow = "hidden"; }
+    function closeModal() { overlay.setAttribute("hidden", ""); document.body.style.overflow = ""; resetModal(); }
+
+    function hideHeader() {
+      if (modalTitle) modalTitle.style.display = "none";
+      if (modalSub)   modalSub.style.display   = "none";
+    }
+    function showHeader() {
+      if (modalTitle) modalTitle.style.display = "";
+      if (modalSub)   modalSub.style.display   = "";
+    }
+
+    function resetModal() {
+      form.style.display = "";
+      form.reset();
+      showHeader();
+      if (loadingEl) loadingEl.setAttribute("hidden", "");
+      if (successEl) successEl.setAttribute("hidden", "");
+      status.textContent = "";
+      status.className = "pitch-form-status";
+      submitBtn.disabled = false;
+    }
+
+    trigger.addEventListener("click", function (e) { e.preventDefault(); openModal(); });
+    closeBtn.addEventListener("click", closeModal);
+    overlay.addEventListener("click", function (e) { if (e.target === overlay) closeModal(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !overlay.hasAttribute("hidden")) closeModal();
+    });
+
+    var doneBtnWired = false;
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var email = form.querySelector("[name='email']").value.trim();
+      if (!emailRe.test(email)) {
+        status.textContent = "Please enter a valid email address.";
+        status.className = "pitch-form-status error";
+        return;
+      }
+
+      submitBtn.disabled = true;
+      form.style.display = "none";
+      hideHeader();
+      if (loadingEl) loadingEl.removeAttribute("hidden");
+
+      fetch("https://admin.capitalasaforce.com/api/newsletter-subscribers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, source: "rural-lens-fund-deck" }),
+      })
+        .catch(function () { /* non-blocking — download proceeds regardless */ })
+        .finally(function () {
+          // Trigger download
+          var a = document.createElement("a");
+          a.href = "/The_Rural_Lens_Fund_updated.pdf";
+          a.download = "The_Rural_Lens_Fund.pdf";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+
+          // Show success
+          if (loadingEl) loadingEl.setAttribute("hidden", "");
+          if (successEl) successEl.removeAttribute("hidden");
+
+          if (!doneBtnWired) {
+            doneBtnWired = true;
+            document.getElementById("deckSuccessDone").addEventListener("click", closeModal);
+          }
+          setTimeout(closeModal, 4000);
+        });
+    });
   })();
 
   /* ── Intersection Observer — Reveal ────────────── */
