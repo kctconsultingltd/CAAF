@@ -938,12 +938,16 @@
         <p class="pitch-modal-sub">Enter your email to download The Rural Lens Fund deck.</p>
 
         <form id="deckForm" novalidate>
-          <div class="pitch-field">
-            <label class="pitch-label" for="deckEmail">Email Address <span class="pitch-req">*</span></label>
-            <input class="pitch-input" type="email" id="deckEmail" name="email" placeholder="you@example.com" required />
+          <div class="pitch-field-row" style="grid-template-columns:1fr;margin-bottom:0">
+            <label>
+              <span>Email Address <span aria-hidden="true">*</span></span>
+              <input type="email" name="email" placeholder="you@example.com" required />
+            </label>
           </div>
-          <p class="pitch-form-status" id="deckFormStatus"></p>
-          <button type="submit" class="pitch-submit" id="deckSubmitBtn">Download Deck &rarr;</button>
+          <div class="pitch-form-footer">
+            <button type="submit" class="pitch-submit" id="deckSubmitBtn">Download Deck &rarr;</button>
+            <p class="pitch-form-status" id="deckFormStatus" aria-live="polite"></p>
+          </div>
         </form>
 
         <!-- Loading screen -->
