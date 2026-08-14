@@ -288,8 +288,9 @@
       }
 
       tbody.innerHTML = data.map(function (r) {
-        var deck = r.deckUrl
-          ? '<a class="deck-link" href="' + r.deckUrl + '" target="_blank" rel="noopener">View Deck &rarr;</a>'
+        var deckHref = API_BASE + '/pitch-submissions/' + r.id + '/deck?key=' + encodeURIComponent(exportKey);
+        var deck = r.hasDeck
+          ? '<a class="deck-link" href="' + deckHref + '" target="_blank" rel="noopener">View Deck &rarr;</a>'
           : '<span class="no-deck">—</span>';
         return '<tr>' +
           '<td class="muted">' + esc(r.date) + '</td>' +

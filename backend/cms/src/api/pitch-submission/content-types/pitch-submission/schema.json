@@ -10,14 +10,16 @@
   "options": { "draftAndPublish": false },
   "pluginOptions": {},
   "attributes": {
-    "fullName":        { "type": "string", "required": true },
-    "email":           { "type": "email",  "required": true },
+    "fullName":        { "type": "string",  "required": true },
+    "email":           { "type": "email",   "required": true },
     "phone":           { "type": "string" },
-    "businessName":    { "type": "string", "required": true },
-    "dealDescription": { "type": "text",   "required": true },
+    "businessName":    { "type": "string",  "required": true },
+    "dealDescription": { "type": "text",    "required": true },
     "currentTurnover": { "type": "string" },
-    "fundingRequest":  { "type": "string", "required": true },
-    "deck":            { "type": "media",  "multiple": false, "required": false, "allowedTypes": ["files"] },
-    "deckUrl":         { "type": "string" }
+    "fundingRequest":  { "type": "string",  "required": true },
+    "hasDeck":         { "type": "boolean", "default": false },
+    "deckData":        { "type": "text" },
+    "deckFileName":    { "type": "string" },
+    "deckMimeType":    { "type": "string" }
   }
 }

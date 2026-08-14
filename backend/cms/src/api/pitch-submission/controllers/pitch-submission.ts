@@ -1,7 +1,5 @@
 import { factories } from '@strapi/strapi';
 import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
 
 export default factories.createCoreController(
   'api::pitch-submission.pitch-submission' as any,
@@ -9,17 +7,14 @@ export default factories.createCoreController(
     async create(ctx) {
       const body = ctx.request.body as Record<string, any>;
 
-      // ── Locate uploaded files (koa-body puts them on ctx.request.files;
-      //    some Strapi builds also expose them on ctx.files) ──────────────
-      const reqFiles  = (ctx.request as any).files as Record<string, any> | undefined;
-      const ctxFiles  = (ctx        as any).files as Record<string, any> | undefined;
-      const files     = reqFiles ?? ctxFiles ?? {};
+      const reqFiles = (ctx.request as any).files as Record<string, any> | undefined;
+      const ctxFiles = (ctx as any).files as Record<string, any> | undefined;
+      const files    = reqFiles ?? ctxFiles ?? {};
 
       strapi.log.info(
         `[pitch-submission] body keys: ${Object.keys(body).join(', ')}` +
         ` | file keys: ${Object.keys(files).join(', ') || 'none'}` +
-        ` | content-type: ${ctx.request.headers['content-type']?.split(';')[0]}` +
-        ` | cloudinary: ${process.env.CLOUDINARY_NAME ? 'configured' : 'NOT configured'}`
+        ` | content-type: ${ctx.request.headers['content-type']?.split(';')[0]}`
       );
 
       // ── Validation ────────────────────────────────────────────────────
@@ -30,56 +25,32 @@ export default factories.createCoreController(
       const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRe.test(body.email)) return ctx.badRequest('Invalid email address.');
 
-      // ── Deck file upload ───────────────────────────────────────────────
-      let deckUrl: string | undefined;
-      let tmpPath: string | undefined;
+      // ── Deck file → base64 ────────────────────────────────────────────
+      let deckData:     string | undefined;
+      let deckFileName: string | undefined;
+      let deckMimeType: string | undefined;
 
       const rawDeck = files['deck'] ?? files['files.deck'];
       strapi.log.info(`[pitch-submission] rawDeck present: ${!!rawDeck}`);
 
       if (rawDeck) {
         const deckFile = Array.isArray(rawDeck) ? rawDeck[0] : rawDeck;
-
-        // formidable v3 uses .filepath; v1/v2 uses .path
         const srcPath: string | undefined = deckFile.filepath ?? deckFile.path;
-        const fileName = deckFile.originalFilename ?? deckFile.name ?? 'deck';
-        const mimeType = deckFile.mimetype ?? deckFile.type ?? 'application/octet-stream';
         const fileSize = Number(deckFile.size ?? 0);
 
         strapi.log.info(
-          `[pitch-submission] deck — srcPath: ${srcPath}, name: ${fileName}, ` +
-          `mime: ${mimeType}, size: ${fileSize}, exists: ${srcPath ? fs.existsSync(srcPath) : false}`
+          `[pitch-submission] deck — srcPath: ${srcPath}, size: ${fileSize}, ` +
+          `exists: ${srcPath ? fs.existsSync(srcPath) : false}`
         );
 
-        // Upload directly to Cloudinary as resource_type:'raw' so PDFs are
-        // stored and served as downloadable files, not converted to images.
         if (srcPath && fs.existsSync(srcPath) && fileSize > 0) {
           try {
-            const ext = path.extname(fileName) || '.pdf';
-            tmpPath   = path.join(os.tmpdir(), `pitch-deck-${Date.now()}${ext}`);
-            fs.copyFileSync(srcPath, tmpPath);
-
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const cloudinaryV2 = require('cloudinary').v2;
-            cloudinaryV2.config({
-              cloud_name: process.env.CLOUDINARY_NAME,
-              api_key:    process.env.CLOUDINARY_KEY,
-              api_secret: process.env.CLOUDINARY_SECRET,
-            });
-
-            const result = await cloudinaryV2.uploader.upload(tmpPath, {
-              resource_type: 'raw',
-              use_filename: true,
-              unique_filename: true,
-              filename_override: fileName,
-            });
-
-            deckUrl = result.secure_url;
-            strapi.log.info(`[pitch-submission] deck uploaded — url: ${deckUrl}`);
+            deckData     = fs.readFileSync(srcPath).toString('base64');
+            deckFileName = deckFile.originalFilename ?? deckFile.name ?? 'deck.pdf';
+            deckMimeType = deckFile.mimetype ?? deckFile.type ?? 'application/pdf';
+            strapi.log.info(`[pitch-submission] deck read — ${fileSize} bytes, mime: ${deckMimeType}`);
           } catch (err: any) {
-            strapi.log.error(`[pitch-submission] deck upload error: ${err.message}\n${err.stack ?? ''}`);
-          } finally {
-            if (tmpPath) try { fs.unlinkSync(tmpPath); } catch {}
+            strapi.log.error(`[pitch-submission] deck read error: ${err.message}`);
           }
         }
       }
@@ -94,7 +65,7 @@ export default factories.createCoreController(
           dealDescription: String(body.dealDescription).trim(),
           currentTurnover: String(body.currentTurnover ?? '').trim() || null,
           fundingRequest:  String(body.fundingRequest).trim(),
-          ...(deckUrl ? { deckUrl } : {}),
+          ...(deckData ? { deckData, deckFileName, deckMimeType, hasDeck: true } : {}),
         },
       });
 
@@ -122,30 +93,49 @@ export default factories.createCoreController(
       };
     },
 
+    // ── Serve a single deck as binary PDF ─────────────────────────────
+    async serveDeck(ctx) {
+      const key       = String(ctx.query.key ?? '');
+      const exportKey = process.env.EXPORT_KEY;
+
+      if (!exportKey) { ctx.status = 401; ctx.body = 'EXPORT_KEY is not configured'; return; }
+      if (key !== exportKey) { ctx.status = 401; ctx.body = 'Invalid export key'; return; }
+
+      const docId = ctx.params.id;
+      const entry = await (strapi.documents as any)('api::pitch-submission.pitch-submission')
+        .findOne(docId, { fields: ['deckData', 'deckFileName', 'deckMimeType'] });
+
+      if (!entry?.deckData) { ctx.status = 404; ctx.body = 'No deck found'; return; }
+
+      const buffer = Buffer.from(entry.deckData, 'base64');
+      const mime   = entry.deckMimeType || 'application/pdf';
+      const name   = entry.deckFileName || 'deck.pdf';
+
+      ctx.set('Content-Type', mime);
+      ctx.set('Content-Disposition', `inline; filename="${name}"`);
+      ctx.set('Content-Length', String(buffer.length));
+      ctx.body = buffer;
+    },
+
+    // ── Export all submissions (metadata only, no binary) ─────────────
     async exportData(ctx) {
-      const key = String(ctx.query.key ?? '');
+      const key       = String(ctx.query.key ?? '');
       const exportKey = process.env.EXPORT_KEY;
 
       strapi.log.info(
         `[pitch-submission] exportData — exportKey:${exportKey ? 'SET(len=' + exportKey.length + ')' : 'MISSING'} | key len:${key.length}`
       );
 
-      if (!exportKey) {
-        ctx.status = 401;
-        ctx.body = 'EXPORT_KEY is not configured on the server';
-        return;
-      }
-      if (key !== exportKey) {
-        ctx.status = 401;
-        ctx.body = 'Invalid export key';
-        return;
-      }
+      if (!exportKey) { ctx.status = 401; ctx.body = 'EXPORT_KEY is not configured on the server'; return; }
+      if (key !== exportKey) { ctx.status = 401; ctx.body = 'Invalid export key'; return; }
 
       const entries = await (strapi.documents as any)(
         'api::pitch-submission.pitch-submission'
       ).findMany({
-        sort: ['createdAt:desc'],
-        limit: 10000,
+        sort:   ['createdAt:desc'],
+        limit:  10000,
+        fields: ['fullName', 'email', 'phone', 'businessName', 'fundingRequest',
+                 'currentTurnover', 'dealDescription', 'hasDeck', 'deckFileName', 'createdAt'],
       });
 
       strapi.log.info(`[pitch-submission] export — found ${entries?.length ?? 0} entries`);
@@ -153,20 +143,20 @@ export default factories.createCoreController(
       const format = String(ctx.query.format ?? 'json');
 
       if (format === 'csv') {
-        const header = ['Date', 'Full Name', 'Email', 'Phone', 'Business', 'Funding Request', 'Current Turnover', 'Deal Description', 'Deck URL'];
-        const rows = [header];
+        const header = ['Date','Full Name','Email','Phone','Business','Funding Request','Current Turnover','Deal Description','Has Deck','Deck File'];
+        const rows   = [header];
         for (const e of (entries ?? [])) {
-          const deckUrl = e.deckUrl ?? '';
           rows.push([
             e.createdAt ? new Date(e.createdAt).toISOString().split('T')[0] : '',
-            e.fullName ?? '',
-            e.email ?? '',
-            e.phone ?? '',
-            e.businessName ?? '',
-            e.fundingRequest ?? '',
+            e.fullName        ?? '',
+            e.email           ?? '',
+            e.phone           ?? '',
+            e.businessName    ?? '',
+            e.fundingRequest  ?? '',
             e.currentTurnover ?? '',
             e.dealDescription ?? '',
-            deckUrl,
+            e.hasDeck ? 'Yes' : 'No',
+            e.deckFileName    ?? '',
           ]);
         }
         const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
@@ -176,17 +166,18 @@ export default factories.createCoreController(
         return;
       }
 
-      // JSON response for the table view
       ctx.body = (entries ?? []).map((e: any) => ({
+        id:              e.documentId ?? '',
         date:            e.createdAt ? new Date(e.createdAt).toISOString().split('T')[0] : '',
-        fullName:        e.fullName ?? '',
-        email:           e.email ?? '',
-        phone:           e.phone ?? '',
-        businessName:    e.businessName ?? '',
-        fundingRequest:  e.fundingRequest ?? '',
+        fullName:        e.fullName        ?? '',
+        email:           e.email           ?? '',
+        phone:           e.phone           ?? '',
+        businessName:    e.businessName    ?? '',
+        fundingRequest:  e.fundingRequest  ?? '',
         currentTurnover: e.currentTurnover ?? '',
         dealDescription: e.dealDescription ?? '',
-        deckUrl: e.deckUrl ?? '',
+        hasDeck:         e.hasDeck         ?? false,
+        deckFileName:    e.deckFileName    ?? '',
       }));
     },
   })

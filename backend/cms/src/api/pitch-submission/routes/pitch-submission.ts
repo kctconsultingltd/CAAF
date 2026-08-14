@@ -12,5 +12,11 @@ export default {
       handler: 'pitch-submission.exportData',
       config: { auth: false, policies: [], middlewares: [] },
     },
+    {
+      method: 'GET',
+      path: '/pitch-submissions/:id/deck',
+      handler: 'pitch-submission.serveDeck',
+      config: { auth: false, policies: [], middlewares: [] },
+    },
   ],
 };
