@@ -67,12 +67,11 @@ export default factories.createCoreController(
               api_secret: process.env.CLOUDINARY_SECRET,
             });
 
-            const result = await new Promise<any>((resolve, reject) => {
-              const stream = cloudinaryV2.uploader.upload_stream(
-                { resource_type: 'raw', use_filename: true, unique_filename: true },
-                (err: any, res: any) => (err ? reject(err) : resolve(res))
-              );
-              fs.createReadStream(tmpPath).pipe(stream);
+            const result = await cloudinaryV2.uploader.upload(tmpPath, {
+              resource_type: 'raw',
+              use_filename: true,
+              unique_filename: true,
+              filename_override: fileName,
             });
 
             deckUrl = result.secure_url;
