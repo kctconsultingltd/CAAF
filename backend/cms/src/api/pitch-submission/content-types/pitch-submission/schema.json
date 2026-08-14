@@ -17,6 +17,7 @@
     "dealDescription": { "type": "text",   "required": true },
     "currentTurnover": { "type": "string" },
     "fundingRequest":  { "type": "string", "required": true },
-    "deck":            { "type": "media",  "multiple": false, "required": false, "allowedTypes": ["files"] }
+    "deck":            { "type": "media",  "multiple": false, "required": false, "allowedTypes": ["files"] },
+    "deckUrl":         { "type": "string" }
   }
 }

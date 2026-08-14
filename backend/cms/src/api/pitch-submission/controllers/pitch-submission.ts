@@ -31,7 +31,6 @@ export default factories.createCoreController(
       if (!emailRe.test(body.email)) return ctx.badRequest('Invalid email address.');
 
       // ── Deck file upload ───────────────────────────────────────────────
-      let deckId: number | undefined;
       let deckUrl: string | undefined;
       let tmpPath: string | undefined;
 
@@ -52,32 +51,32 @@ export default factories.createCoreController(
           `mime: ${mimeType}, size: ${fileSize}, exists: ${srcPath ? fs.existsSync(srcPath) : false}`
         );
 
-        // Copy to a named temp file so Strapi's upload service gets the right extension
+        // Upload directly to Cloudinary as resource_type:'raw' so PDFs are
+        // stored and served as downloadable files, not converted to images.
         if (srcPath && fs.existsSync(srcPath) && fileSize > 0) {
           try {
-            const ext    = path.extname(fileName) || '.pdf';
-            tmpPath      = path.join(os.tmpdir(), `pitch-deck-${Date.now()}${ext}`);
+            const ext = path.extname(fileName) || '.pdf';
+            tmpPath   = path.join(os.tmpdir(), `pitch-deck-${Date.now()}${ext}`);
             fs.copyFileSync(srcPath, tmpPath);
 
-            // Strapi v5 upload service calls file.getStream() internally (formidable v3
-            // style) — provide it explicitly so it doesn't fall back to this.filepath
-            // which would be undefined on a plain descriptor object.
-            const [uploaded] = await strapi.plugin('upload').service('upload').upload({
-              data: {},
-              files: {
-                path: tmpPath,
-                filepath: tmpPath,
-                name: fileName,
-                originalFilename: fileName,
-                type: mimeType,
-                mimetype: mimeType,
-                size: fileSize,
-                getStream: () => fs.createReadStream(tmpPath),
-              },
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const cloudinaryV2 = require('cloudinary').v2;
+            cloudinaryV2.config({
+              cloud_name: process.env.CLOUDINARY_NAME,
+              api_key:    process.env.CLOUDINARY_KEY,
+              api_secret: process.env.CLOUDINARY_SECRET,
             });
-            deckId  = uploaded.id;
-            deckUrl = uploaded.url;
-            strapi.log.info(`[pitch-submission] deck uploaded — id: ${deckId}, url: ${deckUrl}`);
+
+            const result = await new Promise<any>((resolve, reject) => {
+              const stream = cloudinaryV2.uploader.upload_stream(
+                { resource_type: 'raw', use_filename: true, unique_filename: true },
+                (err: any, res: any) => (err ? reject(err) : resolve(res))
+              );
+              fs.createReadStream(tmpPath).pipe(stream);
+            });
+
+            deckUrl = result.secure_url;
+            strapi.log.info(`[pitch-submission] deck uploaded — url: ${deckUrl}`);
           } catch (err: any) {
             strapi.log.error(`[pitch-submission] deck upload error: ${err.message}\n${err.stack ?? ''}`);
           } finally {
@@ -96,7 +95,7 @@ export default factories.createCoreController(
           dealDescription: String(body.dealDescription).trim(),
           currentTurnover: String(body.currentTurnover ?? '').trim() || null,
           fundingRequest:  String(body.fundingRequest).trim(),
-          ...(deckId !== undefined ? { deck: deckId } : {}),
+          ...(deckUrl ? { deckUrl } : {}),
         },
       });
 
@@ -148,17 +147,7 @@ export default factories.createCoreController(
       ).findMany({
         sort: ['createdAt:desc'],
         limit: 10000,
-        populate: ['deck'],
       });
-
-      function fixDeckUrl(url: string): string {
-        // PDFs uploaded before resource_type:'raw' fix were stored under /image/upload/
-        // and return 401. Rewrite to /raw/upload/ so they are served correctly.
-        if (url && url.includes('/image/upload/') && /\.pdf$/i.test(url)) {
-          return url.replace('/image/upload/', '/raw/upload/');
-        }
-        return url;
-      }
 
       strapi.log.info(`[pitch-submission] export — found ${entries?.length ?? 0} entries`);
 
@@ -168,10 +157,7 @@ export default factories.createCoreController(
         const header = ['Date', 'Full Name', 'Email', 'Phone', 'Business', 'Funding Request', 'Current Turnover', 'Deal Description', 'Deck URL'];
         const rows = [header];
         for (const e of (entries ?? [])) {
-          const rawUrl = e.deck?.url
-            ? (e.deck.url.startsWith('http') ? e.deck.url : `https://admin.capitalasaforce.com${e.deck.url}`)
-            : '';
-          const deckUrl = fixDeckUrl(rawUrl);
+          const deckUrl = e.deckUrl ?? '';
           rows.push([
             e.createdAt ? new Date(e.createdAt).toISOString().split('T')[0] : '',
             e.fullName ?? '',
@@ -201,11 +187,7 @@ export default factories.createCoreController(
         fundingRequest:  e.fundingRequest ?? '',
         currentTurnover: e.currentTurnover ?? '',
         dealDescription: e.dealDescription ?? '',
-        deckUrl: fixDeckUrl(
-          e.deck?.url
-            ? (e.deck.url.startsWith('http') ? e.deck.url : `https://admin.capitalasaforce.com${e.deck.url}`)
-            : ''
-        ),
+        deckUrl: e.deckUrl ?? '',
       }));
     },
   })
