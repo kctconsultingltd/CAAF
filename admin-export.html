@@ -113,9 +113,7 @@
   </div>
 
   <script>
-    var API = window.location.hostname.includes('staging')
-      ? 'https://admin-staging.capitalasaforce.com/api/newsletter-subscribers/export'
-      : 'https://admin.capitalasaforce.com/api/newsletter-subscribers/export';
+    var API = 'https://admin.capitalasaforce.com/api/newsletter-subscribers/export';
 
     document.getElementById('exportBtn').addEventListener('click', function () {
       var key    = document.getElementById('keyInput').value.trim();
