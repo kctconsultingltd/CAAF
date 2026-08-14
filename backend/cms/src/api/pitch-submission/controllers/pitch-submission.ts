@@ -151,6 +151,15 @@ export default factories.createCoreController(
         populate: ['deck'],
       });
 
+      function fixDeckUrl(url: string): string {
+        // PDFs uploaded before resource_type:'raw' fix were stored under /image/upload/
+        // and return 401. Rewrite to /raw/upload/ so they are served correctly.
+        if (url && url.includes('/image/upload/') && /\.pdf$/i.test(url)) {
+          return url.replace('/image/upload/', '/raw/upload/');
+        }
+        return url;
+      }
+
       strapi.log.info(`[pitch-submission] export — found ${entries?.length ?? 0} entries`);
 
       const format = String(ctx.query.format ?? 'json');
@@ -159,9 +168,10 @@ export default factories.createCoreController(
         const header = ['Date', 'Full Name', 'Email', 'Phone', 'Business', 'Funding Request', 'Current Turnover', 'Deal Description', 'Deck URL'];
         const rows = [header];
         for (const e of (entries ?? [])) {
-          const deckUrl = e.deck?.url
+          const rawUrl = e.deck?.url
             ? (e.deck.url.startsWith('http') ? e.deck.url : `https://admin.capitalasaforce.com${e.deck.url}`)
             : '';
+          const deckUrl = fixDeckUrl(rawUrl);
           rows.push([
             e.createdAt ? new Date(e.createdAt).toISOString().split('T')[0] : '',
             e.fullName ?? '',
@@ -191,9 +201,11 @@ export default factories.createCoreController(
         fundingRequest:  e.fundingRequest ?? '',
         currentTurnover: e.currentTurnover ?? '',
         dealDescription: e.dealDescription ?? '',
-        deckUrl:         e.deck?.url
-          ? (e.deck.url.startsWith('http') ? e.deck.url : `https://admin.capitalasaforce.com${e.deck.url}`)
-          : '',
+        deckUrl: fixDeckUrl(
+          e.deck?.url
+            ? (e.deck.url.startsWith('http') ? e.deck.url : `https://admin.capitalasaforce.com${e.deck.url}`)
+            : ''
+        ),
       }));
     },
   })
