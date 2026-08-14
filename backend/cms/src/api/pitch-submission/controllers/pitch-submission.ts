@@ -102,8 +102,14 @@ export default factories.createCoreController(
       if (key !== exportKey) { ctx.status = 401; ctx.body = 'Invalid export key'; return; }
 
       const docId = ctx.params.id;
+
+      // findOne in Strapi v5 document service takes { documentId, fields }
       const entry = await (strapi.documents as any)('api::pitch-submission.pitch-submission')
-        .findOne(docId, { fields: ['deckData', 'deckFileName', 'deckMimeType'] });
+        .findOne({ documentId: docId, fields: ['deckData', 'deckFileName', 'deckMimeType'] });
+
+      strapi.log.info(
+        `[pitch-submission] serveDeck — docId: ${docId} | found: ${!!entry} | hasDeckData: ${!!entry?.deckData}`
+      );
 
       if (!entry?.deckData) { ctx.status = 404; ctx.body = 'No deck found'; return; }
 

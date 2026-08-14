@@ -169,8 +169,12 @@
       border-radius: 3px;
       padding: 3px 8px;
       white-space: nowrap;
+      background: none;
+      cursor: pointer;
+      font-family: inherit;
     }
     .deck-link:hover { background: rgba(200,150,42,.1); }
+    .deck-link:disabled { opacity: .5; cursor: wait; }
     .no-deck { color: #3a4a5a; font-size: 0.75rem; }
 
     .empty-state {
@@ -288,9 +292,8 @@
       }
 
       tbody.innerHTML = data.map(function (r) {
-        var deckHref = API_BASE + '/pitch-submissions/' + r.id + '/deck?key=' + encodeURIComponent(exportKey);
         var deck = r.hasDeck
-          ? '<a class="deck-link" href="' + deckHref + '" target="_blank" rel="noopener">View Deck &rarr;</a>'
+          ? '<button class="deck-link" onclick="openDeck(\'' + r.id + '\', this)">View Deck &rarr;</button>'
           : '<span class="no-deck">—</span>';
         return '<tr>' +
           '<td class="muted">' + esc(r.date) + '</td>' +
@@ -313,6 +316,26 @@
       a.download = 'pitch-submissions-' + new Date().toISOString().split('T')[0] + '.csv';
       a.click();
     });
+
+    function openDeck(id, btn) {
+      btn.disabled = true;
+      btn.textContent = 'Loading…';
+      fetch(API_BASE + '/pitch-submissions/' + id + '/deck?key=' + encodeURIComponent(exportKey))
+        .then(function (r) {
+          if (!r.ok) return r.text().then(function (t) { throw new Error(t || 'Error ' + r.status); });
+          return r.blob();
+        })
+        .then(function (blob) {
+          var url = URL.createObjectURL(blob);
+          window.open(url, '_blank');
+          btn.textContent = 'View Deck →';
+          btn.disabled = false;
+        })
+        .catch(function (err) {
+          btn.textContent = err.message || 'Failed';
+          setTimeout(function () { btn.textContent = 'View Deck →'; btn.disabled = false; }, 3000);
+        });
+    }
 
     function esc(s) {
       return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
