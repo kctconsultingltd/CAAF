@@ -1325,6 +1325,62 @@ p {
 #cms-team-list {
   display: contents;
 }
+
+/* ═══════════════════════════════════════════════════
+   TEAM EXPERIENCE
+   ═══════════════════════════════════════════════════ */
+.experience-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+  margin-top: 48px;
+  align-items: start;
+}
+@media (max-width: 899px) {
+  .experience-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+}
+@media (max-width: 480px) {
+  .experience-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+.experience-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+}
+.experience-logo {
+  height: 56px;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+  filter: grayscale(1);
+  opacity: 0.55;
+  transition: filter 0.25s, opacity 0.25s;
+}
+.experience-item:hover .experience-logo {
+  filter: grayscale(0);
+  opacity: 1;
+}
+.experience-mandate {
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text);
+  font-weight: 600;
+  line-height: 1.4;
+}
+.experience-years {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: -6px;
+}
 .team-card {
   border: 1px solid var(--card-border);
   border-radius: 4px;
