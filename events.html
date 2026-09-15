@@ -232,6 +232,20 @@
       </div>
     </div>
 
+    <!-- Gallery lightbox -->
+    <div id="galleryLightbox" class="gallery-lightbox" hidden>
+      <button class="gallery-close" onclick="window._galleryClose()" aria-label="Close">&times;</button>
+      <button class="gallery-prev" onclick="window._galleryPrev()" aria-label="Previous">&#8592;</button>
+      <button class="gallery-next" onclick="window._galleryNext()" aria-label="Next">&#8594;</button>
+      <div class="gallery-img-wrap">
+        <img id="galleryImg" src="" alt="" class="gallery-img" />
+      </div>
+      <div class="gallery-footer">
+        <div class="gallery-counter" id="galleryCounter"></div>
+        <div class="gallery-dots" id="galleryDots"></div>
+      </div>
+    </div>
+
     <!-- Section Divider -->
     <div style="height: 1px; background: var(--line-solid)"></div>
 

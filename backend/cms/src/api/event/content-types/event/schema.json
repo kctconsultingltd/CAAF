@@ -16,6 +16,7 @@
     "eventDate":     { "type": "datetime" },
     "location":      { "type": "string" },
     "coverImage":    { "type": "media", "multiple": false, "required": false, "allowedTypes": ["images"] },
-    "coverImageUrl": { "type": "string" }
+    "coverImageUrl": { "type": "string" },
+    "gallery":       { "type": "media", "multiple": true,  "required": false, "allowedTypes": ["images"] }
   }
 }

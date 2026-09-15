@@ -5,6 +5,64 @@
     ? "https://admin-staging.capitalasaforce.com/api"
     : "https://admin.capitalasaforce.com/api";
 
+  // ─── Gallery lightbox state ───────────────────────────────────────────────
+  var _eventGalleries = {};
+  var _galleryImages  = [];
+  var _galleryIdx     = 0;
+
+  function _galleryShowSlide(idx) {
+    _galleryIdx = ((idx % _galleryImages.length) + _galleryImages.length) % _galleryImages.length;
+    var img     = document.getElementById("galleryImg");
+    var counter = document.getElementById("galleryCounter");
+    if (img)     img.src = _galleryImages[_galleryIdx];
+    if (counter) counter.textContent = (_galleryIdx + 1) + " / " + _galleryImages.length;
+    document.querySelectorAll(".gallery-dot").forEach(function (d, i) {
+      d.classList.toggle("is-active", i === _galleryIdx);
+    });
+  }
+
+  window._galleryOpen = function (images) {
+    _galleryImages = images;
+    var dotsEl = document.getElementById("galleryDots");
+    if (dotsEl) {
+      dotsEl.innerHTML = images.map(function (_, i) {
+        return '<button class="gallery-dot" aria-label="Slide ' + (i + 1) + '"></button>';
+      }).join("");
+      dotsEl.querySelectorAll(".gallery-dot").forEach(function (d, i) {
+        d.addEventListener("click", function () { _galleryShowSlide(i); });
+      });
+    }
+    _galleryShowSlide(0);
+    var lb = document.getElementById("galleryLightbox");
+    if (lb) { lb.removeAttribute("hidden"); document.body.style.overflow = "hidden"; }
+  };
+
+  window._galleryClose = function () {
+    var lb = document.getElementById("galleryLightbox");
+    if (lb) { lb.setAttribute("hidden", ""); document.body.style.overflow = ""; }
+    _galleryImages = [];
+  };
+
+  window._galleryPrev = function () { _galleryShowSlide(_galleryIdx - 1); };
+  window._galleryNext = function () { _galleryShowSlide(_galleryIdx + 1); };
+
+  document.addEventListener("keydown", function (e) {
+    var lb = document.getElementById("galleryLightbox");
+    if (!lb || lb.hidden) return;
+    if (e.key === "Escape")     window._galleryClose();
+    if (e.key === "ArrowLeft")  window._galleryPrev();
+    if (e.key === "ArrowRight") window._galleryNext();
+  });
+
+  document.addEventListener("click", function (e) {
+    var card = e.target.closest && e.target.closest("[data-gallery-key]");
+    if (!card) return;
+    var key = card.getAttribute("data-gallery-key");
+    if (_eventGalleries[key] && _eventGalleries[key].length) {
+      window._galleryOpen(_eventGalleries[key]);
+    }
+  });
+
   // ─── Core fetch wrapper ───────────────────────────────────────────────────
 
   function apiFetch(path, options) {
@@ -665,43 +723,37 @@
   }
 
   function renderEvent(evt) {
-    var imgSrc =
-      (evt.coverImage && evt.coverImage.url) || evt.coverImageUrl || "";
+    var imgSrc = (evt.coverImage && evt.coverImage.url) || evt.coverImageUrl || "";
     var imgHtml = imgSrc
-      ? '<img src="' +
-        escHtml(imgSrc) +
-        '" alt="' +
-        escHtml(evt.title) +
-        '" class="cms-blog-img" loading="lazy" />'
+      ? '<img src="' + escHtml(imgSrc) + '" alt="' + escHtml(evt.title) + '" class="cms-blog-img" loading="lazy" />'
       : "";
     var dateHtml = evt.eventDate
-      ? '<span class="cms-events-date">' +
-        escHtml(formatEventDate(evt.eventDate)) +
-        "</span>"
+      ? '<span class="cms-events-date">' + escHtml(formatEventDate(evt.eventDate)) + "</span>"
       : "";
     var locationHtml = evt.location
-      ? '<span class="cms-events-location">' +
-        escHtml(evt.location) +
-        "</span>"
+      ? '<span class="cms-events-location">' + escHtml(evt.location) + "</span>"
       : "";
     var descHtml = evt.description
       ? '<p class="cms-blog-desc">' + escHtml(evt.description) + "</p>"
       : "";
-    return (
-      '<a href="' +
-      escHtml(evt.url) +
-      '" target="_blank" rel="noopener noreferrer" class="cms-blog-card" data-id="' +
-      escHtml(evt.documentId) +
-      '">' +
-      imgHtml +
-      dateHtml +
-      '<span class="cms-blog-title">' +
-      escHtml(evt.title) +
-      "</span>" +
-      descHtml +
-      locationHtml +
-      "</a>"
-    );
+
+    var galleryImages = (evt.gallery || []).map(function (img) { return img.url; }).filter(Boolean);
+
+    var inner = imgHtml + dateHtml +
+      '<span class="cms-blog-title">' + escHtml(evt.title) + "</span>" +
+      descHtml + locationHtml;
+
+    if (galleryImages.length > 0) {
+      var key = evt.documentId || String(evt.id);
+      _eventGalleries[key] = galleryImages;
+      return '<div class="cms-blog-card event-has-gallery" data-gallery-key="' + escHtml(key) + '">' +
+        inner +
+        '<span class="gallery-cta">View photos →</span>' +
+        '</div>';
+    }
+
+    return '<a href="' + escHtml(evt.url || "#") + '" target="_blank" rel="noopener noreferrer" class="cms-blog-card">' +
+      inner + "</a>";
   }
 
   function loadEventsPage() {
@@ -709,7 +761,7 @@
     if (!el) return;
     var pastEl = document.getElementById("cms-events-past-list");
     apiFetch(
-      "/events?populate=coverImage" +
+      "/events?populate[0]=coverImage&populate[1]=gallery" +
         "&fields[0]=title&fields[1]=url&fields[2]=description" +
         "&fields[3]=eventDate&fields[4]=location&fields[5]=coverImageUrl" +
         "&sort=eventDate:asc&pagination[pageSize]=100"

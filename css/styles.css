@@ -3272,6 +3272,123 @@ to {
 .cms-blog-card:hover {
   border-color: var(--gold);
 }
+.event-has-gallery {
+  cursor: pointer;
+}
+.gallery-cta {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.8;
+}
+.event-has-gallery:hover .gallery-cta {
+  opacity: 1;
+}
+
+/* ── Gallery lightbox ── */
+.gallery-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.gallery-lightbox[hidden] {
+  display: none;
+}
+.gallery-img-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 60px 80px 20px;
+  box-sizing: border-box;
+}
+.gallery-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+  border-radius: 2px;
+}
+.gallery-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+  line-height: 1;
+  padding: 4px 8px;
+}
+.gallery-close:hover { opacity: 1; }
+.gallery-prev,
+.gallery-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 1.2rem;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.gallery-prev { left: 20px; }
+.gallery-next { right: 20px; }
+.gallery-prev:hover,
+.gallery-next:hover { background: rgba(255,255,255,0.18); }
+.gallery-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0 24px;
+}
+.gallery-counter {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.1em;
+}
+.gallery-dots {
+  display: flex;
+  gap: 8px;
+}
+.gallery-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s;
+}
+.gallery-dot.is-active {
+  background: #fff;
+}
+@media (max-width: 600px) {
+  .gallery-img-wrap { padding: 60px 56px 20px; }
+  .gallery-prev { left: 8px; }
+  .gallery-next { right: 8px; }
+}
 .cms-blog-img {
   display: block;
   width: 100%;
