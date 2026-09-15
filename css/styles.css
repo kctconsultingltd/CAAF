@@ -1356,9 +1356,9 @@ p {
   gap: 14px;
 }
 .experience-logo {
-  height: 56px;
+  height: 90px;
   width: auto;
-  max-width: 140px;
+  max-width: 200px;
   object-fit: contain;
   filter: grayscale(1);
   opacity: 0.55;
