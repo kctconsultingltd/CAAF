@@ -2191,6 +2191,24 @@ to {
   margin-bottom: 20px;
 }
 
+.acc-narrative {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.acc-narrative p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.75;
+  overflow-wrap: break-word;
+}
+
+.acc-narrative p strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
 .offerings {
   display: flex;
   flex-direction: column;
