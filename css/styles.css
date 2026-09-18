@@ -2304,7 +2304,7 @@ to {
 }
 
 .services-img[data-idx="0"] { object-position: center 40%; }
-.services-img[data-idx="1"] { object-position: 20% 60%; }
+.services-img[data-idx="1"] { object-position: 40% 60%; }
 .services-img[data-idx="2"] { object-position: center center; }
 
 .services-img-caption {
