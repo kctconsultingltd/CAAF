@@ -1329,6 +1329,24 @@ p {
 /* ═══════════════════════════════════════════════════
    TEAM EXPERIENCE
    ═══════════════════════════════════════════════════ */
+/* marquee */
+.experience-marquee-wrap {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+}
+.experience-marquee-row {
+  display: flex;
+  width: max-content;
+  margin-bottom: 32px;
+}
+.experience-marquee-row--fwd  { animation: marquee-fwd  28s linear infinite; }
+.experience-marquee-row--rev  { animation: marquee-rev  28s linear infinite; }
+@keyframes marquee-fwd { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes marquee-rev { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+.experience-marquee-wrap:hover .experience-marquee-row { animation-play-state: paused; }
+
+/* legacy grid — kept for fallback, now unused */
 .experience-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1351,6 +1369,9 @@ p {
 .experience-item {
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
+  min-width: 180px;
+  padding: 0 48px;
   align-items: center;
   text-align: center;
   gap: 14px;
