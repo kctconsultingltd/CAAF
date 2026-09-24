@@ -335,6 +335,24 @@ p {
   color: var(--bg);
   transform: translateY(-2px);
 }
+.nav-donate {
+  font-family: var(--condensed);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.nav-donate:hover {
+  background: var(--gold);
+  color: var(--bg);
+}
 /* Hamburger Button */
 .nav-hamburger {
   display: none;
