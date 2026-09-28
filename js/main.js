@@ -121,7 +121,7 @@
     if (!items.length) return;
     var images  = document.querySelectorAll(".services-img");
     var caption = document.getElementById("servicesImgCaption");
-    var titles  = ["Finance", "Development", "Impact"];
+    var titles  = ["Finance", "Development", "Impact", "Africa Investment Gateway"];
 
     items.forEach(function (item) {
       item.querySelector(".acc-header").addEventListener("click", function () {
