@@ -2345,7 +2345,7 @@ to {
 .services-img[data-idx="0"] { object-position: center 40%; }
 .services-img[data-idx="1"] { object-position: 65% bottom; }
 .services-img[data-idx="2"] { object-position: center center; }
-.services-img[data-idx="3"] { object-fit: fill; object-position: center; }
+.services-img[data-idx="3"] { object-fit: cover; object-position: center; }
 
 .services-img-caption {
   position: absolute;
