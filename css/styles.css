@@ -312,6 +312,9 @@ p {
 .nav-right {
   margin-left: auto;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 .nav-cta {
   font-family: var(--condensed);
