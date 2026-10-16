@@ -727,8 +727,9 @@
     var imgHtml = imgSrc
       ? '<img src="' + escHtml(imgSrc) + '" alt="' + escHtml(evt.title) + '" class="cms-blog-img" loading="lazy" />'
       : "";
-    var dateHtml = evt.eventDate
-      ? '<span class="cms-events-date">' + escHtml(formatEventDate(evt.eventDate)) + "</span>"
+    var dateText = evt.dateLabel || formatEventDate(evt.eventDate);
+    var dateHtml = dateText
+      ? '<span class="cms-events-date">' + escHtml(dateText) + "</span>"
       : "";
     var locationHtml = evt.location
       ? '<span class="cms-events-location">' + escHtml(evt.location) + "</span>"
@@ -763,17 +764,24 @@
     apiFetch(
       "/events?populate[0]=coverImage&populate[1]=gallery" +
         "&fields[0]=title&fields[1]=url&fields[2]=description" +
-        "&fields[3]=eventDate&fields[4]=location&fields[5]=coverImageUrl" +
+        "&fields[3]=eventDate&fields[4]=location&fields[5]=coverImageUrl&fields[6]=dateLabel" +
         "&sort=eventDate:asc&pagination[pageSize]=100"
     )
       .then(function (json) {
         var items = json.data || [];
         var now = Date.now();
-        var upcoming = items.filter(function (e) {
-          return e.eventDate && new Date(e.eventDate).getTime() > now;
-        });
-        var past = items.filter(function (e) {
-          return !e.eventDate || new Date(e.eventDate).getTime() <= now;
+        // Upcoming: a future date, or a month/year-only event (dateLabel, no fixed date)
+        function isUpcoming(e) {
+          if (e.eventDate) return new Date(e.eventDate).getTime() > now;
+          return !!e.dateLabel;
+        }
+        var upcoming = items.filter(isUpcoming);
+        var past = items.filter(function (e) { return !isUpcoming(e); });
+        // Dated events first (soonest first); month/year-only events after them
+        upcoming.sort(function (a, b) {
+          var ta = a.eventDate ? new Date(a.eventDate).getTime() : Infinity;
+          var tb = b.eventDate ? new Date(b.eventDate).getTime() : Infinity;
+          return ta - tb;
         });
         past.sort(function (a, b) {
           return (
@@ -804,7 +812,7 @@
         encodeURIComponent(now) +
         "&sort=eventDate:asc&pagination[pageSize]=1&populate=coverImage" +
         "&fields[0]=title&fields[1]=description&fields[2]=eventDate" +
-        "&fields[3]=location&fields[4]=url&fields[5]=coverImageUrl"
+        "&fields[3]=location&fields[4]=url&fields[5]=coverImageUrl&fields[6]=dateLabel"
     )
       .then(function (json) {
         var events = json.data || [];
@@ -813,7 +821,7 @@
 
         var imgSrc =
           (evt.coverImage && evt.coverImage.url) || evt.coverImageUrl || "";
-        var meta = formatEventDate(evt.eventDate);
+        var meta = evt.dateLabel || formatEventDate(evt.eventDate);
         if (evt.location) meta += " · " + evt.location;
 
         var overlay = document.createElement("div");
