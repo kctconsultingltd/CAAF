@@ -20,6 +20,20 @@ import * as path from "path";
 const DEFAULT_FEED_URL =
   "https://tochukwuezeukwu.substack.com/api/v1/posts?sort=new&limit=50";
 
+// Canonical Substack host for stored post URLs. Substack reports canonical_url
+// under the publication's current primary domain, which can change; we pin the
+// stored URL to one host so links stay consistent and dedup by slug is stable.
+const CANONICAL_HOST = "tochukwuezeukwu.substack.com";
+
+function postSlug(url: string): string {
+  const base = (url || "").split("?")[0].replace(/\/+$/, "");
+  return base.split("/").pop() || base;
+}
+
+function canonicalPostUrl(url: string): string {
+  return "https://" + CANONICAL_HOST + "/p/" + postSlug(url);
+}
+
 async function fetchWithRetry(url: string, retries = 3, delayMs = 5000): Promise<Response> {
   let lastErr: Error | undefined;
   for (let attempt = 1; attempt <= retries; attempt++) {
@@ -73,14 +87,10 @@ export default {
 
       // De-duplicate by post slug (the /p/<slug> segment), not the full URL, so
       // a Substack domain change does not cause every post to re-import.
-      const slugOf = (url: string): string => {
-        const base = (url || "").split("?")[0].replace(/\/+$/, "");
-        return base.split("/").pop() || base;
-      };
-      const existingSlugs = new Set(existing.map((e: any) => slugOf(e.url)));
+      const existingSlugs = new Set(existing.map((e: any) => postSlug(e.url)));
 
       const newPosts = posts
-        .filter((p) => !existingSlugs.has(slugOf(p.canonical_url)))
+        .filter((p) => !existingSlugs.has(postSlug(p.canonical_url)))
         .sort(
           (a, b) => new Date(a.post_date).getTime() - new Date(b.post_date).getTime()
         );
@@ -151,7 +161,7 @@ export default {
           await strapi.documents("api::blog-link.blog-link").create({
             data: {
               title: p.title,
-              url: p.canonical_url,
+              url: canonicalPostUrl(p.canonical_url),
               description: p.subtitle || "",
               ...(coverImageId !== undefined ? { coverImage: coverImageId } : {}),
               ...(coverImageUrl !== undefined ? { coverImageUrl } : {}),
