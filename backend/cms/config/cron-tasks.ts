@@ -71,10 +71,16 @@ export default {
         .documents("api::blog-link.blog-link")
         .findMany({ fields: ["url"], limit: -1 });
 
-      const existingUrls = new Set(existing.map((e: any) => e.url));
+      // De-duplicate by post slug (the /p/<slug> segment), not the full URL, so
+      // a Substack domain change does not cause every post to re-import.
+      const slugOf = (url: string): string => {
+        const base = (url || "").split("?")[0].replace(/\/+$/, "");
+        return base.split("/").pop() || base;
+      };
+      const existingSlugs = new Set(existing.map((e: any) => slugOf(e.url)));
 
       const newPosts = posts
-        .filter((p) => !existingUrls.has(p.canonical_url))
+        .filter((p) => !existingSlugs.has(slugOf(p.canonical_url)))
         .sort(
           (a, b) => new Date(a.post_date).getTime() - new Date(b.post_date).getTime()
         );
