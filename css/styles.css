@@ -3565,8 +3565,15 @@ to {
 .deal-modal-img {
   display: block;
   width: 100%;
-  max-height: 45vh;
-  object-fit: cover;
+  height: auto;
+  max-height: 65vh;
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.35);
+}
+.deal-card .cms-blog-img {
+  height: 220px;
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.25);
 }
 .deal-modal-body {
   padding: 2rem;
