@@ -7,6 +7,7 @@ const API_UIDS = [
   'api::deal.deal',
   'api::deal-submission.deal-submission',
   'api::investor-interest.investor-interest',
+  'api::featured-deal.featured-deal',
 ] as const;
 
 const PUBLIC_ACTIONS: string[] = [
@@ -16,6 +17,8 @@ const PUBLIC_ACTIONS: string[] = [
   'api::blog-link.blog-link.findOne',
   'api::page-content.page-content.find',
   'api::page-content.page-content.findOne',
+  'api::featured-deal.featured-deal.find',
+  'api::featured-deal.featured-deal.findOne',
   // Deal: find/findOne are public but the controller enforces status=approved for unauthed requests
   'api::deal.deal.find',
   'api::deal.deal.findOne',

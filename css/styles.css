@@ -3469,6 +3469,35 @@ to {
   text-transform: uppercase;
   margin-bottom: 8px;
 }
+
+/* Featured deals */
+.deal-card {
+  display: flex;
+  flex-direction: column;
+}
+.deal-type {
+  align-self: flex-start;
+  font-family: var(--condensed);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  padding: 3px 10px;
+  margin-bottom: 12px;
+}
+.deal-amount {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--gold);
+  margin: 6px 0 4px;
+}
+.deal-cta {
+  margin-top: auto;
+  padding-top: 16px;
+}
 .cms-events-location {
   display: block;
   color: var(--muted);

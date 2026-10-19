@@ -241,6 +241,39 @@
       });
   }
 
+  // ─── Featured Deals ───────────────────────────────────────────────────────
+  // Expected container: <div id="cms-featured-deals"></div> inside <section id="deals" hidden>
+
+  function renderFeaturedDeal(deal) {
+    var imgSrc = deal.image && deal.image.url ? deal.image.url : "";
+    return (
+      '<div class="cms-blog-card deal-card">' +
+      (imgSrc
+        ? '<img src="' + escHtml(imgSrc) + '" alt="' + escHtml(deal.title) + '" class="cms-blog-img" loading="lazy" />'
+        : "") +
+      (deal.dealType ? '<span class="deal-type">' + escHtml(deal.dealType) + "</span>" : "") +
+      '<span class="cms-blog-title">' + escHtml(deal.title) + "</span>" +
+      (deal.amount ? '<div class="deal-amount">' + escHtml(deal.amount) + "</div>" : "") +
+      (deal.description ? '<p class="cms-blog-desc">' + escHtml(deal.description) + "</p>" : "") +
+      '<a class="offering-cta deal-cta" href="#contact">Engage &rarr;</a>' +
+      "</div>"
+    );
+  }
+
+  function loadFeaturedDeals() {
+    var el = document.getElementById("cms-featured-deals");
+    var section = document.getElementById("deals");
+    if (!el || !section) return;
+    apiFetch("/featured-deals?populate=image&sort=order:asc")
+      .then(function (json) {
+        var items = json.data || [];
+        if (!items.length) return;
+        el.innerHTML = items.map(renderFeaturedDeal).join("");
+        section.hidden = false;
+      })
+      .catch(function () {});
+  }
+
   // ─── Blog Links ───────────────────────────────────────────────────────────
   // Expected container: <div id="cms-blog-list"></div>
 
@@ -993,6 +1026,7 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     loadTeamMembers();
+    loadFeaturedDeals();
     loadBlogLinks();
     loadBlogPage();
     loadEventsPage();
