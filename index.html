@@ -165,7 +165,7 @@
       </div>
       <div class="mobile-menu-footer">
         <div class="mobile-menu-contact">
-          <p><a href="mailto:info@capitalasaforce.org" style="color:inherit;text-decoration:underline;">info@capitalasaforce.org</a></p>
+          <p><a href="mailto:info@capitalasaforce.com" style="color:inherit;text-decoration:underline;">info@capitalasaforce.com</a></p>
           <!-- <p><a href="tel:+2348173660671" style="color:inherit;text-decoration:underline;">+234 817 366 0671</a></p> -->
         </div>
       </div>
@@ -488,7 +488,7 @@
     <!-- ═══════════════════════════════════════════════
      5. OUR SOLUTIONS
      ═══════════════════════════════════════════════ -->
-    <section class="section-pad" id="services">
+    <section class="section-pad" id="solutions">
       <div class="container">
         <div class="services-header reveal">
           <div>
@@ -842,7 +842,7 @@
                     <circle cx="12" cy="10" r="3" />
                   </svg>
                 </div>
-                <span><a href="https://maps.google.com" target="_blank" style="color:inherit;text-decoration:underline;">131 Continental Dr, Suite 305, <br> Newark, Delaware, 19713</a></span>
+                <span><a href="https://www.google.com/maps/search/?api=1&amp;query=131+Continental+Dr+Suite+305+Newark+DE+19713" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;">131 Continental Dr, Suite 305, <br> Newark, Delaware, 19713</a></span>
               </div>
               <a
                 href="mailto:info@capitalasaforce.com"
@@ -898,11 +898,11 @@
           <div>
             <div class="footer-col-title">Services</div>
             <ul class="footer-links">
-              <li><a href="#services">Catalytic Instruments</a></li>
-              <li><a href="#services">Investment Lenses</a></li>
-              <li><a href="#services">Innovative Finance</a></li>
-              <li><a href="#services">Pipeline Development</a></li>
-              <li><a href="#services">Thought Leadership</a></li>
+              <li><a href="#solutions">Catalytic Instruments</a></li>
+              <li><a href="#solutions">Investment Lenses</a></li>
+              <li><a href="#solutions">Innovative Finance</a></li>
+              <li><a href="#solutions">Pipeline Development</a></li>
+              <li><a href="#solutions">Thought Leadership</a></li>
             </ul>
           </div>
         </div>
@@ -914,135 +914,6 @@
         </div>
       </div>
     </footer>
-
-    <!-- Pitch Modal -->
-    <div class="pitch-modal-overlay" id="pitchModalOverlay" role="dialog" aria-modal="true" aria-labelledby="pitchModalTitle" hidden>
-      <div class="pitch-modal-card">
-        <button class="pitch-modal-close" id="pitchModalClose" aria-label="Close">&times;</button>
-        <h2 class="pitch-modal-title" id="pitchModalTitle">Pitch Your Business</h2>
-        <p class="pitch-modal-sub">Tell us about your venture. We review every submission.</p>
-        <form id="pitchForm" novalidate>
-          <div class="pitch-field-row">
-            <label><span>Full Name <span aria-hidden="true">*</span></span>
-              <input type="text" name="fullName" required placeholder="Jane Doe" />
-            </label>
-            <label><span>Email <span aria-hidden="true">*</span></span>
-              <input type="email" name="email" required placeholder="jane@example.com" />
-            </label>
-          </div>
-          <div class="pitch-field-row">
-            <label><span>Phone Number</span>
-              <input type="tel" name="phone" placeholder="+234 800 000 0000" />
-            </label>
-            <label><span>Business Name <span aria-hidden="true">*</span></span>
-              <input type="text" name="businessName" required placeholder="Acme Ltd" />
-            </label>
-          </div>
-          <div class="pitch-field-row">
-            <label><span>Current Turnover (USD)</span>
-              <div class="input-with-prefix">
-                <span class="input-prefix">$</span>
-                <input type="number" inputmode="numeric" name="currentTurnover" placeholder="500,000" />
-              </div>
-            </label>
-            <label><span>Funding Request (USD) <span aria-hidden="true">*</span></span>
-              <div class="input-with-prefix">
-                <span class="input-prefix">$</span>
-                <input type="number" inputmode="numeric" name="fundingRequest" required placeholder="2,000,000" />
-              </div>
-            </label>
-          </div>
-          <label class="pitch-field-full"><span>Deal Description <span aria-hidden="true">*</span></span>
-            <textarea name="dealDescription" required rows="4" placeholder="Describe your business and the investment opportunity&hellip;"></textarea>
-          </label>
-          <label class="pitch-field-full"><span>Pitch Deck (PDF / PPT &mdash; max 20&nbsp;MB)</span>
-            <input type="file" name="deck" accept=".pdf,.ppt,.pptx" />
-          </label>
-          <div class="pitch-form-footer">
-            <button type="submit" class="pitch-submit" id="pitchSubmitBtn">Submit Pitch</button>
-            <p class="pitch-form-status" id="pitchFormStatus" aria-live="polite"></p>
-          </div>
-        </form>
-
-        <!-- Loading screen -->
-        <div class="pitch-loading" id="pitchLoading" hidden>
-          <div class="pitch-loading-icon">
-            <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="26" cy="26" r="23" stroke="rgba(200,158,42,0.2)" stroke-width="3"/>
-              <path d="M26 3 a23 23 0 0 1 23 23" stroke="#c89e2a" stroke-width="3" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <h3 class="pitch-success-title">Submitting&hellip;</h3>
-          <p class="pitch-success-sub">Sending your pitch, this will only take a moment.</p>
-        </div>
-
-        <!-- Success screen -->
-        <div class="pitch-success" id="pitchSuccess" hidden>
-          <div class="pitch-success-icon">
-            <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle class="pitch-tick-circle" cx="26" cy="26" r="25" stroke="#22c55e" stroke-width="2"
-                      stroke-dasharray="157" stroke-dashoffset="157"/>
-              <path   class="pitch-tick-check"  d="M14 27l9 9 15-18" stroke="#22c55e" stroke-width="2.5"
-                      stroke-linecap="round" stroke-linejoin="round"
-                      stroke-dasharray="50" stroke-dashoffset="50"/>
-            </svg>
-          </div>
-          <h3 class="pitch-success-title">Pitch Received!</h3>
-          <p class="pitch-success-sub">We&rsquo;ll review your submission and be in touch shortly.</p>
-          <button class="pitch-submit" id="pitchSuccessDone">Done</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Deck Request Modal -->
-    <div class="pitch-modal-overlay" id="deckModalOverlay" role="dialog" aria-modal="true" aria-labelledby="deckModalTitle" hidden>
-      <div class="pitch-modal-card">
-        <button class="pitch-modal-close" id="deckModalClose" aria-label="Close">&times;</button>
-        <h2 class="pitch-modal-title" id="deckModalTitle">Request the Deck</h2>
-        <p class="pitch-modal-sub">Enter your email to download The Rural Lens Fund deck.</p>
-
-        <form id="deckForm" novalidate>
-          <div class="pitch-field-row" style="grid-template-columns:1fr;margin-bottom:0">
-            <label>
-              <span>Email Address <span aria-hidden="true">*</span></span>
-              <input type="email" name="email" placeholder="you@example.com" required />
-            </label>
-          </div>
-          <div class="pitch-form-footer">
-            <button type="submit" class="pitch-submit" id="deckSubmitBtn">Download Deck &rarr;</button>
-            <p class="pitch-form-status" id="deckFormStatus" aria-live="polite"></p>
-          </div>
-        </form>
-
-        <!-- Loading screen -->
-        <div class="pitch-loading" id="deckLoading" hidden>
-          <div class="pitch-loading-icon">
-            <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="26" cy="26" r="23" stroke="rgba(200,158,42,0.2)" stroke-width="3"/>
-              <path d="M26 3 a23 23 0 0 1 23 23" stroke="#c89e2a" stroke-width="3" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <h3 class="pitch-success-title">Preparing&hellip;</h3>
-          <p class="pitch-success-sub">Your download is being prepared.</p>
-        </div>
-
-        <!-- Success screen -->
-        <div class="pitch-success" id="deckSuccess" hidden>
-          <div class="pitch-success-icon">
-            <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle class="pitch-tick-circle" cx="26" cy="26" r="25" stroke="#22c55e" stroke-width="2"
-                      stroke-dasharray="157" stroke-dashoffset="157"/>
-              <path   class="pitch-tick-check"  d="M14 27l9 9 15-18" stroke="#22c55e" stroke-width="2.5"
-                      stroke-linecap="round" stroke-linejoin="round"
-                      stroke-dasharray="50" stroke-dashoffset="50"/>
-            </svg>
-          </div>
-          <h3 class="pitch-success-title">Download Starting!</h3>
-          <p class="pitch-success-sub">The Rural Lens Fund deck is downloading. Check your downloads folder.</p>
-          <button class="pitch-submit" id="deckSuccessDone">Done</button>
-        </div>
-      </div>
-    </div>
 
     <!-- ═══════════════════════════════════════════════
       JAVASCRIPT
