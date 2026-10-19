@@ -300,9 +300,13 @@
       '<div class="deal-modal-scroll">' +
       (imgSrc ? '<img src="' + escHtml(imgSrc) + '" alt="' + escHtml(deal.title) + '" class="deal-modal-img" />' : "") +
       '<div class="deal-modal-body">' +
-      (deal.dealType ? '<span class="deal-type">' + escHtml(deal.dealType) + "</span>" : "") +
+      ((deal.dealType || deal.amount)
+        ? '<div class="deal-modal-meta">' +
+          (deal.dealType ? '<span class="deal-type">' + escHtml(deal.dealType) + "</span>" : "") +
+          (deal.amount ? '<span class="deal-modal-amount">' + escHtml(deal.amount) + "</span>" : "") +
+          "</div>"
+        : "") +
       '<h2 class="deal-modal-title">' + escHtml(deal.title) + "</h2>" +
-      (deal.amount ? '<div class="deal-amount">' + escHtml(deal.amount) + "</div>" : "") +
       (desc ? '<p class="deal-modal-desc">' + desc + "</p>" : "") +
       '<a class="btn-gold deal-modal-cta" href="#contact">Engage <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
       "</div></div></div>";

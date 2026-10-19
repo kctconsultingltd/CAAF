@@ -3339,31 +3339,54 @@ to {
   object-fit: contain;
   background: rgba(0, 0, 0, 0.25);
 }
+/* Compact header (type + amount on one row, smaller title) so typical
+   deals fit without scrolling on laptop-size screens. */
 .deal-modal-body {
-  padding: 2rem;
+  padding: 1.5rem;
+}
+.deal-modal-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-bottom: 0.6rem;
+}
+.deal-modal-meta .deal-type {
+  margin-bottom: 0;
+}
+.deal-modal-amount {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--gold);
 }
 .deal-modal-title {
   font-family: var(--serif);
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: clamp(1.2rem, 1.7vw, 1.45rem);
   font-weight: 600;
-  line-height: 1.2;
-  margin-bottom: 0.25rem;
+  line-height: 1.25;
+  margin: 0;
 }
 .deal-modal-desc {
   color: var(--muted);
-  font-size: 0.95rem;
-  line-height: 1.65;
-  margin: 1rem 0 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  margin: 0.75rem 0 1.1rem;
 }
-@media (min-width: 900px) {
+@media (min-width: 768px) {
+  #deal-modal {
+    max-width: 1200px;
+    max-height: 92vh;
+  }
   .deal-modal-scroll {
     display: flex;
     align-items: stretch;
   }
   .deal-modal-img {
-    flex: 0 0 42%;
-    width: 42%;
-    max-height: 90vh;
+    flex: 0 0 36%;
+    width: 36%;
+    max-height: 92vh;
     position: sticky;
     top: 0;
     align-self: stretch;
@@ -3371,12 +3394,15 @@ to {
   .deal-modal-body {
     flex: 1;
     min-width: 0;
-    padding: 2.25rem 3.5rem 2.25rem 2.25rem;
+    padding: 1.5rem 3.25rem 1.5rem 1.75rem;
   }
 }
-@media (max-width: 640px) {
+@media (max-width: 767px) {
+  .deal-modal-img {
+    max-height: 38vh;
+  }
   .deal-modal-body {
-    padding: 1.25rem;
+    padding: 1.1rem 1.1rem 1.25rem;
   }
 }
 .cms-events-location {
