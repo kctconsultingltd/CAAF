@@ -263,7 +263,6 @@
   // ─── Featured Deals ───────────────────────────────────────────────────────
   // Expected container: <div id="cms-featured-deals"></div> inside <section id="deals" hidden>
 
-  var DEAL_PREVIEW_WORDS = 100;
   var _featuredDeals = [];
 
   function dealImage(deal) {
@@ -272,21 +271,16 @@
 
   function renderFeaturedDeal(deal, idx) {
     var imgSrc = dealImage(deal);
-    var words = (deal.description || "").split(/\s+/).filter(Boolean);
-    var truncated = words.length > DEAL_PREVIEW_WORDS;
-    var preview = truncated
-      ? words.slice(0, DEAL_PREVIEW_WORDS).join(" ") + "…"
-      : deal.description || "";
     return (
       '<div class="cms-blog-card deal-card" data-deal-idx="' + idx + '" role="button" tabindex="0" aria-label="View details: ' + escHtml(deal.title) + '">' +
+      '<span class="deal-expand" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></span>' +
       (imgSrc
         ? '<img src="' + escHtml(imgSrc) + '" alt="' + escHtml(deal.title) + '" class="cms-blog-img" loading="lazy" />'
         : "") +
       (deal.dealType ? '<span class="deal-type">' + escHtml(deal.dealType) + "</span>" : "") +
       '<span class="cms-blog-title">' + escHtml(deal.title) + "</span>" +
       (deal.amount ? '<div class="deal-amount">' + escHtml(deal.amount) + "</div>" : "") +
-      (preview ? '<p class="cms-blog-desc">' + escHtml(preview) + "</p>" : "") +
-      (truncated ? '<span class="deal-more">See more &rarr;</span>' : "") +
+      (deal.description ? '<p class="cms-blog-desc deal-desc">' + escHtml(deal.description) + "</p>" : "") +
       '<div class="deal-cta-wrap"><a class="btn-gold deal-cta" href="#contact">Engage <span class="arrow" aria-hidden="true">&rarr;</span></a></div>' +
       "</div>"
     );
