@@ -278,7 +278,7 @@
       ? words.slice(0, DEAL_PREVIEW_WORDS).join(" ") + "…"
       : deal.description || "";
     return (
-      '<div class="cms-blog-card deal-card">' +
+      '<div class="cms-blog-card deal-card" data-deal-idx="' + idx + '" role="button" tabindex="0" aria-label="View details: ' + escHtml(deal.title) + '">' +
       (imgSrc
         ? '<img src="' + escHtml(imgSrc) + '" alt="' + escHtml(deal.title) + '" class="cms-blog-img" loading="lazy" />'
         : "") +
@@ -286,16 +286,15 @@
       '<span class="cms-blog-title">' + escHtml(deal.title) + "</span>" +
       (deal.amount ? '<div class="deal-amount">' + escHtml(deal.amount) + "</div>" : "") +
       (preview ? '<p class="cms-blog-desc">' + escHtml(preview) + "</p>" : "") +
-      (truncated
-        ? '<button type="button" class="deal-more" data-deal-idx="' + idx + '">See more &rarr;</button>'
-        : "") +
-      '<a class="offering-cta deal-cta" href="#contact">Engage &rarr;</a>' +
+      (truncated ? '<span class="deal-more">See more &rarr;</span>' : "") +
+      '<div class="deal-cta-wrap"><a class="btn-gold deal-cta" href="#contact">Engage <span class="arrow" aria-hidden="true">&rarr;</span></a></div>' +
       "</div>"
     );
   }
 
   function openDealModal(deal) {
     if (document.getElementById("deal-modal-overlay")) return;
+    var opener = document.activeElement;
     var imgSrc = dealImage(deal);
     var desc = deal.description ? escHtml(deal.description).replace(/\n/g, "<br>") : "";
 
@@ -311,7 +310,7 @@
       '<h2 class="deal-modal-title">' + escHtml(deal.title) + "</h2>" +
       (deal.amount ? '<div class="deal-amount">' + escHtml(deal.amount) + "</div>" : "") +
       (desc ? '<p class="deal-modal-desc">' + desc + "</p>" : "") +
-      '<a class="offering-cta deal-modal-cta" href="#contact">Engage &rarr;</a>' +
+      '<a class="btn-gold deal-modal-cta" href="#contact">Engage <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
       "</div></div></div>";
 
     document.body.appendChild(overlay);
@@ -321,6 +320,7 @@
       overlay.remove();
       document.body.style.overflow = "";
       document.removeEventListener("keydown", onEsc);
+      if (opener && opener.focus) opener.focus({ preventScroll: true });
     }
     function onEsc(e) {
       if (e.key === "Escape") close();
@@ -352,11 +352,20 @@
       })
       .catch(function () {});
 
-    el.addEventListener("click", function (e) {
-      var btn = e.target.closest(".deal-more");
-      if (!btn) return;
-      var deal = _featuredDeals[+btn.getAttribute("data-deal-idx")];
+    function openFromCard(card) {
+      var deal = _featuredDeals[+card.getAttribute("data-deal-idx")];
       if (deal) openDealModal(deal);
+    }
+    el.addEventListener("click", function (e) {
+      if (e.target.closest("a")) return; // Engage goes straight to Get in Touch
+      var card = e.target.closest(".deal-card");
+      if (card) openFromCard(card);
+    });
+    el.addEventListener("keydown", function (e) {
+      if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("deal-card")) {
+        e.preventDefault();
+        openFromCard(e.target);
+      }
     });
   }
 

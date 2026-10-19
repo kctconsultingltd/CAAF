@@ -3210,6 +3210,16 @@ to {
 .deal-card {
   display: flex;
   flex-direction: column;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.deal-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-3px);
+}
+.deal-card:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
 }
 .deal-type {
   align-self: flex-start;
@@ -3230,14 +3240,12 @@ to {
   color: var(--gold);
   margin: 6px 0 4px;
 }
-.deal-cta {
+.deal-cta-wrap {
   margin-top: auto;
-  padding-top: 16px;
+  padding-top: 24px;
 }
 .deal-more {
   align-self: flex-start;
-  background: none;
-  border: none;
   padding: 4px 0;
   margin-top: 8px;
   color: var(--gold);
@@ -3246,12 +3254,13 @@ to {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  cursor: pointer;
   transition: color 0.2s;
 }
-.deal-more:hover,
-.deal-more:focus-visible {
+.deal-card:hover .deal-more {
   color: var(--white);
+}
+.deal-modal-cta {
+  margin-top: 0.5rem;
 }
 
 #deal-modal-overlay {
