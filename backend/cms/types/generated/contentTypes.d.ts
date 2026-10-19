@@ -640,6 +640,41 @@ export interface ApiPageContentPageContent extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiFeaturedDealFeaturedDeal
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'featured_deals';
+  info: {
+    description: '';
+    displayName: 'Featured Deal';
+    pluralName: 'featured-deals';
+    singularName: 'featured-deal';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    amount: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    dealType: Schema.Attribute.String;
+    description: Schema.Attribute.Text;
+    image: Schema.Attribute.Media<'images'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::featured-deal.featured-deal'
+    > &
+      Schema.Attribute.Private;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiTeamMemberTeamMember extends Struct.CollectionTypeSchema {
   collectionName: 'team_members';
   info: {
@@ -1189,6 +1224,7 @@ declare module '@strapi/strapi' {
       'api::deal.deal': ApiDealDeal;
       'api::investor-interest.investor-interest': ApiInvestorInterestInvestorInterest;
       'api::page-content.page-content': ApiPageContentPageContent;
+      'api::featured-deal.featured-deal': ApiFeaturedDealFeaturedDeal;
       'api::team-member.team-member': ApiTeamMemberTeamMember;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
