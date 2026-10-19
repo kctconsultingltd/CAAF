@@ -3358,8 +3358,9 @@ to {
   font-family: var(--serif);
   font-size: 1.3rem;
   font-weight: 600;
-  line-height: 1;
+  line-height: 1.2;
   color: var(--gold);
+  margin-top: 0.3rem;
 }
 .deal-modal-title {
   font-family: var(--serif);
