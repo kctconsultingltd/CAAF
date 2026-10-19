@@ -244,8 +244,20 @@
   // ─── Featured Deals ───────────────────────────────────────────────────────
   // Expected container: <div id="cms-featured-deals"></div> inside <section id="deals" hidden>
 
-  function renderFeaturedDeal(deal) {
-    var imgSrc = deal.image && deal.image.url ? deal.image.url : "";
+  var DEAL_PREVIEW_WORDS = 100;
+  var _featuredDeals = [];
+
+  function dealImage(deal) {
+    return deal.image && deal.image.url ? deal.image.url : "";
+  }
+
+  function renderFeaturedDeal(deal, idx) {
+    var imgSrc = dealImage(deal);
+    var words = (deal.description || "").split(/\s+/).filter(Boolean);
+    var truncated = words.length > DEAL_PREVIEW_WORDS;
+    var preview = truncated
+      ? words.slice(0, DEAL_PREVIEW_WORDS).join(" ") + "…"
+      : deal.description || "";
     return (
       '<div class="cms-blog-card deal-card">' +
       (imgSrc
@@ -254,10 +266,58 @@
       (deal.dealType ? '<span class="deal-type">' + escHtml(deal.dealType) + "</span>" : "") +
       '<span class="cms-blog-title">' + escHtml(deal.title) + "</span>" +
       (deal.amount ? '<div class="deal-amount">' + escHtml(deal.amount) + "</div>" : "") +
-      (deal.description ? '<p class="cms-blog-desc">' + escHtml(deal.description) + "</p>" : "") +
+      (preview ? '<p class="cms-blog-desc">' + escHtml(preview) + "</p>" : "") +
+      (truncated
+        ? '<button type="button" class="deal-more" data-deal-idx="' + idx + '">See more &rarr;</button>'
+        : "") +
       '<a class="offering-cta deal-cta" href="#contact">Engage &rarr;</a>' +
       "</div>"
     );
+  }
+
+  function openDealModal(deal) {
+    if (document.getElementById("deal-modal-overlay")) return;
+    var imgSrc = dealImage(deal);
+    var desc = deal.description ? escHtml(deal.description).replace(/\n/g, "<br>") : "";
+
+    var overlay = document.createElement("div");
+    overlay.id = "deal-modal-overlay";
+    overlay.innerHTML =
+      '<div id="deal-modal" role="dialog" aria-modal="true" aria-label="' + escHtml(deal.title) + '">' +
+      '<button id="deal-modal-close" aria-label="Close">&times;</button>' +
+      '<div class="deal-modal-scroll">' +
+      (imgSrc ? '<img src="' + escHtml(imgSrc) + '" alt="' + escHtml(deal.title) + '" class="deal-modal-img" />' : "") +
+      '<div class="deal-modal-body">' +
+      (deal.dealType ? '<span class="deal-type">' + escHtml(deal.dealType) + "</span>" : "") +
+      '<h2 class="deal-modal-title">' + escHtml(deal.title) + "</h2>" +
+      (deal.amount ? '<div class="deal-amount">' + escHtml(deal.amount) + "</div>" : "") +
+      (desc ? '<p class="deal-modal-desc">' + desc + "</p>" : "") +
+      '<a class="offering-cta deal-modal-cta" href="#contact">Engage &rarr;</a>' +
+      "</div></div></div>";
+
+    document.body.appendChild(overlay);
+    document.body.style.overflow = "hidden";
+
+    function close() {
+      overlay.remove();
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", onEsc);
+    }
+    function onEsc(e) {
+      if (e.key === "Escape") close();
+    }
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) close();
+    });
+    overlay.querySelector("#deal-modal-close").addEventListener("click", close);
+    overlay.querySelector(".deal-modal-cta").addEventListener("click", function (e) {
+      e.preventDefault();
+      close();
+      var contact = document.getElementById("contact");
+      if (contact) contact.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    document.addEventListener("keydown", onEsc);
+    overlay.querySelector("#deal-modal-close").focus();
   }
 
   function loadFeaturedDeals() {
@@ -266,12 +326,19 @@
     if (!el || !section) return;
     apiFetch("/featured-deals?populate=image&sort=order:asc")
       .then(function (json) {
-        var items = json.data || [];
-        if (!items.length) return;
-        el.innerHTML = items.map(renderFeaturedDeal).join("");
+        _featuredDeals = json.data || [];
+        if (!_featuredDeals.length) return;
+        el.innerHTML = _featuredDeals.map(renderFeaturedDeal).join("");
         section.hidden = false;
       })
       .catch(function () {});
+
+    el.addEventListener("click", function (e) {
+      var btn = e.target.closest(".deal-more");
+      if (!btn) return;
+      var deal = _featuredDeals[+btn.getAttribute("data-deal-idx")];
+      if (deal) openDealModal(deal);
+    });
   }
 
   // ─── Blog Links ───────────────────────────────────────────────────────────
