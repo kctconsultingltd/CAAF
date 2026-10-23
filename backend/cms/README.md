@@ -59,3 +59,5 @@ Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/
 ---
 
 <sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+
+<!-- Railway redeploys this service when files under backend/cms/ change (see railway.json watchPatterns). -->
