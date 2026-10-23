@@ -3376,13 +3376,24 @@ to {
   margin: 0.75rem 0 1.1rem;
 }
 @media (min-width: 768px) {
+  /* Fixed size so every deal opens in the same frame regardless of text length */
   #deal-modal {
     max-width: 1200px;
-    max-height: 92vh;
+    height: min(92vh, 660px);
+    max-height: none;
   }
   .deal-modal-scroll {
     display: flex;
     align-items: stretch;
+    flex: 1;
+  }
+  .deal-modal-body {
+    display: flex;
+    flex-direction: column;
+  }
+  .deal-modal-cta {
+    margin-top: auto;
+    align-self: flex-start;
   }
   .deal-modal-img {
     flex: 0 0 36%;
@@ -3398,12 +3409,33 @@ to {
     padding: 1.5rem 3.25rem 1.5rem 1.75rem;
   }
 }
+@media (min-width: 768px) and (max-width: 1199px) {
+  #deal-modal {
+    height: min(92vh, 840px);
+  }
+}
 @media (max-width: 767px) {
+  #deal-modal {
+    height: 88vh;
+  }
+  .deal-modal-scroll {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
   .deal-modal-img {
     max-height: 38vh;
+    flex-shrink: 0;
   }
   .deal-modal-body {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
     padding: 1.1rem 1.1rem 1.25rem;
+  }
+  .deal-modal-cta {
+    margin-top: auto;
+    align-self: flex-start;
   }
 }
 .cms-events-location {
