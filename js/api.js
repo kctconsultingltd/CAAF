@@ -310,10 +310,38 @@
     document.body.appendChild(overlay);
     document.body.style.overflow = "hidden";
 
+    // Give the image as much room as the text allows: widen the image column
+    // (side-by-side layout) or raise the image height (stacked layout) while
+    // the content still fits without scrolling.
+    var modal = overlay.querySelector("#deal-modal");
+    var scroller = overlay.querySelector(".deal-modal-scroll");
+    var modalImg = overlay.querySelector(".deal-modal-img");
+    function fitImage() {
+      if (!modalImg || !overlay.isConnected) return;
+      var wide = window.matchMedia("(min-width: 768px)").matches;
+      var prop = wide ? "--deal-img-w" : "--deal-img-h";
+      var unit = wide ? "%" : "vh";
+      var min = wide ? 36 : 38, max = wide ? 60 : 62, best = min;
+      modal.style.removeProperty("--deal-img-w");
+      modal.style.removeProperty("--deal-img-h");
+      for (var v = min; v <= max; v += 2) {
+        modal.style.setProperty(prop, v + unit);
+        if (scroller.scrollHeight <= scroller.clientHeight + 1) best = v;
+        else break;
+      }
+      modal.style.setProperty(prop, best + unit);
+    }
+    if (modalImg) {
+      if (modalImg.complete && modalImg.naturalWidth) fitImage();
+      else modalImg.addEventListener("load", fitImage);
+    }
+    window.addEventListener("resize", fitImage);
+
     function close() {
       overlay.remove();
       document.body.style.overflow = "";
       document.removeEventListener("keydown", onEsc);
+      window.removeEventListener("resize", fitImage);
       if (opener && opener.focus) opener.focus({ preventScroll: true });
     }
     function onEsc(e) {

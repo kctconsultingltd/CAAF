@@ -3396,8 +3396,8 @@ to {
     align-self: flex-start;
   }
   .deal-modal-img {
-    flex: 0 0 36%;
-    width: 36%;
+    flex: 0 0 var(--deal-img-w, 36%);
+    width: var(--deal-img-w, 36%);
     max-height: 92vh;
     position: sticky;
     top: 0;
@@ -3424,7 +3424,7 @@ to {
     flex-direction: column;
   }
   .deal-modal-img {
-    max-height: 38vh;
+    max-height: var(--deal-img-h, 38vh);
     flex-shrink: 0;
   }
   .deal-modal-body {
