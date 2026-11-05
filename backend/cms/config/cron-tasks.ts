@@ -54,25 +54,46 @@ async function notifyTelegram(message: string) {
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) return;
   try {
-    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chat_id: chatId, text: message }),
     });
-  } catch {
+    if (!res.ok) console.error("[substack-import] Telegram rejected message: " + res.status);
+  } catch (err: any) {
     // A failed notification should never break the import job.
+    console.error("[substack-import] Telegram request failed: " + err.message);
   }
+}
+
+// Substack has returned both a bare array and { posts: [...] } from this endpoint.
+function extractPosts(body: any): any[] {
+  const posts = Array.isArray(body) ? body : body?.posts;
+  if (!Array.isArray(posts)) throw new Error("Unexpected feed format");
+  return posts;
+}
+
+// The job runs unattended, so any crash must still reach Telegram.
+function withFailureAlert(task: (ctx: { strapi: any }) => Promise<void>) {
+  return async (ctx: { strapi: any }) => {
+    try {
+      await task(ctx);
+    } catch (err: any) {
+      ctx.strapi.log.error("[substack-import] Run crashed: " + err.message);
+      await notifyTelegram("[substack-import] Run failed: " + err.message);
+    }
+  };
 }
 
 export default {
   importSubstackPosts: {
-    task: async ({ strapi }: { strapi: any }) => {
+    task: withFailureAlert(async ({ strapi }) => {
       const feedUrl = process.env.SUBSTACK_FEED_URL || DEFAULT_FEED_URL;
 
       let posts: any[];
       try {
         const res = await fetchWithRetry(feedUrl);
-        posts = (await res.json()) as any[];
+        posts = extractPosts(await res.json());
       } catch (err: any) {
         strapi.log.error("[substack-import] Failed to fetch feed: " + err.message);
         await notifyTelegram(
@@ -195,7 +216,7 @@ export default {
         failed.forEach((f) => lines.push("  ✗ " + f.title + " — " + f.error));
       }
       await notifyTelegram(lines.join("\n"));
-    },
+    }),
     options: {
       rule: process.env.SUBSTACK_CRON_RULE || "0 */6 * * *",
       tz: process.env.SUBSTACK_CRON_TZ || "UTC",
