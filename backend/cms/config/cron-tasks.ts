@@ -25,6 +25,14 @@ const DEFAULT_FEED_URL =
 // stored URL to one host so links stay consistent and dedup by slug is stable.
 const CANONICAL_HOST = "tochukwuezeukwu.substack.com";
 
+const IMAGE_EXTENSIONS: Record<string, string> = {
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+  "image/webp": ".webp",
+  "image/gif": ".gif",
+  "image/avif": ".avif",
+};
+
 function postSlug(url: string): string {
   const base = (url || "").split("?")[0].replace(/\/+$/, "");
   return base.split("/").pop() || base;
@@ -56,11 +64,14 @@ async function notifyTelegram(message: string) {
     console.error("[substack-import] Telegram not configured: TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID is missing");
     return;
   }
+  // Prod and staging share one chat, so each message says which one sent it.
+  const envName = process.env.RAILWAY_ENVIRONMENT_NAME;
+  const envLabel = envName ? "[" + envName + "] " : "";
   try {
     const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text: message }),
+      body: JSON.stringify({ chat_id: chatId, text: envLabel + message }),
     });
     if (res.ok) {
       console.log("[substack-import] Telegram message sent");
@@ -150,8 +161,11 @@ export default {
               if (!imageRes.ok)
                 throw new Error("Image download failed: " + imageRes.status);
               const buf = Buffer.from(await imageRes.arrayBuffer());
+              const mimetype = (imageRes.headers.get("content-type") || "").split(";")[0].trim();
+              const ext = IMAGE_EXTENSIONS[mimetype];
+              if (!ext) throw new Error("Unsupported image type: " + (mimetype || "unknown"));
 
-              tmpPath = path.join(os.tmpdir(), slug + "-" + Date.now() + ".jpg");
+              tmpPath = path.join(os.tmpdir(), slug + "-" + Date.now() + ext);
               fs.writeFileSync(tmpPath, buf);
 
               const [uploaded] = await strapi
@@ -160,9 +174,9 @@ export default {
                 .upload({
                   data: {},
                   files: {
-                    path: tmpPath,
-                    name: slug + ".jpg",
-                    type: "image/jpeg",
+                    filepath: tmpPath,
+                    originalFilename: slug + ext,
+                    mimetype,
                     size: buf.length,
                   },
                 });
