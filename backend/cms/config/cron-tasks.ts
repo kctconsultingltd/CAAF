@@ -52,14 +52,21 @@ async function fetchWithRetry(url: string, retries = 3, delayMs = 5000): Promise
 async function notifyTelegram(message: string) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
-  if (!token || !chatId) return;
+  if (!token || !chatId) {
+    console.error("[substack-import] Telegram not configured: TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID is missing");
+    return;
+  }
   try {
     const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chat_id: chatId, text: message }),
     });
-    if (!res.ok) console.error("[substack-import] Telegram rejected message: " + res.status);
+    if (res.ok) {
+      console.log("[substack-import] Telegram message sent");
+    } else {
+      console.error("[substack-import] Telegram rejected message: " + res.status + " " + (await res.text()));
+    }
   } catch (err: any) {
     // A failed notification should never break the import job.
     console.error("[substack-import] Telegram request failed: " + err.message);
