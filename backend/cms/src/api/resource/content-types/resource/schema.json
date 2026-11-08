@@ -7,17 +7,71 @@
     "displayName": "Book",
     "description": "Books listed under Research > Resources. Free books are emailed-gated downloads; paid books link out to buyUrl."
   },
-  "options": { "draftAndPublish": false },
+  "options": {
+    "draftAndPublish": false
+  },
   "pluginOptions": {},
   "attributes": {
-    "title": { "type": "string", "required": true },
-    "author": { "type": "string" },
-    "description": { "type": "text" },
-    "cover": { "type": "media", "multiple": false, "required": false, "allowedTypes": ["images"] },
-    "access": { "type": "enumeration", "enum": ["free", "paid"], "default": "free", "required": true },
-    "price": { "type": "string" },
-    "buyUrl": { "type": "string" },
-    "file": { "type": "media", "multiple": false, "required": false, "allowedTypes": ["files"], "private": true },
-    "order": { "type": "integer", "default": 0 }
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "author": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "cover": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "access": {
+      "type": "enumeration",
+      "enum": [
+        "free",
+        "paid"
+      ],
+      "default": "free",
+      "required": true
+    },
+    "price": {
+      "type": "string"
+    },
+    "buyUrl": {
+      "type": "string"
+    },
+    "file": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "files"
+      ],
+      "private": true
+    },
+    "coverPage": {
+      "type": "integer",
+      "default": 1,
+      "min": 1
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    },
+    "autoCoverId": {
+      "type": "integer",
+      "private": true,
+      "visible": false
+    },
+    "autoCoverKey": {
+      "type": "string",
+      "private": true,
+      "visible": false
+    }
   }
 }

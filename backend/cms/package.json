@@ -21,6 +21,7 @@
     "@strapi/provider-upload-cloudinary": "^5.44.0",
     "@strapi/strapi": "5.44.0",
     "better-sqlite3": "12.8.0",
+    "pdf-to-png-converter": "3.7.1",
     "pg": "^8.20.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
@@ -41,5 +42,8 @@
   "strapi": {
     "uuid": "7a0e7769-5d3b-4aff-b32f-b1ca19d78baa",
     "installId": "3e2e7119cab3098b0b650fd751e74d42d0cfcd81e067c680a5fb6fa01efa7a26"
+  },
+  "overrides": {
+    "pdfjs-dist": "5.4.149"
   }
 }

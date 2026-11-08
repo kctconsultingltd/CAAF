@@ -1,4 +1,5 @@
 import type { Core } from '@strapi/strapi';
+import { ensureAutoCover } from './utils/auto-cover';
 
 const API_UIDS = [
   'api::team-member.team-member',
@@ -35,7 +36,20 @@ const AUTHENTICATED_ACTIONS: string[] = API_UIDS.flatMap((uid) =>
 );
 
 export default {
-  register(/* { strapi }: { strapi: Core.Strapi } */) {},
+  register({ strapi }: { strapi: Core.Strapi }) {
+    // Generate a book's cover from its PDF whenever a book is created or updated.
+    strapi.documents.use(async (ctx, next) => {
+      const result: any = await next();
+      if (
+        ctx.uid === 'api::resource.resource' &&
+        (ctx.action === 'create' || ctx.action === 'update') &&
+        result?.documentId
+      ) {
+        await ensureAutoCover(strapi, result.documentId);
+      }
+      return result;
+    });
+  },
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
     await seedRolePermissions(strapi, 'public', PUBLIC_ACTIONS);

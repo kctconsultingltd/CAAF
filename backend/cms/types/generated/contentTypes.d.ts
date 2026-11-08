@@ -800,8 +800,18 @@ export interface ApiResourceResource extends Struct.CollectionTypeSchema {
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'free'>;
     author: Schema.Attribute.String;
+    autoCoverId: Schema.Attribute.Integer & Schema.Attribute.Private;
+    autoCoverKey: Schema.Attribute.String & Schema.Attribute.Private;
     buyUrl: Schema.Attribute.String;
     cover: Schema.Attribute.Media<'images'>;
+    coverPage: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
