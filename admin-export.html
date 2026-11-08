@@ -93,7 +93,7 @@
 <body>
   <div class="card">
     <div class="logo">Capital As A Force</div>
-    <h1>Export Subscribers</h1>
+    <h1>Export Emails</h1>
 
     <label>
       Export Key
@@ -101,8 +101,9 @@
     </label>
 
     <label>
-      Filter by Source
+      List
       <select id="sourceSelect">
+        <option value="__books">Free Book Downloads</option>
         <option value="rural-lens-fund-deck">Rural Lens Fund Deck Requests</option>
         <option value="">All Subscribers</option>
       </select>
@@ -113,7 +114,9 @@
   </div>
 
   <script>
-    var API = 'https://admin.capitalasaforce.com/api/newsletter-subscribers/export';
+    var API_BASE = window.location.hostname.indexOf('staging') !== -1
+      ? 'https://admin-staging.capitalasaforce.com/api'
+      : 'https://admin.capitalasaforce.com/api';
 
     document.getElementById('exportBtn').addEventListener('click', function () {
       var key    = document.getElementById('keyInput').value.trim();
@@ -131,7 +134,10 @@
       msg.className = 'msg';
       btn.disabled = true;
 
-      var url = API + '?key=' + encodeURIComponent(key) + (source ? '&source=' + encodeURIComponent(source) : '');
+      var books = source === '__books';
+      var url = books
+        ? API_BASE + '/resource-downloads/export?key=' + encodeURIComponent(key)
+        : API_BASE + '/newsletter-subscribers/export?key=' + encodeURIComponent(key) + (source ? '&source=' + encodeURIComponent(source) : '');
 
       fetch(url)
         .then(function (r) {
@@ -142,7 +148,7 @@
         .then(function (blob) {
           var a = document.createElement('a');
           a.href = URL.createObjectURL(blob);
-          a.download = 'subscribers-' + new Date().toISOString().split('T')[0] + '.csv';
+          a.download = (books ? 'book-downloads-' : 'subscribers-') + new Date().toISOString().split('T')[0] + '.csv';
           a.click();
           URL.revokeObjectURL(a.href);
           msg.textContent = 'Downloaded.';

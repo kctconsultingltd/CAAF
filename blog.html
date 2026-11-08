@@ -101,7 +101,13 @@
           <a href="/about">About Us</a>
           <a href="/#team">Team</a>
           <a href="/#deals">Deals</a>
-          <a href="/blog" class="nav-active">Research</a>
+          <div class="nav-dropdown">
+            <button type="button" class="nav-dropdown-toggle nav-active" aria-expanded="false" aria-controls="researchMenu">Research<svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <div class="nav-dropdown-menu" id="researchMenu">
+              <a href="/blog#insights">Insights</a>
+              <a href="/blog#resources">Resources</a>
+            </div>
+          </div>
           <a href="/events">Events</a>
           <!-- <a href="/deals">Deals</a> -->
         </div>
@@ -154,7 +160,9 @@
         <a href="/about">About Us</a>
         <a href="/#team">Team</a>
         <a href="/#deals">Deals</a>
-        <a href="/blog">Research</a>
+        <span class="mobile-menu-label">Research</span>
+        <a href="/blog#insights" class="mobile-menu-sublink">Insights</a>
+        <a href="/blog#resources" class="mobile-menu-sublink">Resources</a>
         <a href="/events">Events</a>
         <!-- <a href="/deals">Deals</a> -->
         <a href="https://tochukwuezeukwu.substack.com/subscribe" target="_blank" rel="noopener">Subscribe &amp; Donate</a>
@@ -194,16 +202,28 @@
           >
             Research
           </h1>
-          <p style="color: var(--muted); margin-top: 12px; max-width: 560px">
+          <p
+            id="researchIntro"
+            style="color: var(--muted); margin-top: 12px; max-width: 560px"
+            data-insights="Perspectives on capital, impact, and emerging markets from the CAAF team."
+            data-resources="Books and guides from the CAAF team. Some are free, some are for sale."
+          >
             Perspectives on capital, impact, and emerging markets from the CAAF
             team.
           </p>
         </div>
-        <div
-          id="cms-blog-page-list"
-          class="cms-blog-grid"
-          style="margin-top: 48px"
-        ></div>
+
+        <div class="research-tabs" role="tablist" aria-label="Research">
+          <button type="button" role="tab" class="research-tab" id="tab-insights" data-tab="insights" aria-controls="panel-insights" aria-selected="true">Insights</button>
+          <button type="button" role="tab" class="research-tab" id="tab-resources" data-tab="resources" aria-controls="panel-resources" aria-selected="false" tabindex="-1">Resources</button>
+        </div>
+
+        <div id="panel-insights" role="tabpanel" aria-labelledby="tab-insights" tabindex="0">
+          <div id="cms-blog-page-list" class="cms-blog-grid"></div>
+        </div>
+        <div id="panel-resources" role="tabpanel" aria-labelledby="tab-resources" tabindex="0" hidden>
+          <div id="cms-resources-list" class="cms-blog-grid resource-grid"></div>
+        </div>
       </div>
     </section>
 
@@ -277,6 +297,7 @@
               <li><a href="/#team">Team</a></li>
               <li><a href="/#deals">Deals</a></li>
               <li><a href="/blog">Research</a></li>
+              <li><a href="/blog#resources">Resources</a></li>
               <li><a href="/events">Events</a></li>
               <li><a href="/#contact">Contact</a></li>
             </ul>

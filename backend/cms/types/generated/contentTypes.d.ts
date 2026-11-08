@@ -107,43 +107,6 @@ export interface AdminApiTokenPermission extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface AdminAuditLog extends Struct.CollectionTypeSchema {
-  collectionName: 'strapi_audit_logs';
-  info: {
-    displayName: 'Audit Log';
-    pluralName: 'audit-logs';
-    singularName: 'audit-log';
-  };
-  options: {
-    draftAndPublish: false;
-    timestamps: false;
-  };
-  pluginOptions: {
-    'content-manager': {
-      visible: false;
-    };
-    'content-type-builder': {
-      visible: false;
-    };
-  };
-  attributes: {
-    action: Schema.Attribute.String & Schema.Attribute.Required;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    date: Schema.Attribute.DateTime & Schema.Attribute.Required;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'admin::audit-log'> &
-      Schema.Attribute.Private;
-    payload: Schema.Attribute.JSON;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    user: Schema.Attribute.Relation<'oneToOne', 'admin::user'>;
-  };
-}
-
 export interface AdminPermission extends Struct.CollectionTypeSchema {
   collectionName: 'admin_permissions';
   info: {
@@ -480,6 +443,7 @@ export interface ApiBlogLinkBlogLink extends Struct.CollectionTypeSchema {
   };
   attributes: {
     coverImage: Schema.Attribute.Media<'images'>;
+    coverImageUrl: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -490,6 +454,7 @@ export interface ApiBlogLinkBlogLink extends Struct.CollectionTypeSchema {
       'api::blog-link.blog-link'
     > &
       Schema.Attribute.Private;
+    postDate: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
@@ -518,7 +483,7 @@ export interface ApiDealSubmissionDealSubmission
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.Text;
-    fundingNeeded: Schema.Attribute.Decimal;
+    fundingNeeded: Schema.Attribute.BigInteger;
     industry: Schema.Attribute.String & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -526,9 +491,12 @@ export interface ApiDealSubmissionDealSubmission
       'api::deal-submission.deal-submission'
     > &
       Schema.Attribute.Private;
+    phone: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
-    revenue: Schema.Attribute.Decimal;
-    status: Schema.Attribute.Enumeration<['pending', 'approved', 'rejected']> &
+    revenue: Schema.Attribute.BigInteger;
+    reviewStatus: Schema.Attribute.Enumeration<
+      ['pending', 'approved', 'rejected']
+    > &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'pending'>;
     updatedAt: Schema.Attribute.DateTime;
@@ -555,7 +523,7 @@ export interface ApiDealDeal extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.Text;
-    fundingRequired: Schema.Attribute.Decimal;
+    fundingRequired: Schema.Attribute.BigInteger;
     industry: Schema.Attribute.String & Schema.Attribute.Required;
     investorInterests: Schema.Attribute.Relation<
       'oneToMany',
@@ -565,7 +533,9 @@ export interface ApiDealDeal extends Struct.CollectionTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::deal.deal'> &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    status: Schema.Attribute.Enumeration<['pending', 'approved', 'rejected']> &
+    reviewStatus: Schema.Attribute.Enumeration<
+      ['pending', 'approved', 'rejected']
+    > &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'pending'>;
     updatedAt: Schema.Attribute.DateTime;
@@ -574,69 +544,37 @@ export interface ApiDealDeal extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiInvestorInterestInvestorInterest
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'investor_interests';
+export interface ApiEventEvent extends Struct.CollectionTypeSchema {
+  collectionName: 'events';
   info: {
     description: '';
-    displayName: 'Investor Interest';
-    pluralName: 'investor-interests';
-    singularName: 'investor-interest';
+    displayName: 'Event';
+    pluralName: 'events';
+    singularName: 'event';
   };
   options: {
     draftAndPublish: false;
   };
   attributes: {
+    coverImage: Schema.Attribute.Media<'images'>;
+    coverImageUrl: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    email: Schema.Attribute.Email & Schema.Attribute.Required;
-    investmentRange: Schema.Attribute.String;
-    investorName: Schema.Attribute.String & Schema.Attribute.Required;
-    linkedDeal: Schema.Attribute.Relation<'manyToOne', 'api::deal.deal'>;
+    dateLabel: Schema.Attribute.String;
+    description: Schema.Attribute.Text;
+    eventDate: Schema.Attribute.DateTime;
+    gallery: Schema.Attribute.Media<'images', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::investor-interest.investor-interest'
-    > &
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::event.event'> &
       Schema.Attribute.Private;
-    notes: Schema.Attribute.Text;
+    location: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-  };
-}
-
-export interface ApiPageContentPageContent extends Struct.CollectionTypeSchema {
-  collectionName: 'page_contents';
-  info: {
-    description: '';
-    displayName: 'Page Content';
-    pluralName: 'page-contents';
-    singularName: 'page-content';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    content: Schema.Attribute.Blocks;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::page-content.page-content'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    sectionName: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
+    url: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -675,6 +613,216 @@ export interface ApiFeaturedDealFeaturedDeal
   };
 }
 
+export interface ApiInvestorInterestInvestorInterest
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'investor_interests';
+  info: {
+    description: '';
+    displayName: 'Investor Interest';
+    pluralName: 'investor-interests';
+    singularName: 'investor-interest';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email & Schema.Attribute.Required;
+    investmentRange: Schema.Attribute.String;
+    investorName: Schema.Attribute.String & Schema.Attribute.Required;
+    linkedDeal: Schema.Attribute.Relation<'manyToOne', 'api::deal.deal'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::investor-interest.investor-interest'
+    > &
+      Schema.Attribute.Private;
+    notes: Schema.Attribute.Text;
+    phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiNewsletterSubscriberNewsletterSubscriber
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'newsletter_subscribers';
+  info: {
+    displayName: 'Newsletter Subscriber';
+    pluralName: 'newsletter-subscribers';
+    singularName: 'newsletter-subscriber';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::newsletter-subscriber.newsletter-subscriber'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    source: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPageContentPageContent extends Struct.CollectionTypeSchema {
+  collectionName: 'page_contents';
+  info: {
+    description: '';
+    displayName: 'Page Content';
+    pluralName: 'page-contents';
+    singularName: 'page-content';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    content: Schema.Attribute.Blocks;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::page-content.page-content'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    sectionName: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPitchSubmissionPitchSubmission
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'pitch_submissions';
+  info: {
+    description: 'Inbound business pitches submitted via the homepage modal';
+    displayName: 'Pitch Submission';
+    pluralName: 'pitch-submissions';
+    singularName: 'pitch-submission';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    businessName: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currentTurnover: Schema.Attribute.String;
+    dealDescription: Schema.Attribute.Text & Schema.Attribute.Required;
+    deckData: Schema.Attribute.Text;
+    deckFileName: Schema.Attribute.String;
+    deckMimeType: Schema.Attribute.String;
+    email: Schema.Attribute.Email & Schema.Attribute.Required;
+    fullName: Schema.Attribute.String & Schema.Attribute.Required;
+    fundingRequest: Schema.Attribute.String & Schema.Attribute.Required;
+    hasDeck: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::pitch-submission.pitch-submission'
+    > &
+      Schema.Attribute.Private;
+    phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiResourceDownloadResourceDownload
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'resource_downloads';
+  info: {
+    description: 'One row per free book requested: the email given and which book.';
+    displayName: 'Resource Download';
+    pluralName: 'resource-downloads';
+    singularName: 'resource-download';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::resource-download.resource-download'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    resource: Schema.Attribute.Relation<'manyToOne', 'api::resource.resource'>;
+    resourceTitle: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiResourceResource extends Struct.CollectionTypeSchema {
+  collectionName: 'resources';
+  info: {
+    description: 'Books listed under Research > Resources. Free books are emailed-gated downloads; paid books link out to buyUrl.';
+    displayName: 'Book';
+    pluralName: 'resources';
+    singularName: 'resource';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    access: Schema.Attribute.Enumeration<['free', 'paid']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'free'>;
+    author: Schema.Attribute.String;
+    buyUrl: Schema.Attribute.String;
+    cover: Schema.Attribute.Media<'images'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    file: Schema.Attribute.Media<'files'> & Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::resource.resource'
+    > &
+      Schema.Attribute.Private;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    price: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiTeamMemberTeamMember extends Struct.CollectionTypeSchema {
   collectionName: 'team_members';
   info: {
@@ -699,6 +847,7 @@ export interface ApiTeamMemberTeamMember extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     publishedAt: Schema.Attribute.DateTime;
     role: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
@@ -1212,7 +1361,6 @@ declare module '@strapi/strapi' {
     export interface ContentTypeSchemas {
       'admin::api-token': AdminApiToken;
       'admin::api-token-permission': AdminApiTokenPermission;
-      'admin::audit-log': AdminAuditLog;
       'admin::permission': AdminPermission;
       'admin::role': AdminRole;
       'admin::session': AdminSession;
@@ -1222,9 +1370,14 @@ declare module '@strapi/strapi' {
       'api::blog-link.blog-link': ApiBlogLinkBlogLink;
       'api::deal-submission.deal-submission': ApiDealSubmissionDealSubmission;
       'api::deal.deal': ApiDealDeal;
-      'api::investor-interest.investor-interest': ApiInvestorInterestInvestorInterest;
-      'api::page-content.page-content': ApiPageContentPageContent;
+      'api::event.event': ApiEventEvent;
       'api::featured-deal.featured-deal': ApiFeaturedDealFeaturedDeal;
+      'api::investor-interest.investor-interest': ApiInvestorInterestInvestorInterest;
+      'api::newsletter-subscriber.newsletter-subscriber': ApiNewsletterSubscriberNewsletterSubscriber;
+      'api::page-content.page-content': ApiPageContentPageContent;
+      'api::pitch-submission.pitch-submission': ApiPitchSubmissionPitchSubmission;
+      'api::resource-download.resource-download': ApiResourceDownloadResourceDownload;
+      'api::resource.resource': ApiResourceResource;
       'api::team-member.team-member': ApiTeamMemberTeamMember;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

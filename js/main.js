@@ -73,6 +73,59 @@
     }
   }
 
+  /* ── Nav dropdown (Research ▾) ─────────────────── */
+  document.querySelectorAll(".nav-dropdown").forEach(function (dd) {
+    var btn = dd.querySelector(".nav-dropdown-toggle");
+    var links = dd.querySelectorAll(".nav-dropdown-menu a");
+    var hoverable = window.matchMedia("(hover: hover)").matches;
+    var closeTimer, openedByHover = false;
+
+    function setOpen(open) {
+      dd.classList.toggle("is-open", open);
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      if (!open) openedByHover = false;
+    }
+
+    btn.addEventListener("click", function () {
+      // A click right after hover-open should keep it open, not toggle it shut.
+      if (openedByHover) { openedByHover = false; return; }
+      setOpen(!dd.classList.contains("is-open"));
+    });
+    if (hoverable) {
+      dd.addEventListener("mouseenter", function () {
+        clearTimeout(closeTimer);
+        if (!dd.classList.contains("is-open")) { setOpen(true); openedByHover = true; }
+      });
+      dd.addEventListener("mouseleave", function () {
+        closeTimer = setTimeout(function () { setOpen(false); }, 160);
+      });
+    }
+    dd.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && dd.classList.contains("is-open")) {
+        setOpen(false);
+        btn.focus();
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setOpen(true);
+        var i = Array.prototype.indexOf.call(links, document.activeElement);
+        links[Math.min(i + 1, links.length - 1)].focus();
+      } else if (e.key === "ArrowUp" && document.activeElement !== btn) {
+        e.preventDefault();
+        var j = Array.prototype.indexOf.call(links, document.activeElement);
+        (j > 0 ? links[j - 1] : btn).focus();
+      }
+    });
+    dd.addEventListener("focusout", function (e) {
+      if (!dd.contains(e.relatedTarget)) setOpen(false);
+    });
+    links.forEach(function (a) {
+      a.addEventListener("click", function () { setOpen(false); });
+    });
+    document.addEventListener("click", function (e) {
+      if (!dd.contains(e.target)) setOpen(false);
+    });
+  });
+
   /* ── Bio "See More / See Less" Toggle ──────────── */
   function toggleBio(btn) {
     var text = btn.previousElementSibling;

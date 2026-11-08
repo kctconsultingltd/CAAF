@@ -3565,3 +3565,333 @@ main > section:nth-of-type(even) { background: var(--bg);  }
     background-position: center;
   }
 }
+
+/* ═══════════════════════════════════════════════
+   NAV DROPDOWN — Research ▾ (Insights, Resources)
+   ═══════════════════════════════════════════════ */
+.nav-dropdown {
+  position: relative;
+}
+.nav-dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--condensed);
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  white-space: nowrap;
+  transition: color 0.3s;
+}
+.nav-dropdown-toggle:hover,
+.nav-dropdown.is-open .nav-dropdown-toggle {
+  color: var(--white);
+}
+.nav-dropdown-toggle:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 5px;
+  border-radius: 2px;
+}
+.nav-caret {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-dropdown.is-open .nav-caret {
+  transform: rotate(180deg);
+}
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 16px);
+  left: 50%;
+  min-width: 190px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg2);
+  border: 1px solid var(--line-solid);
+  border-radius: 4px;
+  box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, -6px);
+  transition:
+    opacity 0.16s ease-out,
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 0.22s;
+}
+/* Bridges the gap under the toggle so moving the pointer down doesn't close it. */
+.nav-dropdown-menu::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -17px;
+  height: 17px;
+}
+.nav-dropdown.is-open .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+  transition-delay: 0s;
+}
+.nav-center .nav-dropdown-menu a {
+  padding: 11px 14px;
+  border-radius: 2px;
+  font-size: 0.95rem;
+}
+.nav-center .nav-dropdown-menu a:hover,
+.nav-center .nav-dropdown-menu a:focus-visible {
+  color: var(--white);
+  background: rgba(200, 150, 42, 0.1);
+  outline: none;
+}
+
+/* Mobile menu: Research group */
+.mobile-menu-label {
+  font-family: var(--condensed);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding: 16px 24px 2px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.4s;
+}
+.mobile-menu.open .mobile-menu-label {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.3s;
+}
+.mobile-menu-links a.mobile-menu-sublink {
+  padding: 8px 24px;
+}
+
+/* ═══════════════════════════════════════════════
+   RESEARCH TABS — Insights | Resources
+   ═══════════════════════════════════════════════ */
+.research-tabs {
+  display: flex;
+  gap: 36px;
+  margin-top: 40px;
+  border-bottom: 1px solid var(--line);
+}
+.research-tab {
+  position: relative;
+  min-height: 44px;
+  padding: 12px 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--condensed);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.25s;
+}
+.research-tab:hover,
+.research-tab[aria-selected="true"] {
+  color: var(--white);
+}
+.research-tab::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.research-tab[aria-selected="true"]::after {
+  transform: scaleX(1);
+}
+.research-tab:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+[role="tabpanel"]:focus-visible {
+  outline: 1px solid var(--line-solid);
+  outline-offset: 12px;
+}
+
+/* ═══════════════════════════════════════════════
+   RESOURCE (BOOK) CARDS
+   ═══════════════════════════════════════════════ */
+.resource-card {
+  display: flex;
+  flex-direction: column;
+}
+.resource-cover {
+  height: 240px;
+  margin-bottom: 20px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+}
+.resource-cover img {
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.7);
+}
+/* Typeset stand-in for books uploaded without a cover image */
+.resource-cover-blank {
+  height: 100%;
+  aspect-ratio: 2 / 3;
+  display: flex;
+  align-items: flex-end;
+  padding: 16px 14px;
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--gold);
+  background: var(--bg);
+  border: 1px solid var(--line-solid);
+  border-top: 3px solid var(--gold);
+  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+}
+.resource-badge {
+  align-self: flex-start;
+  font-family: var(--condensed);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  padding: 3px 10px;
+  margin-bottom: 12px;
+}
+.resource-badge--paid {
+  color: var(--bg);
+  background: var(--gold);
+}
+.resource-title {
+  margin-bottom: 4px;
+}
+.resource-author {
+  font-size: 0.85rem;
+  color: rgba(244, 242, 237, 0.78);
+  margin-bottom: 10px;
+}
+.resource-desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+}
+.resource-action {
+  margin-top: auto;
+  padding-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.resource-cta {
+  align-self: flex-start;
+  min-height: 44px;
+  border: 0;
+}
+.resource-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.resource-label {
+  font-family: var(--condensed);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+.resource-row {
+  display: flex;
+  gap: 8px;
+}
+.resource-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  font: 16px/1.3 var(--sans); /* 16px stops iOS zooming into the field */
+  color: var(--white);
+  background: var(--bg);
+  border: 1px solid var(--line-solid);
+  border-radius: 2px;
+  caret-color: var(--gold);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.resource-input::placeholder {
+  color: var(--muted);
+}
+.resource-input:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(200, 150, 42, 0.18);
+}
+.resource-input[aria-invalid="true"] {
+  border-color: #e8836b;
+}
+.resource-submit {
+  flex: none;
+  min-height: 44px;
+  border: 0;
+}
+.resource-submit:disabled {
+  cursor: progress;
+  filter: saturate(0.6) brightness(0.85);
+}
+.resource-consent {
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.resource-status {
+  font-size: 0.85rem;
+}
+.resource-status:empty {
+  display: none;
+}
+.resource-status.is-error {
+  color: #f2a48f;
+}
+.resource-done {
+  font-size: 0.9rem;
+  color: var(--white);
+}
+.resource-empty {
+  color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-dropdown-menu,
+  .nav-caret,
+  .research-tab::after,
+  .mobile-menu-label {
+    transition: none;
+  }
+}

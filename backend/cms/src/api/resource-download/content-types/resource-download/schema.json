@@ -1,0 +1,17 @@
+{
+  "kind": "collectionType",
+  "collectionName": "resource_downloads",
+  "info": {
+    "singularName": "resource-download",
+    "pluralName": "resource-downloads",
+    "displayName": "Resource Download",
+    "description": "One row per free book requested: the email given and which book."
+  },
+  "options": { "draftAndPublish": false },
+  "pluginOptions": {},
+  "attributes": {
+    "email": { "type": "email", "required": true },
+    "resource": { "type": "relation", "relation": "manyToOne", "target": "api::resource.resource" },
+    "resourceTitle": { "type": "string" }
+  }
+}

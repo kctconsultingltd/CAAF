@@ -1,0 +1,23 @@
+{
+  "kind": "collectionType",
+  "collectionName": "resources",
+  "info": {
+    "singularName": "resource",
+    "pluralName": "resources",
+    "displayName": "Book",
+    "description": "Books listed under Research > Resources. Free books are emailed-gated downloads; paid books link out to buyUrl."
+  },
+  "options": { "draftAndPublish": false },
+  "pluginOptions": {},
+  "attributes": {
+    "title": { "type": "string", "required": true },
+    "author": { "type": "string" },
+    "description": { "type": "text" },
+    "cover": { "type": "media", "multiple": false, "required": false, "allowedTypes": ["images"] },
+    "access": { "type": "enumeration", "enum": ["free", "paid"], "default": "free", "required": true },
+    "price": { "type": "string" },
+    "buyUrl": { "type": "string" },
+    "file": { "type": "media", "multiple": false, "required": false, "allowedTypes": ["files"], "private": true },
+    "order": { "type": "integer", "default": 0 }
+  }
+}

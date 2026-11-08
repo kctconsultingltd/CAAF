@@ -488,6 +488,173 @@
       });
   }
 
+  // ─── Research tabs (Insights | Resources), driven by the URL hash ─────────
+
+  function initResearchTabs() {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll(".research-tab"));
+    if (!tabs.length) return;
+    var intro = document.getElementById("researchIntro");
+
+    function show(name) {
+      tabs.forEach(function (tab) {
+        var on = tab.getAttribute("data-tab") === name;
+        tab.setAttribute("aria-selected", on ? "true" : "false");
+        tab.tabIndex = on ? 0 : -1;
+        document.getElementById(tab.getAttribute("aria-controls")).hidden = !on;
+      });
+      if (intro && intro.getAttribute("data-" + name)) {
+        intro.textContent = intro.getAttribute("data-" + name);
+      }
+    }
+    function fromHash() {
+      show(location.hash === "#resources" ? "resources" : "insights");
+    }
+
+    tabs.forEach(function (tab, i) {
+      tab.addEventListener("click", function () {
+        location.hash = tab.getAttribute("data-tab");
+      });
+      tab.addEventListener("keydown", function (e) {
+        var step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (!step) return;
+        e.preventDefault();
+        var next = tabs[(i + step + tabs.length) % tabs.length];
+        next.focus();
+        next.click();
+      });
+    });
+    window.addEventListener("hashchange", fromHash);
+    fromHash();
+  }
+
+  // ─── Resources (books): paid ones link out, free ones are email-gated ─────
+  // Expected container: <div id="cms-resources-list"></div>
+
+  var _resources = [];
+  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function rememberedEmail() {
+    try { return localStorage.getItem("caaf_resource_email") || ""; } catch (e) { return ""; }
+  }
+
+  function renderResource(res, idx) {
+    var cover = mediaUrl(res.cover, "medium");
+    var paid = res.access === "paid";
+    var badge = paid
+      ? '<span class="resource-badge resource-badge--paid">Paid' + (res.price ? " · " + escHtml(res.price) : "") + "</span>"
+      : '<span class="resource-badge">Free</span>';
+    var action;
+    if (paid) {
+      action = res.buyUrl
+        ? '<a class="btn-gold resource-cta" href="' + escHtml(res.buyUrl) + '" target="_blank" rel="noopener noreferrer">Buy' +
+          (res.price ? " · " + escHtml(res.price) : "") + ' <span class="arrow" aria-hidden="true">&rarr;</span></a>'
+        : "";
+    } else {
+      var id = "res-email-" + idx;
+      action =
+        '<button type="button" class="btn-gold resource-cta resource-get" aria-expanded="false" aria-controls="res-form-' + idx + '">Get free copy</button>' +
+        '<form class="resource-form" id="res-form-' + idx + '" data-idx="' + idx + '" novalidate hidden>' +
+        '<label class="resource-label" for="' + id + '">Your email</label>' +
+        '<div class="resource-row">' +
+        '<input class="resource-input" id="' + id + '" type="email" name="email" autocomplete="email" inputmode="email" placeholder="name@example.com" required value="' + escHtml(rememberedEmail()) + '" />' +
+        '<button type="submit" class="btn-gold resource-submit">Download</button>' +
+        "</div>" +
+        '<p class="resource-consent">We\'ll use your email to send occasional updates. Unsubscribe any time.</p>' +
+        '<p class="resource-status" role="status" aria-live="polite"></p>' +
+        "</form>";
+    }
+    return (
+      '<article class="cms-blog-card resource-card">' +
+      (cover
+        ? '<div class="resource-cover"><img src="' + escHtml(cover) + '" alt="Cover of ' + escHtml(res.title) + '" loading="lazy" /></div>'
+        : '<div class="resource-cover" aria-hidden="true"><span class="resource-cover-blank">' + escHtml(res.title) + "</span></div>") +
+      badge +
+      '<h3 class="cms-blog-title resource-title">' + escHtml(res.title) + "</h3>" +
+      (res.author ? '<p class="resource-author">' + escHtml(res.author) + "</p>" : "") +
+      (res.description ? '<p class="cms-blog-desc resource-desc">' + escHtml(res.description) + "</p>" : "") +
+      '<div class="resource-action">' + action + "</div>" +
+      "</article>"
+    );
+  }
+
+  function submitResourceForm(form) {
+    var res = _resources[+form.getAttribute("data-idx")];
+    var input = form.querySelector(".resource-input");
+    var btn = form.querySelector(".resource-submit");
+    var status = form.querySelector(".resource-status");
+    var email = input.value.trim();
+
+    status.className = "resource-status";
+    if (!EMAIL_RE.test(email)) {
+      input.setAttribute("aria-invalid", "true");
+      status.classList.add("is-error");
+      status.textContent = "Enter a valid email, like name@example.com.";
+      input.focus();
+      return;
+    }
+    input.removeAttribute("aria-invalid");
+    btn.disabled = true;
+    btn.textContent = "Preparing…";
+    status.textContent = "";
+
+    apiFetch("/resources/" + encodeURIComponent(res.documentId) + "/download", {
+      method: "POST",
+      body: JSON.stringify({ email: email }),
+    })
+      .then(function (json) {
+        try { localStorage.setItem("caaf_resource_email", email); } catch (e) {}
+        // "noopener" in the features string makes window.open return null,
+        // so open normally and cut the opener link by hand.
+        var opened = window.open(json.url, "_blank");
+        if (opened) opened.opener = null;
+        var action = form.closest(".resource-action");
+        action.innerHTML =
+          '<p class="resource-done" role="status">' +
+          (opened ? "Your copy is opening in a new tab." : "Your copy is ready.") +
+          "</p>" +
+          '<a class="btn-gold resource-cta" href="' + escHtml(json.url) + '" target="_blank" rel="noopener noreferrer">Open PDF <span class="arrow" aria-hidden="true">&rarr;</span></a>';
+        var link = action.querySelector("a");
+        if (link) link.focus();
+      })
+      .catch(function (err) {
+        btn.disabled = false;
+        btn.textContent = "Download";
+        status.classList.add("is-error");
+        status.textContent = (err && err.message) || "Something went wrong. Please try again.";
+      });
+  }
+
+  function loadResources() {
+    var el = document.getElementById("cms-resources-list");
+    if (!el) return;
+    setLoading(el);
+    apiFetch("/resources?populate=cover&sort=order:asc&pagination[pageSize]=100")
+      .then(function (json) {
+        _resources = json.data || [];
+        el.innerHTML = _resources.length
+          ? _resources.map(renderResource).join("")
+          : '<p class="resource-empty">Resources are coming soon.</p>';
+      })
+      .catch(function () {
+        el.innerHTML = '<p class="resource-empty">Resources could not be loaded. Please refresh the page.</p>';
+      });
+
+    el.addEventListener("click", function (e) {
+      var get = e.target.closest(".resource-get");
+      if (!get) return;
+      var form = document.getElementById(get.getAttribute("aria-controls"));
+      get.hidden = true;
+      get.setAttribute("aria-expanded", "true");
+      form.hidden = false;
+      form.querySelector(".resource-input").focus();
+    });
+    el.addEventListener("submit", function (e) {
+      if (!e.target.classList.contains("resource-form")) return;
+      e.preventDefault();
+      submitResourceForm(e.target);
+    });
+  }
+
   // ─── Deals & Investor Interest (commented out — not live yet) ────────────
   /*
 
@@ -1063,6 +1230,8 @@
     loadFeaturedDeals();
     loadBlogLinks();
     loadBlogPage();
+    initResearchTabs();
+    loadResources();
     loadEventsPage();
     loadEventModal();
   });
