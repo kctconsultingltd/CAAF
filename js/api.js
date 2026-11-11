@@ -7,8 +7,8 @@
 
   // ─── Gallery lightbox state ───────────────────────────────────────────────
   var _eventGalleries = {};
-  var _galleryImages  = [];
-  var _galleryIdx     = 0;
+  var _galleryImages = [];
+  var _galleryIdx = 0;
   var GALLERY_MAX_DOTS = 12;
 
   // Prefer one of Strapi's generated sizes over the full-size original.
@@ -19,16 +19,20 @@
   }
 
   function _galleryShowSlide(idx) {
-    _galleryIdx = ((idx % _galleryImages.length) + _galleryImages.length) % _galleryImages.length;
-    var img     = document.getElementById("galleryImg");
+    _galleryIdx =
+      ((idx % _galleryImages.length) + _galleryImages.length) %
+      _galleryImages.length;
+    var img = document.getElementById("galleryImg");
     var counter = document.getElementById("galleryCounter");
-    if (img)     img.src = _galleryImages[_galleryIdx];
-    if (counter) counter.textContent = (_galleryIdx + 1) + " / " + _galleryImages.length;
+    if (img) img.src = _galleryImages[_galleryIdx];
+    if (counter)
+      counter.textContent = _galleryIdx + 1 + " / " + _galleryImages.length;
     document.querySelectorAll(".gallery-dot").forEach(function (d, i) {
       d.classList.toggle("is-active", i === _galleryIdx);
     });
     if (_galleryImages.length > 1) {
-      new Image().src = _galleryImages[(_galleryIdx + 1) % _galleryImages.length];
+      new Image().src =
+        _galleryImages[(_galleryIdx + 1) % _galleryImages.length];
     }
   }
 
@@ -36,42 +40,72 @@
     _galleryImages = images;
     var dotsEl = document.getElementById("galleryDots");
     if (dotsEl) {
-      dotsEl.innerHTML = images.length > 1 && images.length <= GALLERY_MAX_DOTS ? images.map(function (_, i) {
-        return '<button class="gallery-dot" aria-label="Slide ' + (i + 1) + '"></button>';
-      }).join("") : "";
+      dotsEl.innerHTML =
+        images.length > 1 && images.length <= GALLERY_MAX_DOTS
+          ? images
+              .map(function (_, i) {
+                return (
+                  '<button class="gallery-dot" aria-label="Slide ' +
+                  (i + 1) +
+                  '"></button>'
+                );
+              })
+              .join("")
+          : "";
       dotsEl.querySelectorAll(".gallery-dot").forEach(function (d, i) {
-        d.addEventListener("click", function () { _galleryShowSlide(i); });
+        d.addEventListener("click", function () {
+          _galleryShowSlide(i);
+        });
       });
     }
     var single = images.length < 2;
-    document.querySelectorAll(".gallery-prev, .gallery-next, #galleryCounter").forEach(function (el) { el.hidden = single; });
+    document
+      .querySelectorAll(".gallery-prev, .gallery-next, #galleryCounter")
+      .forEach(function (el) {
+        el.hidden = single;
+      });
     _galleryShowSlide(0);
     var lb = document.getElementById("galleryLightbox");
-    if (lb) { lb.removeAttribute("hidden"); document.body.style.overflow = "hidden"; }
+    if (lb) {
+      lb.removeAttribute("hidden");
+      document.body.style.overflow = "hidden";
+    }
   };
 
   window._galleryClose = function () {
     var lb = document.getElementById("galleryLightbox");
-    if (lb) { lb.setAttribute("hidden", ""); document.body.style.overflow = ""; }
+    if (lb) {
+      lb.setAttribute("hidden", "");
+      document.body.style.overflow = "";
+    }
     _galleryImages = [];
   };
 
-  window._galleryPrev = function () { _galleryShowSlide(_galleryIdx - 1); };
-  window._galleryNext = function () { _galleryShowSlide(_galleryIdx + 1); };
+  window._galleryPrev = function () {
+    _galleryShowSlide(_galleryIdx - 1);
+  };
+  window._galleryNext = function () {
+    _galleryShowSlide(_galleryIdx + 1);
+  };
 
   document.addEventListener("keydown", function (e) {
     var lb = document.getElementById("galleryLightbox");
     if (!lb || lb.hidden) return;
-    if (e.key === "Escape")     window._galleryClose();
-    if (e.key === "ArrowLeft")  window._galleryPrev();
+    if (e.key === "Escape") window._galleryClose();
+    if (e.key === "ArrowLeft") window._galleryPrev();
     if (e.key === "ArrowRight") window._galleryNext();
   });
 
   // A CMS cover that fails to load is removed rather than shown as a broken image.
-  document.addEventListener("error", function (e) {
-    var t = e.target;
-    if (t && t.tagName === "IMG" && t.classList.contains("cms-blog-img")) t.remove();
-  }, true);
+  document.addEventListener(
+    "error",
+    function (e) {
+      var t = e.target;
+      if (t && t.tagName === "IMG" && t.classList.contains("cms-blog-img"))
+        t.remove();
+    },
+    true,
+  );
 
   document.addEventListener("click", function (e) {
     var card = e.target.closest && e.target.closest("[data-gallery-key]");
@@ -272,15 +306,33 @@
   function renderFeaturedDeal(deal, idx) {
     var imgSrc = dealImage(deal);
     return (
-      '<div class="cms-blog-card deal-card" data-deal-idx="' + idx + '" role="button" tabindex="0" aria-label="View details: ' + escHtml(deal.title) + '">' +
+      '<div class="cms-blog-card deal-card" data-deal-idx="' +
+      idx +
+      '" role="button" tabindex="0" aria-label="View details: ' +
+      escHtml(deal.title) +
+      '">' +
       '<span class="deal-expand" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></span>' +
       (imgSrc
-        ? '<img src="' + escHtml(imgSrc) + '" alt="' + escHtml(deal.title) + '" class="cms-blog-img" loading="lazy" />'
+        ? '<img src="' +
+          escHtml(imgSrc) +
+          '" alt="' +
+          escHtml(deal.title) +
+          '" class="cms-blog-img" loading="lazy" />'
         : "") +
-      (deal.dealType ? '<span class="deal-type">' + escHtml(deal.dealType) + "</span>" : "") +
-      '<span class="cms-blog-title">' + escHtml(deal.title) + "</span>" +
-      (deal.amount ? '<div class="deal-amount">' + escHtml(deal.amount) + "</div>" : "") +
-      (deal.description ? '<p class="cms-blog-desc deal-desc">' + escHtml(deal.description) + "</p>" : "") +
+      (deal.dealType
+        ? '<span class="deal-type">' + escHtml(deal.dealType) + "</span>"
+        : "") +
+      '<span class="cms-blog-title">' +
+      escHtml(deal.title) +
+      "</span>" +
+      (deal.amount
+        ? '<div class="deal-amount">' + escHtml(deal.amount) + "</div>"
+        : "") +
+      (deal.description
+        ? '<p class="cms-blog-desc deal-desc">' +
+          escHtml(deal.description) +
+          "</p>"
+        : "") +
       '<div class="deal-cta-wrap"><a class="btn-gold deal-cta" href="#contact">Engage <span class="arrow" aria-hidden="true">&rarr;</span></a></div>' +
       "</div>"
     );
@@ -290,19 +342,37 @@
     if (document.getElementById("deal-modal-overlay")) return;
     var opener = document.activeElement;
     var imgSrc = dealImage(deal);
-    var desc = deal.description ? escHtml(deal.description).replace(/\n/g, "<br>") : "";
+    var desc = deal.description
+      ? escHtml(deal.description).replace(/\n/g, "<br>")
+      : "";
 
     var overlay = document.createElement("div");
     overlay.id = "deal-modal-overlay";
     overlay.innerHTML =
-      '<div id="deal-modal" role="dialog" aria-modal="true" aria-label="' + escHtml(deal.title) + '">' +
+      '<div id="deal-modal" role="dialog" aria-modal="true" aria-label="' +
+      escHtml(deal.title) +
+      '">' +
       '<button id="deal-modal-close" aria-label="Close">&times;</button>' +
       '<div class="deal-modal-scroll">' +
-      (imgSrc ? '<img src="' + escHtml(imgSrc) + '" alt="' + escHtml(deal.title) + '" class="deal-modal-img" />' : "") +
+      (imgSrc
+        ? '<img src="' +
+          escHtml(imgSrc) +
+          '" alt="' +
+          escHtml(deal.title) +
+          '" class="deal-modal-img" />'
+        : "") +
       '<div class="deal-modal-body">' +
-      (deal.dealType ? '<div class="deal-modal-meta"><span class="deal-type">' + escHtml(deal.dealType) + "</span></div>" : "") +
-      '<h2 class="deal-modal-title">' + escHtml(deal.title) + "</h2>" +
-      (deal.amount ? '<div class="deal-modal-amount">' + escHtml(deal.amount) + "</div>" : "") +
+      (deal.dealType
+        ? '<div class="deal-modal-meta"><span class="deal-type">' +
+          escHtml(deal.dealType) +
+          "</span></div>"
+        : "") +
+      '<h2 class="deal-modal-title">' +
+      escHtml(deal.title) +
+      "</h2>" +
+      (deal.amount
+        ? '<div class="deal-modal-amount">' + escHtml(deal.amount) + "</div>"
+        : "") +
       (desc ? '<p class="deal-modal-desc">' + desc + "</p>" : "") +
       '<a class="btn-gold deal-modal-cta" href="#contact">Engage <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
       "</div></div></div>";
@@ -321,7 +391,9 @@
       var wide = window.matchMedia("(min-width: 768px)").matches;
       var prop = wide ? "--deal-img-w" : "--deal-img-h";
       var unit = wide ? "%" : "vh";
-      var min = wide ? 36 : 38, max = wide ? 60 : 62, best = min;
+      var min = wide ? 36 : 38,
+        max = wide ? 60 : 62,
+        best = min;
       modal.style.removeProperty("--deal-img-w");
       modal.style.removeProperty("--deal-img-h");
       for (var v = min; v <= max; v += 2) {
@@ -351,12 +423,15 @@
       if (e.target === overlay) close();
     });
     overlay.querySelector("#deal-modal-close").addEventListener("click", close);
-    overlay.querySelector(".deal-modal-cta").addEventListener("click", function (e) {
-      e.preventDefault();
-      close();
-      var contact = document.getElementById("contact");
-      if (contact) contact.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
+    overlay
+      .querySelector(".deal-modal-cta")
+      .addEventListener("click", function (e) {
+        e.preventDefault();
+        close();
+        var contact = document.getElementById("contact");
+        if (contact)
+          contact.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     document.addEventListener("keydown", onEsc);
     overlay.querySelector("#deal-modal-close").focus();
   }
@@ -384,7 +459,10 @@
       if (card) openFromCard(card);
     });
     el.addEventListener("keydown", function (e) {
-      if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("deal-card")) {
+      if (
+        (e.key === "Enter" || e.key === " ") &&
+        e.target.classList.contains("deal-card")
+      ) {
         e.preventDefault();
         openFromCard(e.target);
       }
@@ -434,7 +512,9 @@
     var el = document.getElementById("cms-blog-list");
     if (!el) return;
     setLoading(el);
-    apiFetch("/blog-links?populate=coverImage&fields[0]=title&fields[1]=url&fields[2]=description&fields[3]=postDate&fields[4]=coverImageUrl&sort=postDate:desc&pagination[pageSize]=100")
+    apiFetch(
+      "/blog-links?populate=coverImage&fields[0]=title&fields[1]=url&fields[2]=description&fields[3]=postDate&fields[4]=coverImageUrl&sort=postDate:desc&pagination[pageSize]=100",
+    )
       .then(function (json) {
         var items = json.data || [];
         if (!items.length) {
@@ -473,11 +553,13 @@
     var el = document.getElementById("cms-blog-page-list");
     if (!el) return;
     setLoading(el);
-    apiFetch("/blog-links?populate=coverImage&fields[0]=title&fields[1]=url&fields[2]=description&fields[3]=postDate&fields[4]=coverImageUrl&sort=postDate:desc&pagination[pageSize]=100")
+    apiFetch(
+      "/blog-links?populate=coverImage&fields[0]=title&fields[1]=url&fields[2]=description&fields[3]=postDate&fields[4]=coverImageUrl&sort=postDate:desc&pagination[pageSize]=100",
+    )
       .then(function (json) {
         var items = json.data || [];
         if (!items.length) {
-          el.innerHTML = "<p style=\"color:var(--muted)\">No posts yet.</p>";
+          el.innerHTML = '<p style="color:var(--muted)">No posts yet.</p>';
           return;
         }
         sortByPostDateDesc(items);
@@ -491,7 +573,9 @@
   // ─── Research tabs (Insights | Resources), driven by the URL hash ─────────
 
   function initResearchTabs() {
-    var tabs = Array.prototype.slice.call(document.querySelectorAll(".research-tab"));
+    var tabs = Array.prototype.slice.call(
+      document.querySelectorAll(".research-tab"),
+    );
     if (!tabs.length) return;
     var intro = document.getElementById("researchIntro");
 
@@ -534,29 +618,50 @@
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   function rememberedEmail() {
-    try { return localStorage.getItem("caaf_resource_email") || ""; } catch (e) { return ""; }
+    try {
+      return localStorage.getItem("caaf_resource_email") || "";
+    } catch (e) {
+      return "";
+    }
   }
 
   function renderResource(res, idx) {
     var cover = mediaUrl(res.cover, "medium");
     var paid = res.access === "paid";
     var badge = paid
-      ? '<span class="resource-badge resource-badge--paid">Paid' + (res.price ? " · " + escHtml(res.price) : "") + "</span>"
+      ? '<span class="resource-badge resource-badge--paid">Paid' +
+        (res.price ? " · " + escHtml(res.price) : "") +
+        "</span>"
       : '<span class="resource-badge">Free</span>';
     var action;
     if (paid) {
       action = res.buyUrl
-        ? '<a class="btn-gold resource-cta" href="' + escHtml(res.buyUrl) + '" target="_blank" rel="noopener noreferrer">Buy' +
-          (res.price ? " · " + escHtml(res.price) : "") + ' <span class="arrow" aria-hidden="true">&rarr;</span></a>'
+        ? '<a class="btn-gold resource-cta" href="' +
+          escHtml(res.buyUrl) +
+          '" target="_blank" rel="noopener noreferrer">Buy' +
+          (res.price ? " · " + escHtml(res.price) : "") +
+          ' <span class="arrow" aria-hidden="true">&rarr;</span></a>'
         : "";
     } else {
       var id = "res-email-" + idx;
       action =
-        '<button type="button" class="btn-gold resource-cta resource-get" aria-expanded="false" aria-controls="res-form-' + idx + '">Get free copy</button>' +
-        '<form class="resource-form" id="res-form-' + idx + '" data-idx="' + idx + '" novalidate hidden>' +
-        '<label class="resource-label" for="' + id + '">Your email</label>' +
+        '<button type="button" class="btn-gold resource-cta resource-get" aria-expanded="false" aria-controls="res-form-' +
+        idx +
+        '">Get free copy</button>' +
+        '<form class="resource-form" id="res-form-' +
+        idx +
+        '" data-idx="' +
+        idx +
+        '" novalidate hidden>' +
+        '<label class="resource-label" for="' +
+        id +
+        '">Your email</label>' +
         '<div class="resource-row">' +
-        '<input class="resource-input" id="' + id + '" type="email" name="email" autocomplete="email" inputmode="email" placeholder="name@example.com" required value="' + escHtml(rememberedEmail()) + '" />' +
+        '<input class="resource-input" id="' +
+        id +
+        '" type="email" name="email" autocomplete="email" inputmode="email" placeholder="name@example.com" required value="' +
+        escHtml(rememberedEmail()) +
+        '" />' +
         '<button type="submit" class="btn-gold resource-submit">Download</button>' +
         "</div>" +
         '<p class="resource-consent">We\'ll use your email to send occasional updates. Unsubscribe any time.</p>' +
@@ -566,13 +671,29 @@
     return (
       '<article class="cms-blog-card resource-card">' +
       (cover
-        ? '<div class="resource-cover"><img src="' + escHtml(cover) + '" alt="Cover of ' + escHtml(res.title) + '" loading="lazy" /></div>'
-        : '<div class="resource-cover" aria-hidden="true"><span class="resource-cover-blank">' + escHtml(res.title) + "</span></div>") +
+        ? '<div class="resource-cover"><img src="' +
+          escHtml(cover) +
+          '" alt="Cover of ' +
+          escHtml(res.title) +
+          '" loading="lazy" /></div>'
+        : '<div class="resource-cover" aria-hidden="true"><span class="resource-cover-blank">' +
+          escHtml(res.title) +
+          "</span></div>") +
       badge +
-      '<h3 class="cms-blog-title resource-title">' + escHtml(res.title) + "</h3>" +
-      (res.author ? '<p class="resource-author">' + escHtml(res.author) + "</p>" : "") +
-      (res.description ? '<p class="cms-blog-desc resource-desc">' + escHtml(res.description) + "</p>" : "") +
-      '<div class="resource-action">' + action + "</div>" +
+      '<h3 class="cms-blog-title resource-title">' +
+      escHtml(res.title) +
+      "</h3>" +
+      (res.author
+        ? '<p class="resource-author">' + escHtml(res.author) + "</p>"
+        : "") +
+      (res.description
+        ? '<p class="cms-blog-desc resource-desc">' +
+          escHtml(res.description) +
+          "</p>"
+        : "") +
+      '<div class="resource-action">' +
+      action +
+      "</div>" +
       "</article>"
     );
   }
@@ -602,7 +723,9 @@
       body: JSON.stringify({ email: email }),
     })
       .then(function (json) {
-        try { localStorage.setItem("caaf_resource_email", email); } catch (e) {}
+        try {
+          localStorage.setItem("caaf_resource_email", email);
+        } catch (e) {}
         // "noopener" in the features string makes window.open return null,
         // so open normally and cut the opener link by hand.
         var opened = window.open(json.url, "_blank");
@@ -610,9 +733,13 @@
         var action = form.closest(".resource-action");
         action.innerHTML =
           '<p class="resource-done" role="status">' +
-          (opened ? "Your copy is opening in a new tab." : "Your copy is ready.") +
+          (opened
+            ? "Your copy is opening in a new tab."
+            : "Your copy is ready.") +
           "</p>" +
-          '<a class="btn-gold resource-cta" href="' + escHtml(json.url) + '" target="_blank" rel="noopener noreferrer">Open PDF <span class="arrow" aria-hidden="true">&rarr;</span></a>';
+          '<a class="btn-gold resource-cta" href="' +
+          escHtml(json.url) +
+          '" target="_blank" rel="noopener noreferrer">Open PDF <span class="arrow" aria-hidden="true">&rarr;</span></a>';
         var link = action.querySelector("a");
         if (link) link.focus();
       })
@@ -620,7 +747,8 @@
         btn.disabled = false;
         btn.textContent = "Download";
         status.classList.add("is-error");
-        status.textContent = (err && err.message) || "Something went wrong. Please try again.";
+        status.textContent =
+          (err && err.message) || "Something went wrong. Please try again.";
       });
   }
 
@@ -628,7 +756,9 @@
     var el = document.getElementById("cms-resources-list");
     if (!el) return;
     setLoading(el);
-    apiFetch("/resources?populate=cover&sort=order:asc&pagination[pageSize]=100")
+    apiFetch(
+      "/resources?populate=cover&sort=order:asc&pagination[pageSize]=100",
+    )
       .then(function (json) {
         _resources = json.data || [];
         el.innerHTML = _resources.length
@@ -636,7 +766,8 @@
           : '<p class="resource-empty">Resources are coming soon.</p>';
       })
       .catch(function () {
-        el.innerHTML = '<p class="resource-empty">Resources could not be loaded. Please refresh the page.</p>';
+        el.innerHTML =
+          '<p class="resource-empty">Resources could not be loaded. Please refresh the page.</p>';
       });
 
     el.addEventListener("click", function (e) {
@@ -1046,7 +1177,11 @@
   function renderEvent(evt) {
     var imgSrc = mediaUrl(evt.coverImage, "medium") || evt.coverImageUrl || "";
     var imgHtml = imgSrc
-      ? '<img src="' + escHtml(imgSrc) + '" alt="' + escHtml(evt.title) + '" class="cms-blog-img" loading="lazy" />'
+      ? '<img src="' +
+        escHtml(imgSrc) +
+        '" alt="' +
+        escHtml(evt.title) +
+        '" class="cms-blog-img" loading="lazy" />'
       : "";
     var dateText = evt.dateLabel || formatEventDate(evt.eventDate);
     var dateHtml = dateText
@@ -1059,7 +1194,11 @@
       ? '<p class="cms-blog-desc">' + escHtml(evt.description) + "</p>"
       : "";
 
-    var galleryImages = (evt.gallery || []).map(function (img) { return mediaUrl(img, "large"); }).filter(Boolean);
+    var galleryImages = (evt.gallery || [])
+      .map(function (img) {
+        return mediaUrl(img, "large");
+      })
+      .filter(Boolean);
     var cta = "View photos →";
     // An event whose link is just its poster image opens the poster in the
     // lightbox instead of navigating to a raw image file.
@@ -1068,21 +1207,37 @@
       cta = "View poster →";
     }
 
-    var inner = imgHtml + dateHtml +
-      '<span class="cms-blog-title">' + escHtml(evt.title) + "</span>" +
-      descHtml + locationHtml;
+    var inner =
+      imgHtml +
+      dateHtml +
+      '<span class="cms-blog-title">' +
+      escHtml(evt.title) +
+      "</span>" +
+      descHtml +
+      locationHtml;
 
     if (galleryImages.length > 0) {
       var key = evt.documentId || String(evt.id);
       _eventGalleries[key] = galleryImages;
-      return '<div class="cms-blog-card event-has-gallery" data-gallery-key="' + escHtml(key) + '">' +
+      return (
+        '<div class="cms-blog-card event-has-gallery" data-gallery-key="' +
+        escHtml(key) +
+        '">' +
         inner +
-        '<span class="gallery-cta">' + cta + "</span>" +
-        "</div>";
+        '<span class="gallery-cta">' +
+        cta +
+        "</span>" +
+        "</div>"
+      );
     }
 
-    return '<a href="' + escHtml(evt.url || "#") + '" target="_blank" rel="noopener noreferrer" class="cms-blog-card">' +
-      inner + "</a>";
+    return (
+      '<a href="' +
+      escHtml(evt.url || "#") +
+      '" target="_blank" rel="noopener noreferrer" class="cms-blog-card">' +
+      inner +
+      "</a>"
+    );
   }
 
   function loadEventsPage() {
@@ -1093,7 +1248,7 @@
       "/events?populate[0]=coverImage&populate[1]=gallery" +
         "&fields[0]=title&fields[1]=url&fields[2]=description" +
         "&fields[3]=eventDate&fields[4]=location&fields[5]=coverImageUrl&fields[6]=dateLabel" +
-        "&sort=eventDate:asc&pagination[pageSize]=100"
+        "&sort=eventDate:asc&pagination[pageSize]=100",
     )
       .then(function (json) {
         var items = json.data || [];
@@ -1104,7 +1259,9 @@
           return !!e.dateLabel;
         }
         var upcoming = items.filter(isUpcoming);
-        var past = items.filter(function (e) { return !isUpcoming(e); });
+        var past = items.filter(function (e) {
+          return !isUpcoming(e);
+        });
         // Dated events first (soonest first); month/year-only events after them
         upcoming.sort(function (a, b) {
           var ta = a.eventDate ? new Date(a.eventDate).getTime() : Infinity;
@@ -1140,7 +1297,7 @@
         encodeURIComponent(now) +
         "&sort=eventDate:asc&pagination[pageSize]=1&populate=coverImage" +
         "&fields[0]=title&fields[1]=description&fields[2]=eventDate" +
-        "&fields[3]=location&fields[4]=url&fields[5]=coverImageUrl&fields[6]=dateLabel"
+        "&fields[3]=location&fields[4]=url&fields[5]=coverImageUrl&fields[6]=dateLabel",
     )
       .then(function (json) {
         var events = json.data || [];
