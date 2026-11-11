@@ -28,7 +28,30 @@
       hamburger.classList.toggle("active");
       hamburger.setAttribute("aria-expanded", isOpen);
       document.body.style.overflow = isOpen ? "hidden" : "";
+      if (!isOpen) {
+        mobileMenu.querySelectorAll(".mobile-submenu").forEach(function (sm) {
+          setSubmenu(sm, false);
+        });
+      }
     }
+
+    // Collapsible groups (Research ▾) inside the mobile menu
+    function setSubmenu(sm, open) {
+      sm.classList.toggle("open", open);
+      var t = sm.querySelector(".mobile-submenu-toggle");
+      if (t) t.setAttribute("aria-expanded", open ? "true" : "false");
+      sm.querySelectorAll(".mobile-submenu-list a").forEach(function (a) {
+        a.tabIndex = open ? 0 : -1;
+      });
+    }
+    mobileMenu.querySelectorAll(".mobile-submenu").forEach(function (sm) {
+      var t = sm.querySelector(".mobile-submenu-toggle");
+      if (!t) return;
+      t.addEventListener("click", function (e) {
+        e.stopPropagation();
+        setSubmenu(sm, !sm.classList.contains("open"));
+      });
+    });
 
     var _toggleLock = false;
     hamburger.addEventListener("click", function (e) {

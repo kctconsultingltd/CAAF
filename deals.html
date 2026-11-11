@@ -152,9 +152,15 @@
         <a href="/about">About Us</a>
         <a href="/#team">Team</a>
         <a href="/#deals">Deals</a>
-        <span class="mobile-menu-label">Research</span>
-        <a href="/blog#insights" class="mobile-menu-sublink">Insights</a>
-        <a href="/blog#resources" class="mobile-menu-sublink">Resources</a>
+        <div class="mobile-submenu">
+          <button type="button" class="mobile-submenu-toggle" aria-expanded="false" aria-controls="mobileResearchMenu">Research<svg class="mobile-submenu-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <div class="mobile-submenu-list" id="mobileResearchMenu">
+            <div class="mobile-submenu-inner">
+              <a href="/blog#insights" class="mobile-menu-sublink" tabindex="-1">Insights</a>
+              <a href="/blog#resources" class="mobile-menu-sublink" tabindex="-1">Resources</a>
+            </div>
+          </div>
+        </div>
         <a href="/events">Events</a>
         <!-- <a href="/deals">Deals</a> -->
         <a href="https://tochukwuezeukwu.substack.com/subscribe" target="_blank" rel="noopener">Subscribe &amp; Donate</a>
