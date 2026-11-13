@@ -4078,7 +4078,7 @@ main > section:nth-of-type(even) { background: var(--bg);  }
   background: var(--bg2);
   border: 1px solid var(--line-solid);
   border-top: 3px solid var(--gold);
-  border-radius: 2px;
+  border-radius: 0;
   box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.8);
   overflow-y: auto;
 }
