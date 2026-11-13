@@ -1,10 +1,10 @@
 import { factories } from '@strapi/strapi';
-import { isActiveSubscriber, normalizeEmail } from '../../../utils/substack';
+import { isPaidSubscriber, normalizeEmail } from '../../../utils/substack';
 import { sendBookEmail } from '../../../utils/resource-mailer';
 
 export default factories.createCoreController('api::resource.resource', ({ strapi }) => ({
   // Emails the book to the address given (which proves the address is real).
-  // Free books go to anyone; paid books go free to active Substack subscribers.
+  // Free books go to anyone; paid books go free to paid Substack subscribers.
   // The file field is private and its URL is never returned to the browser.
   async download(ctx) {
     const { documentId } = ctx.params;
@@ -19,8 +19,8 @@ export default factories.createCoreController('api::resource.resource', ({ strap
     }
 
     const viaSubscription = resource.access !== 'free';
-    if (viaSubscription && !(await isActiveSubscriber(strapi, email))) {
-      return ctx.forbidden('This book is free for Substack subscribers. Subscribe to unlock it.');
+    if (viaSubscription && !(await isPaidSubscriber(strapi, email))) {
+      return ctx.forbidden('This book is free for paid Substack subscribers.');
     }
 
     try {

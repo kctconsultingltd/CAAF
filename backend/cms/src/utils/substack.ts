@@ -1,11 +1,12 @@
-// Everything to do with knowing who subscribes to the CAAF Substack.
+// Everything to do with knowing who subscribes to the CAAF Substack, and on
+// which plan. Paid subscribers get every book free; free-plan subscribers
+// are recorded too, so the site can tell them to upgrade.
 //
 // Substack has no webhooks and no public subscriber API, so the list is kept
-// in our own "Substack Subscriber" collection, fed from three places:
+// in our own "Substack Subscriber" collection, fed from two places:
 //   1. syncSubstackSubscribers(): every 6h, reads the dashboard's subscriber
 //      list using the publication owner's login cookie (SUBSTACK_COOKIE).
 //   2. importSubscriberCsv(): an admin uploads Substack's CSV export.
-//   3. The website pop-up: people who subscribe through it are added at once.
 
 const UID = 'api::substack-subscriber.substack-subscriber';
 const IMPORT_UID = 'api::substack-import.substack-import';
@@ -14,13 +15,17 @@ const PAGE_SIZE = 100;
 // A sync that suddenly sees far fewer subscribers is more likely a broken
 // response than a mass unsubscribe, so it doesn't mark anyone unsubscribed.
 const MIN_SYNC_RATIO = 0.8;
-// People who subscribed through our pop-up may take a while to show up in the
-// dashboard list; don't unsubscribe them in the meantime.
-const SITE_GRACE_MS = 7 * 24 * 60 * 60 * 1000;
 const BROWSER_UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36';
 
-export type SubscriberSource = 'sync' | 'csv' | 'site' | 'admin';
+export type SubscriberSource = 'sync' | 'csv' | 'admin';
+export type Plan = 'free' | 'paid';
+
+/** `paid` undefined means "plan unknown": keep what we already have (new rows default to free). */
+export interface SubscriberEntry {
+  email: string;
+  paid?: boolean;
+}
 
 export function publicationHost(): string {
   return (process.env.SUBSTACK_PUBLICATION || 'tochukwuezeukwu.substack.com')
@@ -28,33 +33,43 @@ export function publicationHost(): string {
     .replace(/\/+$/, '');
 }
 
-export function substackSubscribeUrl(email?: string): string {
-  const base = `https://${publicationHost()}/subscribe`;
-  return email ? `${base}?email=${encodeURIComponent(email)}` : base;
-}
-
 export function normalizeEmail(value: unknown): string | null {
   const email = String(value ?? '').trim().toLowerCase();
   return email.length <= 254 && EMAIL_RE.test(email) ? email : null;
 }
 
-export async function isActiveSubscriber(strapi: any, email: string): Promise<boolean> {
-  const row = await strapi.db.query(UID).findOne({ where: { email, status: 'active' }, select: ['id'] });
-  return !!row;
+/** Active subscriber's plan, or null when the email isn't an active subscriber. */
+export async function subscriberPlan(strapi: any, email: string): Promise<Plan | null> {
+  const row = await strapi.db.query(UID).findOne({ where: { email, status: 'active' }, select: ['plan'] });
+  return row ? (row.plan === 'paid' ? 'paid' : 'free') : null;
 }
 
-/** Adds or reactivates subscribers. */
+export async function isPaidSubscriber(strapi: any, email: string): Promise<boolean> {
+  return (await subscriberPlan(strapi, email)) === 'paid';
+}
+
+/** Adds or reactivates subscribers and records their plan. */
 export async function upsertSubscribers(
   strapi: any,
-  emails: string[],
+  entries: SubscriberEntry[],
   source: SubscriberSource
-): Promise<{ added: number; reactivated: number; unchanged: number }> {
-  const unique = [...new Set(emails.map(normalizeEmail).filter((e): e is string => !!e))];
+): Promise<{ added: number; reactivated: number; unchanged: number; planChanged: number }> {
+  // Dedupe; if an email appears twice, any paid row wins.
+  const wanted = new Map<string, boolean | undefined>();
+  for (const e of entries) {
+    const email = normalizeEmail(e.email);
+    if (!email) continue;
+    const prev = wanted.get(email);
+    wanted.set(email, prev === true || e.paid === true ? true : e.paid ?? prev);
+  }
+  const emails = [...wanted.keys()];
   const existing: any[] = [];
-  for (let i = 0; i < unique.length; i += 500) {
-    const chunk = unique.slice(i, i + 500);
+  for (let i = 0; i < emails.length; i += 500) {
+    const chunk = emails.slice(i, i + 500);
     existing.push(
-      ...(await strapi.db.query(UID).findMany({ where: { email: { $in: chunk } }, select: ['id', 'email', 'status'] }))
+      ...(await strapi.db
+        .query(UID)
+        .findMany({ where: { email: { $in: chunk } }, select: ['id', 'email', 'status', 'plan'] }))
     );
   }
   const byEmail = new Map(existing.map((r) => [r.email, r]));
@@ -62,51 +77,30 @@ export async function upsertSubscribers(
   let added = 0;
   let reactivated = 0;
   let unchanged = 0;
+  let planChanged = 0;
 
-  for (const email of unique) {
+  for (const [email, paid] of wanted) {
     const row = byEmail.get(email);
     if (!row) {
       // Created through the document service so the entry gets a documentId
       // and shows up normally in the admin.
-      await strapi.documents(UID).create({ data: { email, status: 'active', source, lastSeenAt: now } });
+      await strapi
+        .documents(UID)
+        .create({ data: { email, status: 'active', plan: paid ? 'paid' : 'free', source, lastSeenAt: now } });
       added++;
-    } else {
-      await strapi.db.query(UID).update({ where: { id: row.id }, data: { status: 'active', lastSeenAt: now } });
-      if (row.status === 'active') unchanged++;
-      else reactivated++;
+      continue;
     }
+    const data: Record<string, unknown> = { status: 'active', lastSeenAt: now };
+    if (paid !== undefined) {
+      const plan: Plan = paid ? 'paid' : 'free';
+      if (plan !== row.plan) planChanged++;
+      data.plan = plan;
+    }
+    await strapi.db.query(UID).update({ where: { id: row.id }, data });
+    if (row.status === 'active') unchanged++;
+    else reactivated++;
   }
-  return { added, reactivated, unchanged };
-}
-
-// ── On-site subscribe ──────────────────────────────────────────────────────
-
-/** Signs the email up to the free tier, the same way Substack's embed form does. */
-export async function subscribeOnSubstack(email: string): Promise<boolean> {
-  const host = publicationHost();
-  try {
-    const res = await fetch(`https://${host}/api/v1/free?nojs=true`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'User-Agent': BROWSER_UA,
-        Origin: `https://${host}`,
-        Referer: `https://${host}/subscribe`,
-      },
-      body: JSON.stringify({
-        email,
-        first_url: `https://${host}/subscribe`,
-        current_url: `https://${host}/subscribe`,
-        source: 'subscribe_page',
-      }),
-    });
-    if (!res.ok) return false;
-    const body: any = await res.json().catch(() => ({}));
-    return !(body?.errors || body?.error || body?.requires_captcha);
-  } catch {
-    return false;
-  }
+  return { added, reactivated, unchanged, planChanged };
 }
 
 // ── Dashboard sync ─────────────────────────────────────────────────────────
@@ -120,10 +114,16 @@ function cookieHeader(raw: string): string {
 
 export class SubstackAuthError extends Error {}
 
+/** Paid access per the dashboard: a paid billing interval, or comp/gift/founding. */
+export function isPaidRecord(s: any): boolean {
+  const interval = String(s?.subscription_interval ?? '').trim().toLowerCase();
+  return (!!interval && interval !== 'free') || s?.is_comp === true || s?.is_gift === true || s?.is_founding === true;
+}
+
 async function fetchSubscriberPage(
   cookie: string,
   offset: number
-): Promise<{ emails: string[]; count: number | null; size: number }> {
+): Promise<{ entries: SubscriberEntry[]; count: number | null; size: number }> {
   const host = publicationHost();
   const res = await fetch(`https://${host}/api/v1/subscriber-stats`, {
     method: 'POST',
@@ -149,54 +149,58 @@ async function fetchSubscriberPage(
   const list: any[] | null = Array.isArray(body?.subscribers) ? body.subscribers : Array.isArray(body) ? body : null;
   if (!list) throw new Error('Unexpected subscriber list format from Substack');
 
-  const emails = list
+  const entries: SubscriberEntry[] = [];
+  for (const s of list) {
     // is_subscribed is missing on some accounts; only an explicit false excludes.
-    .filter((s) => s?.is_subscribed !== false)
-    .map((s) => normalizeEmail(s?.user_email_address ?? s?.email))
-    .filter((e): e is string => !!e);
+    if (s?.is_subscribed === false) continue;
+    const email = normalizeEmail(s?.user_email_address ?? s?.email);
+    if (email) entries.push({ email, paid: isPaidRecord(s) });
+  }
   const count = Number.isFinite(Number(body?.count)) ? Number(body.count) : null;
-  return { emails, count, size: list.length };
+  return { entries, count, size: list.length };
 }
 
 export interface SyncResult {
   skipped?: string;
   seen: number;
+  paid: number;
   added: number;
   reactivated: number;
+  planChanged: number;
   unsubscribed: number;
   unsubscribeSkipped?: string;
 }
 
 export async function syncSubstackSubscribers(strapi: any): Promise<SyncResult> {
   const raw = process.env.SUBSTACK_COOKIE || process.env.SUBSTACK_SID;
-  if (!raw) return { skipped: 'SUBSTACK_COOKIE is not set', seen: 0, added: 0, reactivated: 0, unsubscribed: 0 };
+  if (!raw) {
+    return { skipped: 'SUBSTACK_COOKIE is not set', seen: 0, paid: 0, added: 0, reactivated: 0, planChanged: 0, unsubscribed: 0 };
+  }
   const cookie = cookieHeader(raw);
 
-  const seen = new Set<string>();
+  const seen = new Map<string, boolean>();
   let offset = 0;
   let total: number | null = null;
   for (let pageNo = 0; pageNo < 1000; pageNo++) {
     const page = await fetchSubscriberPage(cookie, offset);
     if (total === null) total = page.count;
-    page.emails.forEach((e) => seen.add(e));
+    for (const e of page.entries) seen.set(e.email, seen.get(e.email) === true || e.paid === true);
     offset += page.size;
     if (page.size < PAGE_SIZE || (total !== null && offset >= total)) break;
     await new Promise((r) => setTimeout(r, 1200)); // stay well under Substack's rate limit
   }
 
-  const { added, reactivated } = await upsertSubscribers(strapi, [...seen], 'sync');
+  const { added, reactivated, planChanged } = await upsertSubscribers(
+    strapi,
+    [...seen].map(([email, paid]) => ({ email, paid })),
+    'sync'
+  );
 
   // Mark people no longer on the list as unsubscribed, guarded against
   // partial or broken responses.
-  const active: any[] = await strapi.db.query(UID).findMany({
-    where: { status: 'active' },
-    select: ['id', 'email', 'source', 'createdAt'],
-  });
+  const active: any[] = await strapi.db.query(UID).findMany({ where: { status: 'active' }, select: ['id', 'email'] });
   const previousActive = active.length - added - reactivated;
-  const now = Date.now();
-  const missing = active.filter(
-    (r) => !seen.has(r.email) && !(r.source === 'site' && now - new Date(r.createdAt).getTime() < SITE_GRACE_MS)
-  );
+  const missing = active.filter((r) => !seen.has(r.email));
 
   let unsubscribed = 0;
   let unsubscribeSkipped: string | undefined;
@@ -213,7 +217,8 @@ export async function syncSubstackSubscribers(strapi: any): Promise<SyncResult> 
     }
   }
 
-  return { seen: seen.size, added, reactivated, unsubscribed, unsubscribeSkipped };
+  const paid = [...seen.values()].filter(Boolean).length;
+  return { seen: seen.size, paid, added, reactivated, planChanged, unsubscribed, unsubscribeSkipped };
 }
 
 // ── CSV import ─────────────────────────────────────────────────────────────
@@ -253,6 +258,20 @@ export function parseCsv(text: string): string[][] {
   return rows.filter((r) => r.some((v) => v.trim() !== ''));
 }
 
+/**
+ * Reads the plan from a Substack export row. Uses the "plan" column when
+ * present (anything but "free" is paid), else "active_subscription"
+ * (true = paid). Returns undefined when the file has neither column.
+ */
+function csvPaid(row: string[], planCol: number, activeCol: number): boolean | undefined {
+  if (planCol !== -1) {
+    const plan = (row[planCol] ?? '').trim().toLowerCase();
+    return !!plan && plan !== 'free';
+  }
+  if (activeCol !== -1) return /^(true|yes|1)$/i.test((row[activeCol] ?? '').trim());
+  return undefined;
+}
+
 /** Runs after a Substack CSV Import entry is saved. Never throws. */
 export async function importSubscriberCsv(strapi: any, documentId: string): Promise<void> {
   let entry: any;
@@ -267,6 +286,8 @@ export async function importSubscriberCsv(strapi: any, documentId: string): Prom
 
     const header = rows[0].map((h) => h.trim().toLowerCase());
     let col = header.findIndex((h) => h === 'email' || h === 'email address' || h === 'user_email_address');
+    const planCol = header.findIndex((h) => h === 'plan' || h === 'subscription_interval');
+    const activeCol = header.findIndex((h) => h === 'active_subscription');
     let dataRows = rows.slice(1);
     if (col === -1) {
       // No header we recognise: use the first column that holds an email.
@@ -275,16 +296,26 @@ export async function importSubscriberCsv(strapi: any, documentId: string): Prom
     }
     if (col === -1) throw new Error('no "email" column found');
 
-    const emails = dataRows.map((r) => r[col]).filter((v) => v && v.trim());
-    const valid = emails.map(normalizeEmail).filter((e): e is string => !!e);
-    const { added, reactivated, unchanged } = await upsertSubscribers(strapi, valid, 'csv');
-    const invalid = emails.length - valid.length;
+    const withEmail = dataRows.filter((r) => r[col] && r[col].trim());
+    const entries: SubscriberEntry[] = [];
+    for (const r of withEmail) {
+      const email = normalizeEmail(r[col]);
+      if (email) entries.push({ email, paid: csvPaid(r, planCol, activeCol) });
+    }
+    const invalid = withEmail.length - entries.length;
+    const paidCount = entries.filter((e) => e.paid).length;
+    const { added, reactivated, unchanged } = await upsertSubscribers(strapi, entries, 'csv');
 
+    const planNote =
+      planCol === -1 && activeCol === -1
+        ? ' The file has no "plan" column, so nobody was marked as paid; export the list from Substack with plans included.'
+        : ` ${paidCount} on a paid plan.`;
     const summary =
       `Imported ${new Date().toISOString().slice(0, 16).replace('T', ' ')} UTC: ` +
       `${added} new, ${reactivated} reactivated, ${unchanged} already present` +
       (invalid ? `, ${invalid} rows skipped (not a valid email)` : '') +
-      '.';
+      '.' +
+      planNote;
     await strapi.db.query(IMPORT_UID).update({ where: { id: entry.id }, data: { summary, importedFileId: entry.file.id } });
     strapi.log.info(`[substack-csv] ${summary}`);
   } catch (err: any) {

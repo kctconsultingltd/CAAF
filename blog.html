@@ -210,7 +210,7 @@
             id="researchIntro"
             style="color: var(--muted); margin-top: 12px; max-width: 560px"
             data-insights="Perspectives on capital, impact, and emerging markets from the CAAF team."
-            data-resources="Books and guides from the CAAF team, sent straight to your inbox. Substack subscribers get every one free."
+            data-resources="Books and guides from the CAAF team, sent straight to your inbox. Paid Substack subscribers get every one free."
           >
             Perspectives on capital, impact, and emerging markets from the CAAF
             team.
@@ -332,8 +332,8 @@
 
       <div class="sub-view sub-view--ask">
         <p class="sub-eyebrow">Resources</p>
-        <h2 class="sub-title" id="subTitle">Subscribed to Capital As A Force on Substack?</h2>
-        <p class="sub-lead" id="subLead">Enter your email and every book is free, paid ones included.</p>
+        <h2 class="sub-title" id="subTitle">A paid subscriber on Substack?</h2>
+        <p class="sub-lead" id="subLead">Paid subscribers to Capital As A Force get every book free. Enter the email on your subscription to unlock them.</p>
 
         <form id="subCheckForm" class="sub-form" novalidate>
           <label class="resource-label" for="subEmail">Your subscriber email</label>
@@ -345,11 +345,12 @@
         <p class="sub-status" id="subStatus" role="status" aria-live="polite"></p>
 
         <div class="sub-notfound" id="subNotFound" hidden>
-          <p><strong id="subNotFoundEmail"></strong> isn't on the subscriber list yet. Subscribing is free and unlocks every book straight away.</p>
+          <p id="subNotFoundText"></p>
           <div class="sub-actions">
-            <button type="button" class="btn-gold resource-submit" id="subSubscribeBtn">Subscribe free and unlock</button>
+            <a class="btn-gold resource-submit" id="subPlansLink" href="https://tochukwuezeukwu.substack.com/subscribe" target="_blank" rel="noopener noreferrer">See paid plans</a>
             <button type="button" class="resource-text-link" id="subRetryBtn">Try a different email</button>
           </div>
+          <p class="sub-note">Just subscribed or upgraded? It can take up to 6 hours to reach this site.</p>
         </div>
 
         <button type="button" class="sub-skip" data-sub-close>Not now, just browse</button>
@@ -358,7 +359,7 @@
       <div class="sub-view sub-view--done" role="status">
         <p class="sub-eyebrow">Unlocked</p>
         <h2 class="sub-title">Every book is yours.</h2>
-        <p class="sub-lead">Thanks for subscribing. Pick any book and we'll email the PDF to <strong id="subDoneEmail"></strong>.</p>
+        <p class="sub-lead">Thanks for being a paid subscriber. Pick any book and we'll email the PDF to <strong id="subDoneEmail"></strong>.</p>
         <button type="button" class="btn-gold resource-submit" id="subDoneBtn" data-sub-close>Browse the books</button>
       </div>
     </dialog>

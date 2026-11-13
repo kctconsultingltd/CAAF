@@ -4204,6 +4204,15 @@ html.sub-dialog-open {
 .sub-actions .resource-text-link {
   align-self: center;
 }
+.sub-actions a.resource-submit {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.sub-note {
+  font-size: 0.8rem;
+  color: rgba(244, 242, 237, 0.68);
+}
 .sub-skip {
   align-self: center;
   min-height: 44px;

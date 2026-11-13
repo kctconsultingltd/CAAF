@@ -109,7 +109,7 @@ let lastCookieAlertAt = 0;
 const COOKIE_ALERT_INTERVAL_MS = 24 * 60 * 60 * 1000;
 
 export default {
-  // Keeps the "Substack Subscriber" list (who gets every book free) in step
+  // Keeps the "Substack Subscriber" list (paid ones get every book free) in step
   // with the Substack dashboard. Telegram hears about changes and problems
   // only, so a quiet run stays quiet.
   syncSubstackSubscribers: {
@@ -121,13 +121,14 @@ export default {
           return;
         }
         const summary =
-          "seen " + r.seen + ", new " + r.added + ", reactivated " + r.reactivated +
+          r.seen + " subscribers (" + r.paid + " paid): new " + r.added +
+          ", reactivated " + r.reactivated + ", plan changed " + r.planChanged +
           ", unsubscribed " + r.unsubscribed;
         strapi.log.info("[substack-sync] Done: " + summary);
         if (r.unsubscribeSkipped) {
           strapi.log.warn("[substack-sync] " + r.unsubscribeSkipped);
           await notifyTelegram("[substack-sync] Warning: " + r.unsubscribeSkipped + ".");
-        } else if (r.added || r.reactivated || r.unsubscribed) {
+        } else if (r.added || r.reactivated || r.planChanged || r.unsubscribed) {
           await notifyTelegram("[substack-sync] Subscriber list updated: " + summary + ".");
         }
       } catch (err: any) {

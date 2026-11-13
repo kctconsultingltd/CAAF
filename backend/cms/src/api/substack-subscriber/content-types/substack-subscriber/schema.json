@@ -5,14 +5,15 @@
     "singularName": "substack-subscriber",
     "pluralName": "substack-subscribers",
     "displayName": "Substack Subscriber",
-    "description": "Emails subscribed to the CAAF Substack. Kept up to date automatically every 6 hours; subscribers get every book free."
+    "description": "Emails subscribed to the CAAF Substack. Kept up to date automatically every 6 hours. Active subscribers on the paid plan get every book free."
   },
   "options": { "draftAndPublish": false },
   "pluginOptions": {},
   "attributes": {
     "email": { "type": "email", "required": true, "unique": true },
     "status": { "type": "enumeration", "enum": ["active", "unsubscribed"], "default": "active", "required": true },
-    "source": { "type": "enumeration", "enum": ["sync", "csv", "site", "admin"], "default": "admin" },
+    "plan": { "type": "enumeration", "enum": ["free", "paid"], "default": "free", "required": true },
+    "source": { "type": "enumeration", "enum": ["sync", "csv", "admin"], "default": "admin" },
     "lastSeenAt": { "type": "datetime" }
   }
 }

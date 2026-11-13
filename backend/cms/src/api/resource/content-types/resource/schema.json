@@ -5,7 +5,7 @@
     "singularName": "resource",
     "pluralName": "resources",
     "displayName": "Book",
-    "description": "Books listed under Research > Resources. Every book is emailed as a PDF. Free books go to anyone; paid books link out to buyUrl and are free for Substack subscribers, so upload the PDF on paid books too."
+    "description": "Books listed under Research > Resources. Every book is emailed as a PDF. Free books go to anyone; paid books link out to buyUrl and are free for paid Substack subscribers, so upload the PDF on paid books too."
   },
   "options": {
     "draftAndPublish": false

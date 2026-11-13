@@ -42,7 +42,7 @@ export async function sendBookEmail(
   const subject = `Your copy of ${book.title}`;
   const byline = book.author ? ` by ${book.author}` : '';
   const thanks = viaSubscription
-    ? 'As a subscriber to Capital As A Force on Substack, this one is on us.'
+    ? 'As a paid subscriber to Capital As A Force on Substack, this one is on us.'
     : 'Thank you for your interest in our research.';
 
   const text = [

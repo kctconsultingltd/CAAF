@@ -693,7 +693,7 @@
       action = getButton("Get free copy");
     } else if (unlocked) {
       badge =
-        '<span class="resource-badge resource-badge--sub">Free for subscribers</span>';
+        '<span class="resource-badge resource-badge--sub">Free for paid subscribers</span>';
       action =
         getButton("Get your copy") +
         (res.buyUrl
@@ -718,8 +718,8 @@
           : "") +
         '<button type="button" class="resource-text-link resource-unlock">' +
         (res.buyUrl
-          ? "Or get it free as a Substack subscriber"
-          : "Free for Substack subscribers") +
+          ? "Or get it free as a paid Substack subscriber"
+          : "Free for paid Substack subscribers") +
         "</button>";
     }
 
@@ -772,7 +772,7 @@
         escHtml(email) +
         "</strong></span>" +
         '<button type="button" class="subscriber-bar-btn" data-sub-action="forget">Not you?</button>'
-      : '<span class="subscriber-bar-text">Subscribed to Capital As A Force on Substack? Every book is free for you.</span>' +
+      : '<span class="subscriber-bar-text">Paid subscribers to Capital As A Force on Substack get every book free.</span>' +
         '<button type="button" class="subscriber-bar-btn" data-sub-action="open">Unlock with my email</button>';
   }
 
@@ -819,14 +819,25 @@
         btn.textContent = "Send";
         status.classList.add("is-error");
         if (err && err.status === 403) {
-          // This email isn't (or is no longer) on the subscriber list.
+          // This email isn't (or is no longer) a paid subscriber: re-lock the
+          // cards, then show the message on the book that was requested.
           if (subscriberEmail()) {
             writeStore(SUBSCRIBER_KEY, "");
-            renderSubscriberBar();
+            renderResourceList();
+            var card = document.querySelectorAll(".resource-card")[
+              +form.getAttribute("data-idx")
+            ];
+            var action = card && card.querySelector(".resource-action");
+            if (!action) return;
+            action.insertAdjacentHTML(
+              "beforeend",
+              '<p class="resource-status is-error" role="status"></p>',
+            );
+            status = action.lastElementChild;
           }
           status.innerHTML =
-            "That email isn't on our subscriber list yet. " +
-            '<button type="button" class="resource-inline-link resource-unlock">Check or subscribe</button>';
+            "This book is free for paid Substack subscribers, and that email isn't one yet. " +
+            '<button type="button" class="resource-inline-link resource-unlock">Check my subscription</button>';
           return;
         }
         status.textContent =
@@ -904,7 +915,8 @@
     var btn = dlg.querySelector("#subCheckBtn");
     var status = dlg.querySelector("#subStatus");
     var notFound = dlg.querySelector("#subNotFound");
-    var subscribeBtn = dlg.querySelector("#subSubscribeBtn");
+    var notFoundText = dlg.querySelector("#subNotFoundText");
+    var plansLink = dlg.querySelector("#subPlansLink");
 
     function say(msg, kind) {
       status.textContent = msg || "";
@@ -940,9 +952,18 @@
       })
         .then(function (json) {
           if (json.subscribed) return unlock(email);
-          dlg.querySelector("#subNotFoundEmail").textContent = email;
+          // Free-plan subscribers are asked to upgrade; everyone else to subscribe.
+          var onFree = json.plan === "free";
+          notFoundText.innerHTML =
+            "<strong>" +
+            escHtml(email) +
+            "</strong> " +
+            (onFree
+              ? "is on the free plan. Books are free for paid subscribers, so upgrading unlocks all of them."
+              : "isn't a paid subscriber yet. A paid subscription unlocks every book.");
+          plansLink.textContent = onFree ? "Upgrade on Substack" : "See paid plans";
           notFound.hidden = false;
-          subscribeBtn.focus();
+          plansLink.focus();
         })
         .catch(function (err) {
           say(
@@ -953,39 +974,6 @@
         .then(function () {
           btn.disabled = false;
           btn.textContent = "Check";
-        });
-    });
-
-    subscribeBtn.addEventListener("click", function () {
-      var email = input.value.trim().toLowerCase();
-      subscribeBtn.disabled = true;
-      subscribeBtn.textContent = "Subscribing…";
-      apiFetch("/substack-subscribers/subscribe", {
-        method: "POST",
-        body: JSON.stringify({ email: email }),
-      })
-        .then(function (json) {
-          if (json.subscribed) return unlock(email);
-          if (json.subscribeUrl) {
-            var w = window.open(json.subscribeUrl, "_blank");
-            if (w) w.opener = null;
-          }
-          notFound.hidden = true;
-          say(
-            "Finish subscribing on Substack in the new tab, then come back and press Check.",
-            "info",
-          );
-          btn.focus();
-        })
-        .catch(function (err) {
-          say(
-            (err && err.message) || "Something went wrong. Please try again.",
-            "error",
-          );
-        })
-        .then(function () {
-          subscribeBtn.disabled = false;
-          subscribeBtn.textContent = "Subscribe free and unlock";
         });
     });
 

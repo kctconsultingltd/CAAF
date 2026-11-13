@@ -789,7 +789,7 @@ export interface ApiResourceDownloadResourceDownload
 export interface ApiResourceResource extends Struct.CollectionTypeSchema {
   collectionName: 'resources';
   info: {
-    description: 'Books listed under Research > Resources. Every book is emailed as a PDF. Free books go to anyone; paid books link out to buyUrl and are free for Substack subscribers, so upload the PDF on paid books too.';
+    description: 'Books listed under Research > Resources. Every book is emailed as a PDF. Free books go to anyone; paid books link out to buyUrl and are free for paid Substack subscribers, so upload the PDF on paid books too.';
     displayName: 'Book';
     pluralName: 'resources';
     singularName: 'resource';
@@ -871,7 +871,7 @@ export interface ApiSubstackSubscriberSubstackSubscriber
   extends Struct.CollectionTypeSchema {
   collectionName: 'substack_subscribers';
   info: {
-    description: 'Emails subscribed to the CAAF Substack. Kept up to date automatically every 6 hours; subscribers get every book free.';
+    description: 'Emails subscribed to the CAAF Substack. Kept up to date automatically every 6 hours. Active subscribers on the paid plan get every book free.';
     displayName: 'Substack Subscriber';
     pluralName: 'substack-subscribers';
     singularName: 'substack-subscriber';
@@ -893,8 +893,11 @@ export interface ApiSubstackSubscriberSubstackSubscriber
       'api::substack-subscriber.substack-subscriber'
     > &
       Schema.Attribute.Private;
+    plan: Schema.Attribute.Enumeration<['free', 'paid']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'free'>;
     publishedAt: Schema.Attribute.DateTime;
-    source: Schema.Attribute.Enumeration<['sync', 'csv', 'site', 'admin']> &
+    source: Schema.Attribute.Enumeration<['sync', 'csv', 'admin']> &
       Schema.Attribute.DefaultTo<'admin'>;
     status: Schema.Attribute.Enumeration<['active', 'unsubscribed']> &
       Schema.Attribute.Required &
