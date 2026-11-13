@@ -1,5 +1,6 @@
 import type { Core } from '@strapi/strapi';
 import { ensureAutoCover } from './utils/auto-cover';
+import { importSubscriberCsv } from './utils/substack';
 
 const API_UIDS = [
   'api::team-member.team-member',
@@ -46,6 +47,14 @@ export default {
         result?.documentId
       ) {
         await ensureAutoCover(strapi, result.documentId);
+      }
+      // Import the emails from an uploaded Substack subscriber CSV.
+      if (
+        ctx.uid === 'api::substack-import.substack-import' &&
+        (ctx.action === 'create' || ctx.action === 'update') &&
+        result?.documentId
+      ) {
+        await importSubscriberCsv(strapi, result.documentId);
       }
       return result;
     });

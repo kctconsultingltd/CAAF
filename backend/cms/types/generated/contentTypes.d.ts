@@ -756,7 +756,7 @@ export interface ApiResourceDownloadResourceDownload
   extends Struct.CollectionTypeSchema {
   collectionName: 'resource_downloads';
   info: {
-    description: 'One row per free book requested: the email given and which book.';
+    description: 'One row per book emailed: the email given and which book.';
     displayName: 'Resource Download';
     pluralName: 'resource-downloads';
     singularName: 'resource-download';
@@ -781,13 +781,15 @@ export interface ApiResourceDownloadResourceDownload
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    viaSubscription: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
   };
 }
 
 export interface ApiResourceResource extends Struct.CollectionTypeSchema {
   collectionName: 'resources';
   info: {
-    description: 'Books listed under Research > Resources. Free books are emailed-gated downloads; paid books link out to buyUrl.';
+    description: 'Books listed under Research > Resources. Every book is emailed as a PDF. Free books go to anyone; paid books link out to buyUrl and are free for Substack subscribers, so upload the PDF on paid books too.';
     displayName: 'Book';
     pluralName: 'resources';
     singularName: 'resource';
@@ -827,6 +829,76 @@ export interface ApiResourceResource extends Struct.CollectionTypeSchema {
     price: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSubstackImportSubstackImport
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'substack_imports';
+  info: {
+    description: 'Upload the subscriber CSV exported from the Substack dashboard and save. The emails are added to Substack Subscribers; reopen the entry to see the result.';
+    displayName: 'Substack CSV Import';
+    pluralName: 'substack-imports';
+    singularName: 'substack-import';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    file: Schema.Attribute.Media<'files'> & Schema.Attribute.Required;
+    importedFileId: Schema.Attribute.Integer & Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::substack-import.substack-import'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    summary: Schema.Attribute.Text;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSubstackSubscriberSubstackSubscriber
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'substack_subscribers';
+  info: {
+    description: 'Emails subscribed to the CAAF Substack. Kept up to date automatically every 6 hours; subscribers get every book free.';
+    displayName: 'Substack Subscriber';
+    pluralName: 'substack-subscribers';
+    singularName: 'substack-subscriber';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    lastSeenAt: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::substack-subscriber.substack-subscriber'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    source: Schema.Attribute.Enumeration<['sync', 'csv', 'site', 'admin']> &
+      Schema.Attribute.DefaultTo<'admin'>;
+    status: Schema.Attribute.Enumeration<['active', 'unsubscribed']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'active'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1388,6 +1460,8 @@ declare module '@strapi/strapi' {
       'api::pitch-submission.pitch-submission': ApiPitchSubmissionPitchSubmission;
       'api::resource-download.resource-download': ApiResourceDownloadResourceDownload;
       'api::resource.resource': ApiResourceResource;
+      'api::substack-import.substack-import': ApiSubstackImportSubstackImport;
+      'api::substack-subscriber.substack-subscriber': ApiSubstackSubscriberSubstackSubscriber;
       'api::team-member.team-member': ApiTeamMemberTeamMember;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

@@ -1,0 +1,17 @@
+{
+  "kind": "collectionType",
+  "collectionName": "substack_imports",
+  "info": {
+    "singularName": "substack-import",
+    "pluralName": "substack-imports",
+    "displayName": "Substack CSV Import",
+    "description": "Upload the subscriber CSV exported from the Substack dashboard and save. The emails are added to Substack Subscribers; reopen the entry to see the result."
+  },
+  "options": { "draftAndPublish": false },
+  "pluginOptions": {},
+  "attributes": {
+    "file": { "type": "media", "multiple": false, "required": true, "allowedTypes": ["files"] },
+    "summary": { "type": "text" },
+    "importedFileId": { "type": "integer", "private": true, "visible": false }
+  }
+}

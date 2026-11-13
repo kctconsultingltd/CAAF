@@ -210,7 +210,7 @@
             id="researchIntro"
             style="color: var(--muted); margin-top: 12px; max-width: 560px"
             data-insights="Perspectives on capital, impact, and emerging markets from the CAAF team."
-            data-resources="Books and guides from the CAAF team. Some are free, some are for sale."
+            data-resources="Books and guides from the CAAF team, sent straight to your inbox. Substack subscribers get every one free."
           >
             Perspectives on capital, impact, and emerging markets from the CAAF
             team.
@@ -226,6 +226,7 @@
           <div id="cms-blog-page-list" class="cms-blog-grid"></div>
         </div>
         <div id="panel-resources" role="tabpanel" aria-labelledby="tab-resources" tabindex="0" hidden>
+          <div id="subscriberBar" class="subscriber-bar" hidden></div>
           <div id="cms-resources-list" class="cms-blog-grid resource-grid"></div>
         </div>
       </div>
@@ -322,6 +323,45 @@
         </div>
       </div>
     </footer>
+
+    <!-- Substack subscriber pop-up (Resources tab) -->
+    <dialog id="subscriberDialog" class="sub-dialog" aria-labelledby="subTitle" aria-describedby="subLead" data-state="ask">
+      <button type="button" class="sub-close" data-sub-close aria-label="Close">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+
+      <div class="sub-view sub-view--ask">
+        <p class="sub-eyebrow">Resources</p>
+        <h2 class="sub-title" id="subTitle">Subscribed to Capital As A Force on Substack?</h2>
+        <p class="sub-lead" id="subLead">Enter your email and every book is free, paid ones included.</p>
+
+        <form id="subCheckForm" class="sub-form" novalidate>
+          <label class="resource-label" for="subEmail">Your subscriber email</label>
+          <div class="resource-row">
+            <input class="resource-input" id="subEmail" type="email" name="email" autocomplete="email" inputmode="email" placeholder="name@example.com" required />
+            <button type="submit" class="btn-gold resource-submit" id="subCheckBtn">Check</button>
+          </div>
+        </form>
+        <p class="sub-status" id="subStatus" role="status" aria-live="polite"></p>
+
+        <div class="sub-notfound" id="subNotFound" hidden>
+          <p><strong id="subNotFoundEmail"></strong> isn't on the subscriber list yet. Subscribing is free and unlocks every book straight away.</p>
+          <div class="sub-actions">
+            <button type="button" class="btn-gold resource-submit" id="subSubscribeBtn">Subscribe free and unlock</button>
+            <button type="button" class="resource-text-link" id="subRetryBtn">Try a different email</button>
+          </div>
+        </div>
+
+        <button type="button" class="sub-skip" data-sub-close>Not now, just browse</button>
+      </div>
+
+      <div class="sub-view sub-view--done" role="status">
+        <p class="sub-eyebrow">Unlocked</p>
+        <h2 class="sub-title">Every book is yours.</h2>
+        <p class="sub-lead">Thanks for subscribing. Pick any book and we'll email the PDF to <strong id="subDoneEmail"></strong>.</p>
+        <button type="button" class="btn-gold resource-submit" id="subDoneBtn" data-sub-close>Browse the books</button>
+      </div>
+    </dialog>
 
     <script src="js/api.js" defer></script>
     <button class="back-to-top" id="backToTop" aria-label="Back to top">

@@ -130,7 +130,9 @@
             json && json.error && json.error.message
               ? json.error.message
               : "Request failed (" + res.status + ")";
-          throw new Error(msg);
+          var err = new Error(msg);
+          err.status = res.status;
+          throw err;
         }
         return json;
       });
@@ -579,7 +581,10 @@
     if (!tabs.length) return;
     var intro = document.getElementById("researchIntro");
 
+    var current = null;
     function show(name) {
+      var changed = name !== current;
+      current = name;
       tabs.forEach(function (tab) {
         var on = tab.getAttribute("data-tab") === name;
         tab.setAttribute("aria-selected", on ? "true" : "false");
@@ -589,6 +594,7 @@
       if (intro && intro.getAttribute("data-" + name)) {
         intro.textContent = intro.getAttribute("data-" + name);
       }
+      if (changed && name === "resources") maybeAskSubscriber();
     }
     function fromHash() {
       show(location.hash === "#resources" ? "resources" : "insights");
@@ -611,63 +617,112 @@
     fromHash();
   }
 
-  // ─── Resources (books): paid ones link out, free ones are email-gated ─────
+  // ─── Resources (books) ────────────────────────────────────────────────────
+  // Every book is emailed as a PDF (which proves the address is real). Free
+  // books go to anyone; paid books link out to buy, and are free for Substack
+  // subscribers once their email is verified in the subscriber pop-up.
   // Expected container: <div id="cms-resources-list"></div>
 
   var _resources = [];
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  var RESOURCE_EMAIL_KEY = "caaf_resource_email";
+  var SUBSCRIBER_KEY = "caaf_subscriber_email";
 
-  function rememberedEmail() {
+  function readStore(key) {
     try {
-      return localStorage.getItem("caaf_resource_email") || "";
+      return localStorage.getItem(key) || "";
     } catch (e) {
       return "";
     }
+  }
+  function writeStore(key, value) {
+    try {
+      if (value) localStorage.setItem(key, value);
+      else localStorage.removeItem(key);
+    } catch (e) {}
+  }
+
+  function subscriberEmail() {
+    return readStore(SUBSCRIBER_KEY);
+  }
+
+  function emailForm(idx) {
+    var id = "res-email-" + idx;
+    return (
+      '<form class="resource-form" id="res-form-' +
+      idx +
+      '" data-idx="' +
+      idx +
+      '" novalidate hidden>' +
+      '<label class="resource-label" for="' +
+      id +
+      '">Email the PDF to</label>' +
+      '<div class="resource-row">' +
+      '<input class="resource-input" id="' +
+      id +
+      '" type="email" name="email" autocomplete="email" inputmode="email" placeholder="name@example.com" required value="' +
+      escHtml(subscriberEmail() || readStore(RESOURCE_EMAIL_KEY)) +
+      '" />' +
+      '<button type="submit" class="btn-gold resource-submit">Send</button>' +
+      "</div>" +
+      '<p class="resource-consent">We\'ll send the PDF to this address and may email occasional updates. Unsubscribe any time.</p>' +
+      '<p class="resource-status" role="status" aria-live="polite"></p>' +
+      "</form>"
+    );
   }
 
   function renderResource(res, idx) {
     var cover = mediaUrl(res.cover, "medium");
     var paid = res.access === "paid";
-    var badge = paid
-      ? '<span class="resource-badge resource-badge--paid">Paid' +
-        (res.price ? " · " + escHtml(res.price) : "") +
-        "</span>"
-      : '<span class="resource-badge">Free</span>';
-    var action;
-    if (paid) {
-      action = res.buyUrl
-        ? '<a class="btn-gold resource-cta" href="' +
-          escHtml(res.buyUrl) +
-          '" target="_blank" rel="noopener noreferrer">Buy' +
-          (res.price ? " · " + escHtml(res.price) : "") +
-          ' <span class="arrow" aria-hidden="true">&rarr;</span></a>'
-        : "";
-    } else {
-      var id = "res-email-" + idx;
-      action =
+    var unlocked = paid && !!subscriberEmail();
+    var price = res.price ? " · " + escHtml(res.price) : "";
+    var getButton = function (label) {
+      return (
         '<button type="button" class="btn-gold resource-cta resource-get" aria-expanded="false" aria-controls="res-form-' +
         idx +
-        '">Get free copy</button>' +
-        '<form class="resource-form" id="res-form-' +
-        idx +
-        '" data-idx="' +
-        idx +
-        '" novalidate hidden>' +
-        '<label class="resource-label" for="' +
-        id +
-        '">Your email</label>' +
-        '<div class="resource-row">' +
-        '<input class="resource-input" id="' +
-        id +
-        '" type="email" name="email" autocomplete="email" inputmode="email" placeholder="name@example.com" required value="' +
-        escHtml(rememberedEmail()) +
-        '" />' +
-        '<button type="submit" class="btn-gold resource-submit">Download</button>' +
-        "</div>" +
-        '<p class="resource-consent">We\'ll use your email to send occasional updates. Unsubscribe any time.</p>' +
-        '<p class="resource-status" role="status" aria-live="polite"></p>' +
-        "</form>";
+        '">' +
+        label +
+        "</button>" +
+        emailForm(idx)
+      );
+    };
+
+    var badge, action;
+    if (!paid) {
+      badge = '<span class="resource-badge">Free</span>';
+      action = getButton("Get free copy");
+    } else if (unlocked) {
+      badge =
+        '<span class="resource-badge resource-badge--sub">Free for subscribers</span>';
+      action =
+        getButton("Get your copy") +
+        (res.buyUrl
+          ? '<a class="resource-text-link" href="' +
+            escHtml(res.buyUrl) +
+            '" target="_blank" rel="noopener noreferrer">Or buy it' +
+            price +
+            "</a>"
+          : "");
+    } else {
+      badge =
+        '<span class="resource-badge resource-badge--paid">Paid' +
+        price +
+        "</span>";
+      action =
+        (res.buyUrl
+          ? '<a class="btn-gold resource-cta" href="' +
+            escHtml(res.buyUrl) +
+            '" target="_blank" rel="noopener noreferrer">Buy' +
+            price +
+            ' <span class="arrow" aria-hidden="true">&rarr;</span></a>'
+          : "") +
+        '<button type="button" class="resource-text-link resource-unlock">' +
+        (res.buyUrl
+          ? "Or get it free as a Substack subscriber"
+          : "Free for Substack subscribers") +
+        "</button>";
     }
+
     return (
       '<article class="cms-blog-card resource-card">' +
       (cover
@@ -698,6 +753,29 @@
     );
   }
 
+  function renderResourceList() {
+    var el = document.getElementById("cms-resources-list");
+    if (!el) return;
+    el.innerHTML = _resources.length
+      ? _resources.map(renderResource).join("")
+      : '<p class="resource-empty">Resources are coming soon.</p>';
+    renderSubscriberBar();
+  }
+
+  function renderSubscriberBar() {
+    var bar = document.getElementById("subscriberBar");
+    if (!bar) return;
+    var email = subscriberEmail();
+    bar.hidden = false;
+    bar.innerHTML = email
+      ? '<span class="subscriber-bar-text"><span class="subscriber-bar-dot" aria-hidden="true"></span>Every book is free for <strong>' +
+        escHtml(email) +
+        "</strong></span>" +
+        '<button type="button" class="subscriber-bar-btn" data-sub-action="forget">Not you?</button>'
+      : '<span class="subscriber-bar-text">Subscribed to Capital As A Force on Substack? Every book is free for you.</span>' +
+        '<button type="button" class="subscriber-bar-btn" data-sub-action="open">Unlock with my email</button>';
+  }
+
   function submitResourceForm(form) {
     var res = _resources[+form.getAttribute("data-idx")];
     var input = form.querySelector(".resource-input");
@@ -715,38 +793,42 @@
     }
     input.removeAttribute("aria-invalid");
     btn.disabled = true;
-    btn.textContent = "Preparing…";
+    btn.textContent = "Sending…";
     status.textContent = "";
 
     apiFetch("/resources/" + encodeURIComponent(res.documentId) + "/download", {
       method: "POST",
       body: JSON.stringify({ email: email }),
     })
-      .then(function (json) {
-        try {
-          localStorage.setItem("caaf_resource_email", email);
-        } catch (e) {}
-        // "noopener" in the features string makes window.open return null,
-        // so open normally and cut the opener link by hand.
-        var opened = window.open(json.url, "_blank");
-        if (opened) opened.opener = null;
+      .then(function () {
+        writeStore(RESOURCE_EMAIL_KEY, email);
         var action = form.closest(".resource-action");
         action.innerHTML =
-          '<p class="resource-done" role="status">' +
-          (opened
-            ? "Your copy is opening in a new tab."
-            : "Your copy is ready.") +
-          "</p>" +
-          '<a class="btn-gold resource-cta" href="' +
-          escHtml(json.url) +
-          '" target="_blank" rel="noopener noreferrer">Open PDF <span class="arrow" aria-hidden="true">&rarr;</span></a>';
-        var link = action.querySelector("a");
-        if (link) link.focus();
+          '<p class="resource-done" role="status" tabindex="-1">' +
+          '<span class="resource-done-title">Sent. Check your inbox.</span>' +
+          "<span>We emailed <strong>" +
+          escHtml(res.title) +
+          "</strong> to " +
+          escHtml(email) +
+          ". It can take a minute; if it isn't there, look in spam or promotions.</span>" +
+          "</p>";
+        action.querySelector(".resource-done").focus();
       })
       .catch(function (err) {
         btn.disabled = false;
-        btn.textContent = "Download";
+        btn.textContent = "Send";
         status.classList.add("is-error");
+        if (err && err.status === 403) {
+          // This email isn't (or is no longer) on the subscriber list.
+          if (subscriberEmail()) {
+            writeStore(SUBSCRIBER_KEY, "");
+            renderSubscriberBar();
+          }
+          status.innerHTML =
+            "That email isn't on our subscriber list yet. " +
+            '<button type="button" class="resource-inline-link resource-unlock">Check or subscribe</button>';
+          return;
+        }
         status.textContent =
           (err && err.message) || "Something went wrong. Please try again.";
       });
@@ -761,9 +843,7 @@
     )
       .then(function (json) {
         _resources = json.data || [];
-        el.innerHTML = _resources.length
-          ? _resources.map(renderResource).join("")
-          : '<p class="resource-empty">Resources are coming soon.</p>';
+        renderResourceList();
       })
       .catch(function () {
         el.innerHTML =
@@ -771,6 +851,11 @@
       });
 
     el.addEventListener("click", function (e) {
+      var unlockBtn = e.target.closest(".resource-unlock");
+      if (unlockBtn) {
+        openSubscriberDialog(unlockBtn);
+        return;
+      }
       var get = e.target.closest(".resource-get");
       if (!get) return;
       var form = document.getElementById(get.getAttribute("aria-controls"));
@@ -784,6 +869,175 @@
       e.preventDefault();
       submitResourceForm(e.target);
     });
+
+    var bar = document.getElementById("subscriberBar");
+    if (bar) {
+      bar.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-sub-action]");
+        if (!btn) return;
+        if (btn.getAttribute("data-sub-action") === "forget") {
+          writeStore(SUBSCRIBER_KEY, "");
+          renderResourceList();
+          var open = bar.querySelector('[data-sub-action="open"]');
+          if (open) open.focus();
+        } else {
+          openSubscriberDialog(btn);
+        }
+      });
+    }
+    initSubscriberDialog();
+  }
+
+  // ─── Substack subscriber pop-up ───────────────────────────────────────────
+  // Shown every time the Resources tab opens, unless this device has already
+  // verified a subscriber email.
+
+  var _subDialog = null;
+  var _subReturnFocus = null;
+
+  function initSubscriberDialog() {
+    var dlg = document.getElementById("subscriberDialog");
+    if (!dlg || typeof dlg.showModal !== "function") return;
+    _subDialog = dlg;
+    var form = dlg.querySelector("#subCheckForm");
+    var input = dlg.querySelector("#subEmail");
+    var btn = dlg.querySelector("#subCheckBtn");
+    var status = dlg.querySelector("#subStatus");
+    var notFound = dlg.querySelector("#subNotFound");
+    var subscribeBtn = dlg.querySelector("#subSubscribeBtn");
+
+    function say(msg, kind) {
+      status.textContent = msg || "";
+      status.className = "sub-status" + (kind ? " is-" + kind : "");
+    }
+
+    function unlock(email) {
+      writeStore(SUBSCRIBER_KEY, email);
+      writeStore(RESOURCE_EMAIL_KEY, email);
+      dlg.querySelector("#subDoneEmail").textContent = email;
+      dlg.setAttribute("data-state", "done");
+      renderResourceList();
+      dlg.querySelector("#subDoneBtn").focus();
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var email = input.value.trim().toLowerCase();
+      notFound.hidden = true;
+      if (!EMAIL_RE.test(email)) {
+        input.setAttribute("aria-invalid", "true");
+        say("Enter a valid email, like name@example.com.", "error");
+        input.focus();
+        return;
+      }
+      input.removeAttribute("aria-invalid");
+      btn.disabled = true;
+      btn.textContent = "Checking…";
+      say("");
+      apiFetch("/substack-subscribers/check", {
+        method: "POST",
+        body: JSON.stringify({ email: email }),
+      })
+        .then(function (json) {
+          if (json.subscribed) return unlock(email);
+          dlg.querySelector("#subNotFoundEmail").textContent = email;
+          notFound.hidden = false;
+          subscribeBtn.focus();
+        })
+        .catch(function (err) {
+          say(
+            (err && err.message) || "Something went wrong. Please try again.",
+            "error",
+          );
+        })
+        .then(function () {
+          btn.disabled = false;
+          btn.textContent = "Check";
+        });
+    });
+
+    subscribeBtn.addEventListener("click", function () {
+      var email = input.value.trim().toLowerCase();
+      subscribeBtn.disabled = true;
+      subscribeBtn.textContent = "Subscribing…";
+      apiFetch("/substack-subscribers/subscribe", {
+        method: "POST",
+        body: JSON.stringify({ email: email }),
+      })
+        .then(function (json) {
+          if (json.subscribed) return unlock(email);
+          if (json.subscribeUrl) {
+            var w = window.open(json.subscribeUrl, "_blank");
+            if (w) w.opener = null;
+          }
+          notFound.hidden = true;
+          say(
+            "Finish subscribing on Substack in the new tab, then come back and press Check.",
+            "info",
+          );
+          btn.focus();
+        })
+        .catch(function (err) {
+          say(
+            (err && err.message) || "Something went wrong. Please try again.",
+            "error",
+          );
+        })
+        .then(function () {
+          subscribeBtn.disabled = false;
+          subscribeBtn.textContent = "Subscribe free and unlock";
+        });
+    });
+
+    dlg.querySelector("#subRetryBtn").addEventListener("click", function () {
+      notFound.hidden = true;
+      input.select();
+      input.focus();
+    });
+    dlg.querySelectorAll("[data-sub-close]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        dlg.close();
+      });
+    });
+    // A click on the dimmed backdrop (the dialog element itself) closes it.
+    dlg.addEventListener("click", function (e) {
+      if (e.target === dlg) dlg.close();
+    });
+    dlg.addEventListener("close", function () {
+      document.documentElement.classList.remove("sub-dialog-open");
+      var back = _subReturnFocus;
+      _subReturnFocus = null;
+      if (back && document.contains(back)) back.focus();
+    });
+  }
+
+  function openSubscriberDialog(returnFocusTo) {
+    var dlg = _subDialog;
+    if (!dlg || dlg.open) return;
+    dlg.setAttribute("data-state", "ask");
+    dlg.querySelector("#subNotFound").hidden = true;
+    var status = dlg.querySelector("#subStatus");
+    status.textContent = "";
+    status.className = "sub-status";
+    var input = dlg.querySelector("#subEmail");
+    input.removeAttribute("aria-invalid");
+    if (!input.value) input.value = readStore(RESOURCE_EMAIL_KEY);
+    _subReturnFocus = returnFocusTo || document.activeElement;
+    document.documentElement.classList.add("sub-dialog-open");
+    dlg.showModal();
+    input.focus();
+  }
+
+  // Called by the Research tabs whenever Resources becomes the active tab.
+  function maybeAskSubscriber() {
+    if (subscriberEmail()) return;
+    // A short pause lets the tab switch land before the pop-up appears.
+    setTimeout(function () {
+      var panel = document.getElementById("panel-resources");
+      if (panel && !panel.hidden && !subscriberEmail()) {
+        openSubscriberDialog(document.getElementById("tab-resources"));
+      }
+    }, 350);
   }
 
   // ─── Deals & Investor Interest (commented out — not live yet) ────────────

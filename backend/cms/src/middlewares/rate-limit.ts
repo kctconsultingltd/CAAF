@@ -2,7 +2,7 @@ import type { Core } from '@strapi/strapi';
 
 const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 const MAX_REQUESTS = 10;
-const RATE_LIMITED_PATHS = ['/api/deal-submissions', '/api/investor-interests', '/api/resources'];
+const RATE_LIMITED_PATHS = ['/api/deal-submissions', '/api/investor-interests', '/api/resources', '/api/substack-subscribers'];
 
 const store = new Map<string, { count: number; reset: number }>();
 

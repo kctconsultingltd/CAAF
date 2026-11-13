@@ -16,11 +16,12 @@ export default factories.createCoreController(
         .documents('api::resource-download.resource-download')
         .findMany({ sort: ['createdAt:desc'], limit: 10000 } as any);
 
-      const rows = [['Email', 'Resource', 'Date']];
+      const rows = [['Email', 'Resource', 'Subscriber', 'Date']];
       for (const e of entries ?? []) {
         rows.push([
           e.email ?? '',
           e.resourceTitle ?? '',
+          e.viaSubscription ? 'Yes' : 'No',
           e.createdAt ? new Date(e.createdAt).toISOString().split('T')[0] : '',
         ]);
       }

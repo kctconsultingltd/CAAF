@@ -1,0 +1,18 @@
+{
+  "kind": "collectionType",
+  "collectionName": "substack_subscribers",
+  "info": {
+    "singularName": "substack-subscriber",
+    "pluralName": "substack-subscribers",
+    "displayName": "Substack Subscriber",
+    "description": "Emails subscribed to the CAAF Substack. Kept up to date automatically every 6 hours; subscribers get every book free."
+  },
+  "options": { "draftAndPublish": false },
+  "pluginOptions": {},
+  "attributes": {
+    "email": { "type": "email", "required": true, "unique": true },
+    "status": { "type": "enumeration", "enum": ["active", "unsubscribed"], "default": "active", "required": true },
+    "source": { "type": "enumeration", "enum": ["sync", "csv", "site", "admin"], "default": "admin" },
+    "lastSeenAt": { "type": "datetime" }
+  }
+}

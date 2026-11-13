@@ -16,6 +16,7 @@
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import { syncSubstackSubscribers, SubstackAuthError } from "../src/utils/substack";
 
 const DEFAULT_FEED_URL =
   "https://tochukwuezeukwu.substack.com/api/v1/posts?sort=new&limit=50";
@@ -103,7 +104,53 @@ function withFailureAlert(task: (ctx: { strapi: any }) => Promise<void>) {
   };
 }
 
+// A stale login cookie fails every run; only nag about it once a day.
+let lastCookieAlertAt = 0;
+const COOKIE_ALERT_INTERVAL_MS = 24 * 60 * 60 * 1000;
+
 export default {
+  // Keeps the "Substack Subscriber" list (who gets every book free) in step
+  // with the Substack dashboard. Telegram hears about changes and problems
+  // only, so a quiet run stays quiet.
+  syncSubstackSubscribers: {
+    task: async ({ strapi }: { strapi: any }) => {
+      try {
+        const r = await syncSubstackSubscribers(strapi);
+        if (r.skipped) {
+          strapi.log.info("[substack-sync] Skipped: " + r.skipped);
+          return;
+        }
+        const summary =
+          "seen " + r.seen + ", new " + r.added + ", reactivated " + r.reactivated +
+          ", unsubscribed " + r.unsubscribed;
+        strapi.log.info("[substack-sync] Done: " + summary);
+        if (r.unsubscribeSkipped) {
+          strapi.log.warn("[substack-sync] " + r.unsubscribeSkipped);
+          await notifyTelegram("[substack-sync] Warning: " + r.unsubscribeSkipped + ".");
+        } else if (r.added || r.reactivated || r.unsubscribed) {
+          await notifyTelegram("[substack-sync] Subscriber list updated: " + summary + ".");
+        }
+      } catch (err: any) {
+        strapi.log.error("[substack-sync] Failed: " + err.message);
+        if (err instanceof SubstackAuthError) {
+          if (Date.now() - lastCookieAlertAt < COOKIE_ALERT_INTERVAL_MS) return;
+          lastCookieAlertAt = Date.now();
+          await notifyTelegram(
+            "[substack-sync] The Substack login cookie has expired or was rejected (" + err.message + "). " +
+              "Log in to Substack as the publication owner, copy a fresh substack.sid / connect.sid cookie " +
+              "and paste it into SUBSTACK_COOKIE on Railway."
+          );
+        } else {
+          await notifyTelegram("[substack-sync] Run failed: " + err.message);
+        }
+      }
+    },
+    options: {
+      rule: process.env.SUBSTACK_SYNC_CRON_RULE || "15 */6 * * *",
+      tz: "UTC",
+    },
+  },
+
   importSubstackPosts: {
     task: withFailureAlert(async ({ strapi }) => {
       const feedUrl = process.env.SUBSTACK_FEED_URL || DEFAULT_FEED_URL;
