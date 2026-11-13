@@ -6,7 +6,11 @@
 // brand. One <style> block adds the small-screen tweaks clients that support
 // media queries will use.
 
-const SITE = 'https://www.capitalasaforce.com';
+// Staging emails point at the staging site, so its assets (logo) and links
+// match what's deployed there.
+const SITE = /staging/i.test(process.env.RAILWAY_ENVIRONMENT_NAME || '')
+  ? 'https://staging.capitalasaforce.com'
+  : 'https://www.capitalasaforce.com';
 // Trimmed logo served with Cross-Origin-Resource-Policy: cross-origin (see
 // vercel.json) so webmail clients may load it. 212×187, shown at 73×64.
 const LOGO = `${SITE}/img/email/caaf-logo.png`;
