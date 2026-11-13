@@ -17,6 +17,7 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import { syncSubstackSubscribers, SubstackAuthError } from "../src/utils/substack";
+import { notifyTelegram } from "../src/utils/telegram";
 
 const DEFAULT_FEED_URL =
   "https://tochukwuezeukwu.substack.com/api/v1/posts?sort=new&limit=50";
@@ -56,33 +57,6 @@ async function fetchWithRetry(url: string, retries = 3, delayMs = 5000): Promise
     if (attempt < retries) await new Promise((r) => setTimeout(r, delayMs * attempt));
   }
   throw lastErr;
-}
-
-async function notifyTelegram(message: string) {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
-  if (!token || !chatId) {
-    console.error("[substack-import] Telegram not configured: TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID is missing");
-    return;
-  }
-  // Prod and staging share one chat, so each message says which one sent it.
-  const envName = process.env.RAILWAY_ENVIRONMENT_NAME;
-  const envLabel = envName ? "[" + envName + "] " : "";
-  try {
-    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text: envLabel + message }),
-    });
-    if (res.ok) {
-      console.log("[substack-import] Telegram message sent");
-    } else {
-      console.error("[substack-import] Telegram rejected message: " + res.status + " " + (await res.text()));
-    }
-  } catch (err: any) {
-    // A failed notification should never break the import job.
-    console.error("[substack-import] Telegram request failed: " + err.message);
-  }
 }
 
 // Substack has returned both a bare array and { posts: [...] } from this endpoint.

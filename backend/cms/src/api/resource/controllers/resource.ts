@@ -1,6 +1,7 @@
 import { factories } from '@strapi/strapi';
 import { isPaidSubscriber, normalizeEmail } from '../../../utils/substack';
 import { sendBookEmail } from '../../../utils/resource-mailer';
+import { notifyTelegram } from '../../../utils/telegram';
 
 export default factories.createCoreController('api::resource.resource', ({ strapi }) => ({
   // Emails the book to the address given (which proves the address is real).
@@ -27,6 +28,8 @@ export default factories.createCoreController('api::resource.resource', ({ strap
       await sendBookEmail(strapi, email, resource, resource.file, viaSubscription);
     } catch (err: any) {
       strapi.log.error(`[resource-download] Email to ${email} failed: ${err.message}`);
+      // The visitor only sees a generic error, so tell the admins the real reason.
+      await notifyTelegram(`[resource-download] Could not email "${resource.title}" to ${email}: ${err.message}`);
       ctx.status = 502;
       ctx.body = {
         error: { status: 502, name: 'EmailError', message: "We couldn't send the email. Try again in a minute." },
