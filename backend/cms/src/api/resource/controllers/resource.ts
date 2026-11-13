@@ -14,7 +14,7 @@ export default factories.createCoreController('api::resource.resource', ({ strap
 
     const resource: any = await strapi
       .documents('api::resource.resource')
-      .findOne({ documentId, populate: ['file'] });
+      .findOne({ documentId, populate: ['file', 'cover'] });
     if (!resource || !resource.file?.url) {
       return ctx.notFound('This book is not available yet.');
     }

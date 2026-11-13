@@ -1,11 +1,9 @@
 import { Resend } from 'resend';
+import { buildBookEmail, BookEmailInput } from './book-email-template';
 
 // Files up to this size travel as an attachment; bigger ones as a link, so the
 // email stays deliverable (most inboxes reject messages over ~10-25 MB).
 const MAX_ATTACHMENT_BYTES = 8 * 1024 * 1024;
-
-const esc = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
 export interface BookFile {
   url: string;
@@ -28,10 +26,24 @@ function fileName(book: { title: string }, file: BookFile): string {
  * Emails a book to the reader. Throws when the email provider rejects the
  * message, so the caller can tell the visitor it wasn't sent.
  */
+export interface BookInfo {
+  title: string;
+  author?: string | null;
+  description?: string | null;
+  cover?: any;
+}
+
+/** Best email-sized rendition of the cover (Strapi media), or null. */
+function coverImage(cover: any): BookEmailInput['cover'] {
+  if (!cover?.url) return null;
+  const f = cover.formats?.medium || cover.formats?.small || cover;
+  return { url: f.url, width: f.width ?? cover.width, height: f.height ?? cover.height };
+}
+
 export async function sendBookEmail(
   strapi: any,
   to: string,
-  book: { title: string; author?: string | null },
+  book: BookInfo,
   file: BookFile,
   viaSubscription: boolean
 ): Promise<SendResult> {
@@ -39,42 +51,17 @@ export async function sendBookEmail(
   const mode: SendResult['mode'] = sizeBytes > 0 && sizeBytes <= MAX_ATTACHMENT_BYTES ? 'attachment' : 'link';
   const filename = fileName(book, file);
   const from = process.env.EMAIL_FROM || 'noreply@capitalasaforce.com';
-  const subject = `Your copy of ${book.title}`;
-  const byline = book.author ? ` by ${book.author}` : '';
-  const thanks = viaSubscription
-    ? 'As a paid subscriber to Capital As A Force on Substack, this one is on us.'
-    : 'Thank you for your interest in our research.';
-
-  const text = [
-    'Hi,',
-    '',
-    mode === 'attachment'
-      ? `Your copy of "${book.title}"${byline} is attached to this email.`
-      : `Here is your copy of "${book.title}"${byline}:\n${file.url}`,
-    '',
-    thanks,
-    '',
-    'Capital As A Force',
-    'https://www.capitalasaforce.com',
-  ].join('\n');
-
-  const html = `<!doctype html><html><body style="margin:0;background:#f4f5f7;font-family:Arial,Helvetica,sans-serif;color:#1b2430">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f5f7;padding:32px 16px">
-<tr><td align="center">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-top:3px solid #c8962a">
-<tr><td style="padding:32px 32px 8px;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#8a6a1f">Capital As A Force &middot; Resources</td></tr>
-<tr><td style="padding:0 32px;font-family:Georgia,serif;font-size:24px;line-height:1.25;color:#06111f">${esc(book.title)}</td></tr>
-${book.author ? `<tr><td style="padding:6px 32px 0;font-size:14px;color:#5b6573">${esc(book.author)}</td></tr>` : ''}
-<tr><td style="padding:20px 32px 0;font-size:15px;line-height:1.6">
-${mode === 'attachment'
-    ? 'Your copy is attached to this email as a PDF.'
-    : `Your copy is ready to download:</td></tr>
-<tr><td style="padding:16px 32px 0"><a href="${esc(file.url)}" style="display:inline-block;background:#06111f;color:#ffffff;text-decoration:none;padding:12px 24px;font-size:14px;letter-spacing:1px">Download the PDF</a>`}
-</td></tr>
-<tr><td style="padding:20px 32px 32px;font-size:14px;line-height:1.6;color:#5b6573">${esc(thanks)}</td></tr>
-</table>
-<p style="font-size:12px;color:#8b93a0;margin:16px 0 0">You received this because this address was entered to request the book on capitalasaforce.com.</p>
-</td></tr></table></body></html>`;
+  const { subject, html, text } = buildBookEmail({
+    title: book.title,
+    author: book.author,
+    description: book.description,
+    cover: coverImage(book.cover),
+    mode,
+    fileUrl: file.url,
+    filename,
+    sizeBytes,
+    viaSubscription,
+  });
 
   // Same providers the rest of the site uses: ZeptoMail first (pitch
   // submissions), Resend otherwise (deal and investor forms).
@@ -87,7 +74,7 @@ ${mode === 'attachment'
   const key = process.env.RESEND_API_KEY;
   if (key) {
     const { error } = await new Resend(key).emails.send({
-      from,
+      from: from.includes('<') ? from : `Capital As A Force <${from}>`,
       to,
       subject,
       text,
