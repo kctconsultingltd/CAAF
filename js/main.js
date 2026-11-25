@@ -2,18 +2,7 @@
   /* ── Nav Scroll ────────────────────────────────── */
   const nav = document.getElementById("mainNav");
   var backToTopBtn = document.getElementById("backToTop");
-  // The brand bar scrolls away with the page; the fixed nav sits just below
-  // it until then, and at the very top once it's gone.
-  var brandBar = document.querySelector(".brand-bar");
-  var navOffset = -1;
   function checkScroll() {
-    if (brandBar) {
-      var off = Math.max(0, brandBar.offsetHeight - window.scrollY);
-      if (off !== navOffset) {
-        navOffset = off;
-        document.documentElement.style.setProperty("--brand-offset", off + "px");
-      }
-    }
     if (window.scrollY > 40) nav.classList.add("scrolled");
     else nav.classList.remove("scrolled");
     if (backToTopBtn) {
@@ -22,7 +11,6 @@
     }
   }
   window.addEventListener("scroll", checkScroll, { passive: true });
-  window.addEventListener("resize", checkScroll);
   checkScroll();
   if (backToTopBtn) {
     backToTopBtn.addEventListener("click", function () {
