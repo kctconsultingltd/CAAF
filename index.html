@@ -86,6 +86,16 @@
     <script defer src="/_vercel/speed-insights/script.js"></script>
   </head>
   <body>
+    <!-- Shared brand bar: same markup on theatlas.capitalasaforce.com -->
+    <nav class="brand-bar" aria-label="Capital as a Force sites">
+      <div class="brand-bar-inner">
+        <span class="brand-bar-label">A Capital as a Force site</span>
+        <ul class="brand-bar-switch">
+          <li><a href="/" aria-current="page">Capital as a Force</a></li>
+          <li><a href="https://theatlas.capitalasaforce.com/?utm_source=capitalasaforce&amp;utm_medium=brand-bar">The Atlas<span class="brand-bar-ext" aria-hidden="true">&#8599;</span></a></li>
+        </ul>
+      </div>
+    </nav>
     <!-- ═══════════════════════════════════════════════
      1. NAVIGATION
      ═══════════════════════════════════════════════ -->
@@ -931,6 +941,69 @@
     <!-- ═══════════════════════════════════════════════
       JAVASCRIPT
       ═══════════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════════
+     THE ATLAS POP-UP (homepage). Shares one slot with the event pop-up and
+     respects a 14-day snooze: see loadHomePopups() in js/api.js.
+     Counts are typed in here; update them when The Atlas changes.
+     ═══════════════════════════════════════════════ -->
+    <dialog class="atlas-pop" id="atlasDialog" aria-labelledby="atlasPopTitle">
+      <div class="atlas-pop-inner">
+        <button type="button" class="atlas-pop-close" data-atlas-close aria-label="Close">&times;</button>
+        <p class="atlas-pop-eyebrow">New from Capital as a Force<span class="atlas-pop-eyebrow-extra"> &middot; The Atlas</span></p>
+        <h2 class="atlas-pop-title" id="atlasPopTitle">Who moves African capital, <em>and how to reach them.</em></h2>
+        <p class="atlas-pop-lead">Five connected research tools, each curated, sourced and updated on a published schedule.</p>
+        <ul class="atlas-pop-tools">
+          <li>
+            <a class="atlas-tool" href="https://theatlas.capitalasaforce.com/lp-atlas?utm_source=capitalasaforce&amp;utm_medium=popup&amp;utm_content=lp-atlas" data-atlas-go>
+              <span class="atlas-tool-n">95</span>
+              <span class="atlas-tool-u">LPs</span>
+              <span class="atlas-tool-name">LP Atlas</span>
+              <span class="atlas-tool-d">Who funds Africa&rsquo;s funds, each with its latest sourced commitment.</span>
+            </a>
+          </li>
+          <li>
+            <a class="atlas-tool" href="https://theatlas.capitalasaforce.com/gp-atlas?utm_source=capitalasaforce&amp;utm_medium=popup&amp;utm_content=gp-atlas" data-atlas-go>
+              <span class="atlas-tool-n">95</span>
+              <span class="atlas-tool-u">Managers</span>
+              <span class="atlas-tool-name">Specialist GPs Atlas</span>
+              <span class="atlas-tool-d">Sector specialists by region, status, instrument and cheque size.</span>
+            </a>
+          </li>
+          <li>
+            <a class="atlas-tool" href="https://theatlas.capitalasaforce.com/first-close?utm_source=capitalasaforce&amp;utm_medium=popup&amp;utm_content=first-close" data-atlas-go>
+              <span class="atlas-tool-n">38</span>
+              <span class="atlas-tool-u">Closes</span>
+              <span class="atlas-tool-name">First Close Africa</span>
+              <span class="atlas-tool-d">Every Africa-focused fund close of the last 18 months.</span>
+            </a>
+          </li>
+          <li>
+            <a class="atlas-tool" href="https://theatlas.capitalasaforce.com/lp-ready?utm_source=capitalasaforce&amp;utm_medium=popup&amp;utm_content=lp-ready" data-atlas-go>
+              <span class="atlas-tool-n">126</span>
+              <span class="atlas-tool-u">Checkpoints</span>
+              <span class="atlas-tool-name">LP-Ready</span>
+              <span class="atlas-tool-d">The diligence standard LPs apply, with a live readiness score.</span>
+            </a>
+          </li>
+          <li>
+            <a class="atlas-tool" href="https://theatlas.capitalasaforce.com/capital-voices?utm_source=capitalasaforce&amp;utm_medium=popup&amp;utm_content=capital-voices" data-atlas-go>
+              <span class="atlas-tool-n">271</span>
+              <span class="atlas-tool-u">Speakers</span>
+              <span class="atlas-tool-name">Capital Voices</span>
+              <span class="atlas-tool-d">Practitioners worth putting on a stage, for balanced panels.</span>
+            </a>
+          </li>
+        </ul>
+        <div class="atlas-pop-foot">
+          <div class="atlas-pop-ctas">
+            <a class="btn-gold" href="https://theatlas.capitalasaforce.com/?utm_source=capitalasaforce&amp;utm_medium=popup&amp;utm_content=explore" data-atlas-go>Explore The Atlas <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="atlas-pop-signin" href="https://theatlas.capitalasaforce.com/sign-in?utm_source=capitalasaforce&amp;utm_medium=popup&amp;utm_content=sign-in" data-atlas-go>Members sign in</a>
+          </div>
+          <button type="button" class="atlas-pop-later" data-atlas-close>Not now</button>
+        </div>
+      </div>
+    </dialog>
+
     <script src="js/api.js" defer></script>
     <button class="back-to-top" id="backToTop" aria-label="Back to top">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

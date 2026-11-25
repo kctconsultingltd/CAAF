@@ -1531,21 +1531,122 @@
       });
   }
 
-  function loadEventModal() {
+  // ─── Homepage pop-ups: next event, or The Atlas ──────────────────────────
+  // One pop-up per visit. With an upcoming event, the event shows; but if the
+  // event showed last visit and The Atlas is due, The Atlas gets this visit.
+  // The Atlas pop-up is due unless the visitor clicked through to it (never
+  // again on this device), closed it in the last 14 days, or saw it already
+  // this session.
+
+  var LAST_POPUP_KEY = "caaf_last_popup";
+  var ATLAS_KEY = "caaf_atlas_popup"; // "clicked" or the time it was closed
+  var ATLAS_SNOOZE_MS = 14 * 24 * 60 * 60 * 1000;
+  var ATLAS_DELAY_MS = 5000;
+
+  function atlasPopupDue() {
+    if (!document.getElementById("atlasDialog")) return false;
+    try {
+      if (sessionStorage.getItem(ATLAS_KEY)) return false;
+    } catch (e) {}
+    var state = readStore(ATLAS_KEY);
+    if (state === "clicked") return false;
+    var closedAt = parseInt(state, 10);
+    return !closedAt || Date.now() - closedAt > ATLAS_SNOOZE_MS;
+  }
+
+  function loadHomePopups() {
     if (!document.querySelector(".hero")) return;
+    var atlasDue = atlasPopupDue();
+    fetchNextEvent()
+      .catch(function () {
+        return null;
+      })
+      .then(function (evt) {
+        var eventLastTime = readStore(LAST_POPUP_KEY) === "event";
+        if (evt && !(atlasDue && eventLastTime)) {
+          writeStore(LAST_POPUP_KEY, "event");
+          showEventModal(evt);
+        } else if (atlasDue) {
+          scheduleAtlasPopup();
+        }
+      });
+  }
+
+  // Waits ATLAS_DELAY_MS or until the visitor scrolls halfway past the hero,
+  // whichever comes first, and never opens over the mobile menu or another
+  // open dialog.
+  function scheduleAtlasPopup() {
+    var hero = document.querySelector(".hero");
+    var fired = false;
+    var timer = setTimeout(fire, ATLAS_DELAY_MS);
+    function onScroll() {
+      if (window.scrollY > hero.offsetHeight * 0.5) fire();
+    }
+    function fire() {
+      if (fired) return;
+      var menu = document.getElementById("mobileMenu");
+      if (
+        (menu && menu.classList.contains("open")) ||
+        document.querySelector("dialog[open], #event-modal-overlay")
+      ) {
+        clearTimeout(timer);
+        timer = setTimeout(fire, 2000);
+        return;
+      }
+      fired = true;
+      clearTimeout(timer);
+      window.removeEventListener("scroll", onScroll);
+      openAtlasPopup();
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+  }
+
+  function openAtlasPopup() {
+    var dialog = document.getElementById("atlasDialog");
+    if (!dialog || typeof dialog.showModal !== "function") return;
+    var wentToAtlas = false;
+    writeStore(LAST_POPUP_KEY, "atlas");
+    try {
+      sessionStorage.setItem(ATLAS_KEY, "shown");
+    } catch (e) {}
+
+    if (!dialog._wired) {
+      dialog._wired = true;
+      dialog.addEventListener("click", function (e) {
+        // A click on the dialog itself (not its content) is the backdrop.
+        if (e.target === dialog || e.target.closest("[data-atlas-close]")) {
+          dialog.close();
+          return;
+        }
+        if (e.target.closest("[data-atlas-go]")) {
+          wentToAtlas = true;
+          writeStore(ATLAS_KEY, "clicked");
+        }
+      });
+      dialog.addEventListener("close", function () {
+        document.documentElement.classList.remove("atlas-pop-open");
+        if (!wentToAtlas) writeStore(ATLAS_KEY, String(Date.now()));
+      });
+    }
+    document.documentElement.classList.add("atlas-pop-open");
+    dialog.showModal();
+  }
+
+  function fetchNextEvent() {
     var now = new Date().toISOString();
-    apiFetch(
+    return apiFetch(
       "/events?filters[eventDate][$gt]=" +
         encodeURIComponent(now) +
         "&sort=eventDate:asc&pagination[pageSize]=1&populate=coverImage" +
         "&fields[0]=title&fields[1]=description&fields[2]=eventDate" +
         "&fields[3]=location&fields[4]=url&fields[5]=coverImageUrl&fields[6]=dateLabel",
-    )
-      .then(function (json) {
-        var events = json.data || [];
-        if (!events.length) return;
-        var evt = events[0];
+    ).then(function (json) {
+      return (json.data || [])[0] || null;
+    });
+  }
 
+  function showEventModal(evt) {
+    (function () {
         var imgSrc =
           (evt.coverImage && evt.coverImage.url) || evt.coverImageUrl || "";
         var meta = evt.dateLabel || formatEventDate(evt.eventDate);
@@ -1618,8 +1719,7 @@
           .querySelector("#event-modal-close")
           .addEventListener("click", closeModal);
         document.addEventListener("keydown", onEsc);
-      })
-      .catch(function () {});
+    })();
   }
 
   // ─── Init ─────────────────────────────────────────────────────────────────
@@ -1632,6 +1732,6 @@
     initResearchTabs();
     loadResources();
     loadEventsPage();
-    loadEventModal();
+    loadHomePopups();
   });
 })();
