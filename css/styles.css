@@ -4293,19 +4293,18 @@ html.sub-dialog-open {
 }
 .brand-bar-switch {
   display: flex;
-  height: 24px;
+  height: 100%;
   margin: 0;
   padding: 0;
   list-style: none;
-  border: 1px solid var(--line-solid);
 }
 .brand-bar-switch a {
   display: flex;
   align-items: center;
   gap: 4px;
   height: 100%;
-  padding: 0 12px;
-  color: var(--muted);
+  padding: 0 4px;
+  color: var(--gold-light);
   text-decoration: none;
   transition:
     color 0.2s,
@@ -4313,7 +4312,6 @@ html.sub-dialog-open {
 }
 .brand-bar-switch a:hover {
   color: var(--white);
-  background: rgba(200, 150, 42, 0.12);
 }
 .brand-bar-switch a:focus-visible {
   outline: 2px solid var(--gold-light);
