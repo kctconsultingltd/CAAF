@@ -4293,7 +4293,7 @@ html.sub-dialog-open {
 }
 .brand-bar-switch {
   display: flex;
-  height: 22px;
+  height: 24px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -4304,7 +4304,7 @@ html.sub-dialog-open {
   align-items: center;
   gap: 4px;
   height: 100%;
-  padding: 0 10px;
+  padding: 0 12px;
   color: var(--muted);
   text-decoration: none;
   transition:
@@ -4457,7 +4457,7 @@ html.atlas-pop-open {
 }
 .atlas-tool-u {
   font-family: var(--condensed);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
